@@ -18,7 +18,8 @@ class Storage(object):
     Args:
       hash_value: hash value of chunk.
     Returns:
-      instance of Chunk corresponding to given hash."""
+      instance of Chunk corresponding to given hash.
+    """
 
 
   def addChunk(self, chunk):
