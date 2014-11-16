@@ -8,15 +8,15 @@ class Storage(object):
     """Creates Storage object.
 
     Args:
-      hash_function: instance of HashFunction
-      logger: instance of DriveLogger
+      hash_function: instance of HashFunction.
+      logger: instance of DriveLogger.
     """
 
   def getChunk(self, hash_value):
     """Retrieves Chunk.
 
     Args:
-      hash_value: hash value of chunk
+      hash_value: hash value of chunk.
     Returns:
       instance of Chunk corresponding to given hash."""
 
@@ -26,4 +26,6 @@ class Storage(object):
 
     Args:
       chunk: instance of Chunk.
+    Returns:
+      hash of given chunk.
     """
