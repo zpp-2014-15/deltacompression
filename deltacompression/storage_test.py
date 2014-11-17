@@ -45,6 +45,18 @@ class StorageTest(unittest.TestCase):
     self.assertEqual("aaa", self._storage.getChunk(hash1))
     self.assertEqual("bbb", self._storage.getChunk(hash2))
 
+  def testAddChunkRaisesWhenChunkExists(self):
+    self._storage.addChunk("aaa")
+    self.assertRaises(storage.StorageException, self._storage.addChunk, "aaa")
+
+  def testGetChunkRaisesWhenChunkDoesNotExist(self):
+    self.assertRaises(storage.StorageException, self._storage.getChunk, 123)
+
+  def testContainsHash(self):
+    hash1 = self._storage.addChunk("aaa")
+    self.assertTrue(self._storage.containsHash(hash1))
+    self.assertFalse(self._storage.containsHash(123))
+
 
 if __name__ == '__main__':
   unittest.main()
