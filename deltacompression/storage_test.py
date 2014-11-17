@@ -47,7 +47,8 @@ class StorageTest(unittest.TestCase):
 
     def testAddChunkRaisesWhenChunkExists(self):
         self._storage.addChunk("aaa")
-        self.assertRaises(storage.StorageException, self._storage.addChunk, "aaa")
+        self.assertRaises(storage.StorageException, self._storage.addChunk,
+                          "aaa")
 
     def testGetChunkRaisesWhenChunkDoesNotExist(self):
         self.assertRaises(storage.StorageException, self._storage.getChunk, 123)
