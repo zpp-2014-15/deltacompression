@@ -30,3 +30,18 @@ class Storage(object):
         Returns:
             hash of given chunk.
         """
+
+
+class Chunk(object):
+    """Class responsible for storing one data chunk."""
+
+    def __init__(self, data):
+        """Creates data chunk.
+
+        Args:
+            data: chunk of data.
+        """
+        self._data = data
+
+    def get(self):
+        return self._data
