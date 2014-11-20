@@ -58,3 +58,18 @@ class Storage(object):
             raise StorageException("Chunk with given hash already exists.")
         self._storage[hash_value] = chunk
         return hash_value
+
+
+class Chunk(object):
+    """Class responsible for storing one data chunk."""
+
+    def __init__(self, data):
+        """Creates data chunk.
+
+        Args:
+            data: chunk of data.
+        """
+        self._data = data
+
+    def get(self):
+        return self._data

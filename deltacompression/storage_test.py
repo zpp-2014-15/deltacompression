@@ -59,5 +59,14 @@ class StorageTest(unittest.TestCase):
         self.assertFalse(self._storage.containsHash(123))
 
 
+class ChunkTest(unittest.TestCase):
+
+    def testGet(self):
+        chunk = storage.Chunk("asd")
+        self.assertEqual(chunk.get(), "asd")
+
+        chunk2 = storage.Chunk("dsa")
+        self.assertEqual(chunk2.get(), "dsa")
+
 if __name__ == '__main__':
     unittest.main()
