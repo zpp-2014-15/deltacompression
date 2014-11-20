@@ -51,7 +51,7 @@ class Storage(object):
         Returns:
             hash of given chunk.
         Raises:
-            StorageException if chunk already exists
+            StorageException if chunk already exists.
         """
         hash_value = self._hash_function.computeHash(chunk)
         if hash_value in self._storage:
