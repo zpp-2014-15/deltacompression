@@ -2,11 +2,11 @@
 
 import unittest
 
-from deltacompression import storage
-from deltacompression.chunk_hash import HashFunction
+from deltacompression.backend import storage
+from deltacompression.backend import chunk_hash
 
 
-class SimpleHasher(HashFunction):
+class SimpleHasher(chunk_hash.HashFunction):
 
     def calculateHash(self, chunk):
         return sum(map(ord, chunk))

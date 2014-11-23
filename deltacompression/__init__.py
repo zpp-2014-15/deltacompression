@@ -1,1 +1,1 @@
-"""Delta compression main directory."""
+"""Delta compression main project directory."""
