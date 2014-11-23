@@ -32,11 +32,8 @@ class ChunkerTest(unittest.TestCase):
 
     def testBadFile(self):
         """Testing chunker's behaviour after passing nonexistent file."""
-        try:
-            ret = [i for i in self._chunker.chunkData(self.bad_file_name)]
-            self.assertFalse(ret)
-        except ChunkerException:
-            pass
+        with self.assertRaises(ChunkerException):
+            list(self._chunker.chunkData(self.bad_file_name))
 
 
 if __name__ == "__main__":
