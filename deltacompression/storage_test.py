@@ -3,18 +3,12 @@
 import unittest
 
 from deltacompression import storage
+from deltacompression.chunk_hash import HashFunction
 
 
-# TODO(marseel): should be derivied class of HashFunction
-class SimpleHasher(object):
+class SimpleHasher(HashFunction):
 
-    def computeHash(self, chunk):
-        """Computes hash.
-
-        Args:
-            chunk: string
-        Returns:
-            Integer"""
+    def calculateHash(self, chunk):
         return sum(map(ord, chunk))
 
 
@@ -28,8 +22,8 @@ class StorageTest(unittest.TestCase):
     def testAddChunk(self):
         chunk1 = "aaa"
         chunk2 = "bbb"
-        chunk1_hash = self._hasher.computeHash(chunk1)
-        chunk2_hash = self._hasher.computeHash(chunk2)
+        chunk1_hash = self._hasher.calculateHash(chunk1)
+        chunk2_hash = self._hasher.calculateHash(chunk2)
         returned_hash1 = self._storage.addChunk(chunk1)
         returned_hash2 = self._storage.addChunk(chunk2)
 

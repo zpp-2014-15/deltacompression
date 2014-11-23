@@ -53,7 +53,7 @@ class Storage(object):
         Raises:
             StorageException if chunk already exists.
         """
-        hash_value = self._hash_function.computeHash(chunk)
+        hash_value = self._hash_function.calculateHash(chunk)
         if hash_value in self._storage:
             raise StorageException("Chunk with given hash already exists.")
         self._storage[hash_value] = chunk
