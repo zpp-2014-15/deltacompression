@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(__file__))
 
 import wx
 
-from gui import controller
+from deltacompression.gui import controller
 
 
 def main():

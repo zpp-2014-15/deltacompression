@@ -25,4 +25,4 @@ nosetests --with-coverage
 
 Running application
 ===================
-python main.py
+python deltacompresion/main.py
