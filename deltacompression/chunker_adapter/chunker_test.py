@@ -1,7 +1,7 @@
 """Tests for chunker.py"""
 
 import unittest
-from chunker_adapter.chunker import Chunker
+from deltacompression.chunker_adapter.chunker import Chunker
 import os
 import os.path as op
 

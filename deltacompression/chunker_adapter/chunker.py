@@ -2,7 +2,7 @@
 
 from subprocess import Popen, PIPE
 import cStringIO
-from deltacompression.storage import Chunk
+from deltacompression.backend.storage import Chunk
 import os.path as op
 
 class ChunkerException(Exception):
