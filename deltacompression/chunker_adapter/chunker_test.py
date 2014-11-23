@@ -10,7 +10,7 @@ from deltacompression.chunker_adapter.chunker import Chunker, ChunkerException
 class ChunkerTest(unittest.TestCase):
     """ Test for the Chunker class. """
 
-    file_name = op.join(op.abspath(op.dirname(__file__)), '__test_file__')
+    file_name = op.join(op.abspath(op.dirname(__file__)), "__test_file__")
     bad_file_name = "___surely_there_is_no_such_file___"
 
     def setUp(self):
@@ -19,7 +19,7 @@ class ChunkerTest(unittest.TestCase):
     def testChunking(self):
         # due to chunker module's limitations we can't actually test it on
         # smaller data
-        with open(self.file_name, 'w') as tfile:
+        with open(self.file_name, "w") as tfile:
             cont = ",".join([str(i) for i in xrange(15000)])
             tfile.write(cont)
         try:
@@ -39,5 +39,5 @@ class ChunkerTest(unittest.TestCase):
             pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

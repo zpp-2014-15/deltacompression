@@ -14,7 +14,7 @@ class ChunkerException(Exception):
 class Chunker(object):
     """Python adapter for the external chunker module."""
 
-    path = op.join(op.abspath(op.dirname(__file__)), 'adapter')
+    path = op.join(op.abspath(op.dirname(__file__)), "adapter")
     no_file_msg = "There is no '{}' file"
 
     def __init__(self, min_chunk, max_chunk):
@@ -56,6 +56,6 @@ class Chunker(object):
         chunks = []
         for line in buf:
             chunks.append(int(line.strip()))
-        with open(file_name, 'r') as fil:
+        with open(file_name, "r") as fil:
             for chunk in chunks:
                 yield Chunk(fil.read(chunk))
