@@ -1,10 +1,10 @@
 """Python adapter for the external chunking module."""
 
 import os.path as op
-from subprocess import Popen, PIPE
+import subprocess
 import cStringIO
 
-from deltacompression.backend.storage import Chunk
+from deltacompression.backend import storage
 
 
 class ChunkerException(Exception):
@@ -46,8 +46,9 @@ class Chunker(object):
         if not op.isfile(file_name):
             raise ChunkerException(self.no_file_msg.format(file_name))
 
-        process = Popen([self.path, str(self._min_chunk),
-                         str(self._max_chunk), file_name], stdout=PIPE)
+        process = subprocess.Popen([self.path, str(self._min_chunk),
+                                    str(self._max_chunk), file_name],
+                                   stdout=subprocess.PIPE)
         out, err = process.communicate()
         retcode = process.wait()
         if retcode:
@@ -58,4 +59,4 @@ class Chunker(object):
             chunks.append(int(line.strip()))
         with open(file_name, "r") as fil:
             for chunk in chunks:
-                yield Chunk(fil.read(chunk))
+                yield storage.Chunk(fil.read(chunk))

@@ -4,7 +4,7 @@ import os
 import os.path as op
 import unittest
 
-from deltacompression.chunker_adapter.chunker import Chunker, ChunkerException
+from deltacompression.chunker_adapter import chunker
 
 
 class ChunkerTest(unittest.TestCase):
@@ -14,7 +14,7 @@ class ChunkerTest(unittest.TestCase):
     bad_file_name = "___surely_there_is_no_such_file___"
 
     def setUp(self):
-        self._chunker = Chunker(1000, 7000)
+        self._chunker = chunker.Chunker(1000, 7000)
 
     def testChunking(self):
         # due to chunker module's limitations we can't actually test it on
@@ -32,7 +32,7 @@ class ChunkerTest(unittest.TestCase):
 
     def testBadFile(self):
         """Testing chunker's behaviour after passing nonexistent file."""
-        with self.assertRaises(ChunkerException):
+        with self.assertRaises(chunker.ChunkerException):
             list(self._chunker.chunkData(self.bad_file_name))
 
 
