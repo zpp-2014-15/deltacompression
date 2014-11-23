@@ -1,8 +1,8 @@
 """Tests for chunk_hash.py."""
 import unittest
 
-from deltacompression import storage
-from deltacompression import chunk_hash
+from deltacompression.backend import storage
+from deltacompression.backend import chunk_hash
 
 
 class HashSHA256Test(unittest.TestCase):
