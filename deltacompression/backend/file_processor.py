@@ -23,7 +23,11 @@ class FileProcessor(object):
     def processFile(self, file_name):
         """Processes a single file.
 
-        Args"""
+        Args:
+            file_name: path to the file to pe processed.
+        Returns:
+            compressed data representing given file
+        """
         data = []
         for chunk in self._chunker.chunkData(file_name):
             data.append(self._data_updater.update(chunk))
