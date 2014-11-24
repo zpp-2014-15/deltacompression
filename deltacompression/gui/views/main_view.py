@@ -8,8 +8,10 @@ class MainView(wx.Frame):
     def __init__(self, parent):
         wx.Frame.__init__(self, parent, title="Delta compression")
         self._simulate_button = None
+        self._choose_data_button = None
 
     def BuildFrame(self):
+        """Creates frame with buttons and layout."""
         sizer = wx.BoxSizer(wx.VERTICAL)
         self._simulate_button = wx.Button(self, label="Simulate")
         sizer.Add(self._simulate_button, 0, wx.EXPAND | wx.ALL)
@@ -17,6 +19,7 @@ class MainView(wx.Frame):
         self._choose_data_button = wx.Button(self, label="Choose data")
         sizer.Add(self._choose_data_button, 0, wx.EXPAND | wx.ALL)
         self.SetSizer(sizer)
+        self.Centre()
 
     def GetSimulateButton(self):
         return self._simulate_button
