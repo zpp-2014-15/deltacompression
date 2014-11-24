@@ -20,7 +20,7 @@ class DataUpdater(object):
         Args:
             chunk: instance of Chunk that will be added to the storage
         Returns:
-            data to be sent through the network
+            data representing given chunk
         """
         raise NotImplementedError
 
