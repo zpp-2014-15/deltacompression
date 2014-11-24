@@ -59,6 +59,9 @@ class Storage(object):
         self._storage[hash_value] = chunk
         return hash_value
 
+    def getHashFunction(self):
+        return self._hash_function
+
 
 class Chunk(object):
     """Class responsible for storing one data chunk."""
