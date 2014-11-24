@@ -37,7 +37,7 @@ class DummyUpdater(DataUpdater):
     def update(self, chunk):
         try:
             self._storage.addChunk(chunk)
-            return chunk
+            return chunk.get()
         except storage.StorageException:
             return self._storage.getHashFunction().calculateHash(chunk)
 
