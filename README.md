@@ -30,6 +30,10 @@ Running tests
 =============
 nosetests --with-coverage
 
+Testing code style
+==================
+pylint deltacompression/
+
 Running application
 ===================
 python deltacompresion/main.py

@@ -4,13 +4,14 @@ import wx
 
 
 class MainView(wx.Frame):
+    """This view is responsible for choosing parameters and simulating."""
 
     def __init__(self, parent):
         wx.Frame.__init__(self, parent, title="Delta compression")
         self._simulate_button = None
         self._choose_data_button = None
 
-    def BuildFrame(self):
+    def buildFrame(self):
         """Creates frame with buttons and layout."""
         sizer = wx.BoxSizer(wx.VERTICAL)
         self._simulate_button = wx.Button(self, label="Simulate")
@@ -21,13 +22,13 @@ class MainView(wx.Frame):
         self.SetSizer(sizer)
         self.Centre()
 
-    def GetSimulateButton(self):
+    def getSimulateButton(self):
         return self._simulate_button
 
-    def GetChooseDataButton(self):
+    def getChooseDataButton(self):
         return self._choose_data_button
 
-    def _GetDataFromDialog(self, dialog):
+    def _getDataFromDialog(self, dialog):
         if dialog.ShowModal() == wx.ID_OK:
             result = dialog.GetPath()
         else:
@@ -36,7 +37,7 @@ class MainView(wx.Frame):
         dialog.Destroy()
         return result
 
-    def GetDataTestDirectory(self):
+    def getDataTestDirectory(self):
         """Allows user to choose directory.
 
         Returns:
@@ -44,14 +45,14 @@ class MainView(wx.Frame):
         """
         dialog = wx.DirDialog(None, "Choose a directory:",
                               style=wx.DD_DEFAULT_STYLE)
-        return self._GetDataFromDialog(dialog)
+        return self._getDataFromDialog(dialog)
 
-    def GetFilePath(self):
+    def getFilePath(self):
         """Allows user to choose file.
 
         Returns:
             Absolute path to file or empty string if user canceled dialog.
         """
         dialog = wx.FileDialog(None, "Choose a file:",
-                              style=wx.DD_DEFAULT_STYLE)
-        return self._GetDataFromDialog(dialog)
+                               style=wx.DD_DEFAULT_STYLE)
+        return self._getDataFromDialog(dialog)

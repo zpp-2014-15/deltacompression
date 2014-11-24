@@ -12,7 +12,7 @@ from deltacompression.gui import controller
 def main():
     app = wx.App(False)
     main_controller = controller.MainController(app)
-    main_controller.StartApp()
+    main_controller.startApp()
     app.MainLoop()
 
 

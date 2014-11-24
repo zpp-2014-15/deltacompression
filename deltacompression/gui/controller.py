@@ -8,17 +8,18 @@ class MainController(object):
 
     def __init__(self, app):
         self._main_view = main_view.MainView(None)
+        app.SetTopWindow(self._main_view)
 
-    def StartApp(self):
+    def startApp(self):
         """Creates main Frame and shows this frame."""
-        self._main_view.BuildFrame()
-        choose_data_button = self._main_view.GetChooseDataButton()
-        choose_data_button.Bind(wx.EVT_BUTTON, self._ChooseFileHook)
+        self._main_view.buildFrame()
+        choose_data_button = self._main_view.getChooseDataButton()
+        choose_data_button.Bind(wx.EVT_BUTTON, self._chooseFileHook)
 
         self._main_view.Show()
 
-    def _ChooseFileHook(self, event):
+    def _chooseFileHook(self, _):
         """Shows dialog to choose file."""
-        file_path = self._main_view.GetFilePath()
+        file_path = self._main_view.getFilePath()
         print file_path
         # TODO(marcelzieba): Add FileProcessor to process data.
