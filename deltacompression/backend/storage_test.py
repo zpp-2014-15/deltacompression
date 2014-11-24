@@ -62,5 +62,5 @@ class ChunkTest(unittest.TestCase):
         chunk2 = storage.Chunk("dsa")
         self.assertEqual(chunk2.get(), "dsa")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

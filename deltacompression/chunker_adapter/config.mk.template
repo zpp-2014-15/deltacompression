@@ -1,0 +1,7 @@
+# try to copy this file and adjust libraries' paths appropriately
+# there's no need to install hydra's boost libraries thanks to this file
+LIB1=/a/path/to/hydra/boost/libraries
+LIB2=/a/path/to/hydra/static/libraries
+IPATH=/a/path/to/dir/containing/chunker.h/and/cool/dir
+RUNTIME_LIB_DIRS=$(LIB1):$(LIB2)
+LINK_LIB_DIRS=-L$(LIB1) -L$(LIB2)

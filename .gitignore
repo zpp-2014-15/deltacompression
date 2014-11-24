@@ -52,3 +52,9 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# config file for the Makefile
+config.mk
+
+adapter
+*.o

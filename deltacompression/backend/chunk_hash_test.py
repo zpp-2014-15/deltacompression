@@ -16,5 +16,5 @@ class HashSHA256Test(unittest.TestCase):
         self.assertEqual(exp, self._sha_hash.calculateHash(chunk))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
