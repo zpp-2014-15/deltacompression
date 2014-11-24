@@ -11,10 +11,11 @@ class MainController(object):
     def StartApp(self):
         self._main_view.BuildFrame()
         choose_data_button = self._main_view.GetChooseDataButton()
-        choose_data_button.Bind(wx.EVT_BUTTON, self._ChooseDirectoryHook)
+        choose_data_button.Bind(wx.EVT_BUTTON, self._ChooseFileHook)
 
         self._main_view.Show()
 
-    def _ChooseDirectoryHook(self, event):
-        directory = self._main_view.GetDataTestDirectory()
-        print directory
+    def _ChooseFileHook(self, event):
+        file_path = self._main_view.GetFilePath()
+        print file_path
+        # TODO(marcelzieba): Add FileProcessor to process data.

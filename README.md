@@ -19,6 +19,13 @@ ln -s /usr/lib/python2.7/dist-packages/wx.pth .
 ln -s /usr/lib/python2.7/dist-packages/wxversion.py .
 ln -s /usr/lib/python2.7/dist-packages/wxversion.pyc .
 
+PYTHONPATH
+==========
+Add repository directory to PYTHONPATH
+If yo are using virtualenvwrapper just simply type:
+add2virtualenv .
+in repository (directory that contains README.md etc)
+
 Running tests
 =============
 nosetests --with-coverage

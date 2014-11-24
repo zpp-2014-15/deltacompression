@@ -24,14 +24,7 @@ class MainView(wx.Frame):
     def GetChooseDataButton(self):
         return self._choose_data_button
 
-    def GetDataTestDirectory(self):
-        """Allows user to choose directory.
-
-        Returns:
-            Returns absolute path or empty string if user canceled dialog.
-        """
-        dialog = wx.DirDialog(None, "Choose a directory:",
-                              style=wx.DD_DEFAULT_STYLE)
+    def _GetDataFromDialog(self, dialog):
         if dialog.ShowModal() == wx.ID_OK:
             result = dialog.GetPath()
         else:
@@ -39,3 +32,23 @@ class MainView(wx.Frame):
 
         dialog.Destroy()
         return result
+
+    def GetDataTestDirectory(self):
+        """Allows user to choose directory.
+
+        Returns:
+            Absolute path or empty string if user canceled dialog.
+        """
+        dialog = wx.DirDialog(None, "Choose a directory:",
+                              style=wx.DD_DEFAULT_STYLE)
+        return self._GetDataFromDialog(dialog)
+
+    def GetFilePath(self):
+        """Allows user to choose file.
+
+        Returns:
+            Absolute path to file or empty string if user canceled dialog.
+        """
+        dialog = wx.FileDialog(None, "Choose a file:",
+                              style=wx.DD_DEFAULT_STYLE)
+        return self._GetDataFromDialog(dialog)
