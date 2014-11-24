@@ -8,7 +8,7 @@ pip install -r requirements.txt
 and wxPython (for ubuntu):
 apt-get install python-wxgtk2.8
 
-Using virtualevn?
+Using virtualenv?
 ================
 If you are using virtualevn you will probably have problem with wxPython.
 You should add this library to your virtualenv:
