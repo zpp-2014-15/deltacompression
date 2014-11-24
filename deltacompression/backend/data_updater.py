@@ -6,13 +6,13 @@ from deltacompression.backend import storage
 class DataUpdater(object):
     """Class responsible for adding new chunks to the storage."""
 
-    def __init__(self, storageObject):
+    def __init__(self, storage_object):
         """Creates DataUpdater object.
 
         Args:
             storageObject: instance of Storage
         """
-        self._storage = storageObject
+        self._storage = storage_object
 
     def update(self, chunk):
         """Adds chunk to the storage.
