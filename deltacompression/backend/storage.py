@@ -59,8 +59,19 @@ class Storage(object):
         self._storage[hash_value] = chunk
         return hash_value
 
-    def getHashFunction(self):
-        return self._hash_function
+    def getCorrespondingHash(self, chunk):
+        """
+        Args:
+            chunk: instance of Chunk.
+        Returns:
+            hash of the chunk if it is in the storage, None otherwise.
+        """
+        print chunk
+        hash_value = self._hash_function.calculateHash(chunk)
+        if hash_value in self._storage:
+            return hash_value
+        else:
+            return None
 
 
 class Chunk(object):

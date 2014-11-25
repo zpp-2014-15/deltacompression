@@ -1,7 +1,5 @@
 """This module contains class responsible for adding chunks to the storage."""
 
-from deltacompression.backend import storage
-
 
 class DataUpdater(object):
     """Class responsible for adding new chunks to the storage."""
@@ -35,11 +33,12 @@ class DataUpdater(object):
 class DummyUpdater(DataUpdater):
 
     def update(self, chunk):
-        try:
+        hash_value = self._storage.getCorrespondingHash(chunk)
+        if hash_value is None:
             self._storage.addChunk(chunk)
             return chunk.get()
-        except storage.StorageException:
-            return self._storage.getHashFunction().calculateHash(chunk)
+        else:
+            return hash_value
 
     def getName(self):
         return "Dummy Updater"
