@@ -66,7 +66,6 @@ class Storage(object):
         Returns:
             hash of the chunk if it is in the storage, None otherwise.
         """
-        print chunk
         hash_value = self._hash_function.calculateHash(chunk)
         if hash_value in self._storage:
             return hash_value
