@@ -33,12 +33,11 @@ class DataUpdater(object):
 class DummyUpdater(DataUpdater):
 
     def update(self, chunk):
-        hash_value = self._storage.getCorrespondingHash(chunk)
-        if hash_value is None:
+        if self._storage.containsChunk(chunk):
+            return self._storage.getHashOfChunk(chunk)
+        else:
             self._storage.addChunk(chunk)
             return chunk.get()
-        else:
-            return hash_value
 
     def getName(self):
         return "Dummy Updater"

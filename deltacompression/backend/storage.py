@@ -59,18 +59,26 @@ class Storage(object):
         self._storage[hash_value] = chunk
         return hash_value
 
-    def getCorrespondingHash(self, chunk):
+    def containsChunk(self, chunk):
+        """
+        Returns:
+            true if chunk is in the storage, false otherwise.
+        """
+        return self._hash_function.calculateHash(chunk) in self._storage
+
+    def getHashOfChunk(self, chunk):
         """
         Args:
             chunk: instance of Chunk.
         Returns:
-            hash of the chunk if it is in the storage, None otherwise.
+            hash of the chunk, if it is in the storage.
+        Raises:
+            StorageException if chunk is not in the storage.
         """
         hash_value = self._hash_function.calculateHash(chunk)
-        if hash_value in self._storage:
-            return hash_value
-        else:
-            return None
+        if hash_value not in self._storage:
+            raise StorageException("Given chunk does not exist in the storage.")
+        return hash_value
 
 
 class Chunk(object):
