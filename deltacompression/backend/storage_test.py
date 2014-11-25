@@ -52,6 +52,13 @@ class StorageTest(unittest.TestCase):
         self.assertTrue(self._storage.containsHash(hash1))
         self.assertFalse(self._storage.containsHash(123))
 
+    def testGetCorrespondingHash(self):
+        chunk1 = "aaa"
+        hash1 = self._hasher.calculateHash(chunk1)
+        self.assertIs(self._storage.getCorrespondingHash(chunk1), None)
+        self._storage.addChunk(chunk1)
+        self.assertEqual(self._storage.getCorrespondingHash(chunk1), hash1)
+
 
 class ChunkTest(unittest.TestCase):
 

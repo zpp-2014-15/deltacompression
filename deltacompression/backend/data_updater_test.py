@@ -20,13 +20,9 @@ class DummyUpdaterTest(unittest.TestCase):
         hash1 = self._hash_function.calculateHash(chunk1)
         self.assertEqual(self._updater.update(chunk1), chunk1.get())
         self.assertEqual(self._updater.update(chunk1), hash1)
-        self.assertEqual(self._updater.update(chunk1), hash1)
 
         chunk2 = storage.Chunk("other data")
         hash2 = self._hash_function.calculateHash(chunk2)
         self.assertEqual(self._updater.update(chunk2), chunk2.get())
         self.assertEqual(self._updater.update(chunk2), hash2)
         self.assertEqual(self._updater.update(chunk1), hash1)
-
-    def testGetName(self):
-        self.assertEqual(self._updater.getName(), "Dummy Updater")
