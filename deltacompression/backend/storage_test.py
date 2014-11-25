@@ -36,8 +36,8 @@ class StorageTest(unittest.TestCase):
         hash1 = self._storage.addChunk(chunk1)
         hash2 = self._storage.addChunk(chunk2)
 
-        self.assertEqual(chunk1.get(), self._storage.getChunk(hash1).get())
-        self.assertEqual(chunk2.get(), self._storage.getChunk(hash2).get())
+        self.assertEqual("aaa", self._storage.getChunk(hash1).get())
+        self.assertEqual("bbb", self._storage.getChunk(hash2).get())
 
     def testAddChunkRaisesWhenChunkExists(self):
         chunk1 = storage.Chunk("aaa")
