@@ -46,4 +46,4 @@ class FileProcessor(object):
         for chunk in self._chunker.chunkData(file_name):
             data.append(self._data_updater.update(chunk))
 
-        return self._compression_algorithm.compress(data)
+        return self._compression_algorithm.compress("".join(data))

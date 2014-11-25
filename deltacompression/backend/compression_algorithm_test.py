@@ -11,10 +11,9 @@ class DummyCompressionAlgorithmTest(unittest.TestCase):
         self._algorithm = compression_algorithm.DummyCompressionAlgorithm()
 
     def testCompression(self):
-        data = ["Lorem ipsu", "m do", "", "lor sit", " amet"]
-        self.assertEqual(self._algorithm.compress(data),
-                         "Lorem ipsum dolor sit amet")
+        data = "Lorem ipsum dolor sit amet"
+        self.assertEqual(self._algorithm.compress(data), data)
 
-    def testGetName(self):
-        self.assertEqual(self._algorithm.getName(),
-                         "Dummy Compression Algorithm")
+    def testDecompression(self):
+        data = "Lorem ipsum dolor sit amet"
+        self.assertEqual(self._algorithm.decompress(data), data)

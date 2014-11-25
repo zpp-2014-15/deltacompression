@@ -25,13 +25,6 @@ class FileProcessorTest(unittest.TestCase):
         self._file_processor = file_processor.FileProcessor(
             self._data_updater, self._compression_algorithm, 1000, 7000)
 
-    def test1(self):
-        self._file_processor.setDataUpdater(self._data_updater)
-
-    def test2(self):
-        self._file_processor.setCompressionAlgorithm(
-            self._compression_algorithm)
-
     def testFileProcessor(self):
         with open(self.file_name, "w") as tfile:
             cont = ",".join([str(i) for i in xrange(15000)])
