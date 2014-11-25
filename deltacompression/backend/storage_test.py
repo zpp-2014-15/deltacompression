@@ -9,7 +9,7 @@ from deltacompression.backend import chunk_hash
 class SimpleHasher(chunk_hash.HashFunction):
 
     def calculateHash(self, chunk):
-        return sum(map(ord, chunk))
+        return sum(map(ord, chunk.get()))
 
 
 class StorageTest(unittest.TestCase):
@@ -20,8 +20,8 @@ class StorageTest(unittest.TestCase):
         self._storage = storage.Storage(self._hasher, None)
 
     def testAddChunk(self):
-        chunk1 = "aaa"
-        chunk2 = "bbb"
+        chunk1 = storage.Chunk("aaa")
+        chunk2 = storage.Chunk("bbb")
         chunk1_hash = self._hasher.calculateHash(chunk1)
         chunk2_hash = self._hasher.calculateHash(chunk2)
         returned_hash1 = self._storage.addChunk(chunk1)
@@ -31,24 +31,26 @@ class StorageTest(unittest.TestCase):
         self.assertEqual(chunk2_hash, returned_hash2)
 
     def testGetChunk(self):
-        chunk1 = "aaa"
-        chunk2 = "bbb"
+        chunk1 = storage.Chunk("aaa")
+        chunk2 = storage.Chunk("bbb")
         hash1 = self._storage.addChunk(chunk1)
         hash2 = self._storage.addChunk(chunk2)
 
-        self.assertEqual("aaa", self._storage.getChunk(hash1))
-        self.assertEqual("bbb", self._storage.getChunk(hash2))
+        self.assertEqual("aaa", self._storage.getChunk(hash1).get())
+        self.assertEqual("bbb", self._storage.getChunk(hash2).get())
 
     def testAddChunkRaisesWhenChunkExists(self):
-        self._storage.addChunk("aaa")
+        chunk1 = storage.Chunk("aaa")
+        self._storage.addChunk(chunk1)
         self.assertRaises(storage.StorageException, self._storage.addChunk,
-                          "aaa")
+                          chunk1)
 
     def testGetChunkRaisesWhenChunkDoesNotExist(self):
         self.assertRaises(storage.StorageException, self._storage.getChunk, 123)
 
     def testContainsHash(self):
-        hash1 = self._storage.addChunk("aaa")
+        chunk1 = storage.Chunk("aaa")
+        hash1 = self._storage.addChunk(chunk1)
         self.assertTrue(self._storage.containsHash(hash1))
         self.assertFalse(self._storage.containsHash(123))
 
