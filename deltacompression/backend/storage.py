@@ -80,6 +80,13 @@ class Storage(object):
             raise StorageException("Given chunk does not exist in the storage.")
         return hash_value
 
+    def getChunks(self):
+        """
+        Returns:
+            A generator for all the contained Chunks.
+        """
+        return self._storage.viewvalues()
+
 
 class Chunk(object):
     """Class responsible for storing one data chunk."""

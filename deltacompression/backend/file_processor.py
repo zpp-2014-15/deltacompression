@@ -34,7 +34,7 @@ class FileProcessor(object):
         """Processes a single file.
 
         Args:
-            file_name: path to the file to pe processed.
+            file_name: path to the file to be processed.
         Returns:
             compressed data representing given file.
         Raises:
@@ -44,6 +44,8 @@ class FileProcessor(object):
         """
         data = []
         for chunk in self._chunker.chunkData(file_name):
-            data.append(self._data_updater.update(chunk))
+            update = self._data_updater.update(chunk)
+            if update:
+                data.append(update.serialize())
 
         return self._compression_algorithm.compress("".join(data))
