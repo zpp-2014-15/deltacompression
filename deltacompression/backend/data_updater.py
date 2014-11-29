@@ -30,6 +30,10 @@ class DataUpdater(object):
         """
         raise NotImplementedError
 
+    def addSentData(self, decompressed_data):
+        """Updates the storage with the decompressed data."""
+        raise NotImplementedError
+
 
 class DummyUpdater(DataUpdater):
 
@@ -42,3 +46,9 @@ class DummyUpdater(DataUpdater):
 
     def getName(self):
         return "Dummy Updater"
+
+    def addSentData(self, data):
+        while data:
+            update = chunk_update.DummyChunkUpdate.deserialize(data)
+            self._storage.addChunk(update.getChunk())
+            data = data[update.getBinarySize():]

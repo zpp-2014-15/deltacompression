@@ -10,7 +10,6 @@ from deltacompression.backend import data_updater
 from deltacompression.backend import storage
 from deltacompression.backend import chunk_hash
 from deltacompression.backend import compression_algorithm
-from deltacompression.backend import chunk_update
 
 
 class FileProcessorTest(unittest.TestCase):
@@ -21,21 +20,10 @@ class FileProcessorTest(unittest.TestCase):
     def setUp(self):
         self._storage = storage.Storage(chunk_hash.HashSHA256(), None)
         self._data_updater = data_updater.DummyUpdater(self._storage)
-        self._chunk_update_cls = chunk_update.DummyChunkUpdate
-        self._deserialize_kwargs = {}
         self._compression_algorithm = compression_algorithm \
             .DummyCompressionAlgorithm()
         self._file_processor = file_processor.FileProcessor(
             self._data_updater, self._compression_algorithm, 1000, 7000)
-
-    def updateStorage(self, storage_obj, compressed_data):
-        """Updates storage object with the given data."""
-        data = self._compression_algorithm.decompress(compressed_data)
-        while data:
-            update = self._chunk_update_cls.deserialize(
-                data, **self._deserialize_kwargs)
-            storage_obj.addChunk(update.getChunk())
-            data = data[update.getBinarySize():]
 
     def sendDataTest(self, cont):
         """Testing sending data to a remote Storage."""
@@ -44,8 +32,10 @@ class FileProcessorTest(unittest.TestCase):
             tfile.write(cont)
         try:
             remote_storage = storage.Storage(chunk_hash.HashSHA256(), None)
+            remote_updater = data_updater.DummyUpdater(remote_storage)
             compressed_data = self._file_processor.processFile(self.file_name)
-            self.updateStorage(remote_storage, compressed_data)
+            data = self._compression_algorithm.decompress(compressed_data)
+            remote_updater.addSentData(data)
             self.assertEqual(
                 set([ch.get() for ch in self._storage.getChunks()]),
                 set([ch.get() for ch in remote_storage.getChunks()]))
