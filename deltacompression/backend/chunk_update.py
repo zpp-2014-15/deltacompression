@@ -19,13 +19,24 @@ class ChunkUpdate(object):
     def getBinarySize(self):
         raise NotImplementedError
 
+    @classmethod
+    def deserialize(cls, data, **kwargs):
+        """Creates an ChunkUpdate objects from the given data.
+        Args:
+            data: String to be deserialized.
+            kwargs: additional, implementation specific arguments
+        Returns:
+            deserialized ChunkUpdate object
+        """
+        raise NotImplementedError
+
 
 class DummyChunkUpdate(ChunkUpdate):
     """ChunkUpdate containing the whole new Chunk."""
 
-    # format for the size of the chunk - it's 32-bit integer, little-endian
+    # format for the length of the chunk - it's 32-bit integer, little-endian
     FMT = "<i"
-    # size of len variable in bytes, used in binary representation
+    # size of length variable in bytes, used in binary representation
     LEN_SIZE = struct.Struct(FMT).size
 
     def __init__(self, chunk):
@@ -48,14 +59,13 @@ class DummyChunkUpdate(ChunkUpdate):
 
 
 class DeltaChunkUpdate(ChunkUpdate):
-    """ChunkUpdate a hash of a base Chunk and the diff value between the base
-    and final Chunk. """
+    """ChunkUpdate containing a hash of a base Chunk and the diff value
+    between the base and the final Chunk. """
 
-    # format for the size of the chunk - it's 32-bit integer, little-endian
+    # format for the length of the chunk - it's 32-bit integer, little-endian
     FMT = "<i"
-    # size of len variable in bytes, used in binary representation
+    # size of length variable in bytes, used in binary representation
     LEN_SIZE = struct.Struct(FMT).size
-
 
     def __init__(self, hash_value, diff):
         self._hash = hash_value
@@ -69,7 +79,8 @@ class DeltaChunkUpdate(ChunkUpdate):
         return self.LEN_SIZE + len(self._hash) + len(self._diff)
 
     @classmethod
-    def deserialize(cls, data, hash_size):
+    def deserialize(cls, data, **kwargs):
+        hash_size = kwargs.pop('hash_size')
         size, = struct.unpack(cls.FMT, data[:cls.LEN_SIZE])
         return DeltaChunkUpdate(
             data[cls.LEN_SIZE:cls.LEN_SIZE + hash_size],

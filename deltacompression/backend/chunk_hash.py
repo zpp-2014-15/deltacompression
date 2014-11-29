@@ -4,6 +4,7 @@ import hashlib
 
 
 class HashFunction(object):
+    """Hashing function producing a hash with fixed length."""
 
     def calculateHash(self, chunk):
         """Abstract method for calculating hash."""

@@ -83,7 +83,7 @@ class Storage(object):
     def getChunks(self):
         """
         Returns:
-            A generator for all the contained Chunks.
+            An iterable for all the contained Chunks.
         """
         return self._storage.viewvalues()
 

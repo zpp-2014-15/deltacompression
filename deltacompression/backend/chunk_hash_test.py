@@ -16,5 +16,6 @@ class HashSHA256Test(unittest.TestCase):
                "\xde\x880L&\xb0\xcb\x99\xce\x91\xc6")
         self.assertEqual(exp, self._sha_hash.calculateHash(chunk))
 
+
 if __name__ == "__main__":
     unittest.main()
