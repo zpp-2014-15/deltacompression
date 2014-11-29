@@ -25,7 +25,7 @@ class FileProcessorTest(unittest.TestCase):
         self._file_processor = file_processor.FileProcessor(
             self._data_updater, self._compression_algorithm, 1000, 7000)
 
-    def sendDataTest(self, cont):
+    def _sendDataTest(self, cont):
         """Testing sending data to a remote Storage."""
 
         with open(self.file_name, "w") as tfile:
@@ -35,7 +35,7 @@ class FileProcessorTest(unittest.TestCase):
             remote_updater = data_updater.DummyUpdater(remote_storage)
             compressed_data = self._file_processor.processFile(self.file_name)
             data = self._compression_algorithm.decompress(compressed_data)
-            remote_updater.addSentData(data)
+            remote_updater.addReceivedData(data)
             self.assertEqual(
                 set([ch.get() for ch in self._storage.getChunks()]),
                 set([ch.get() for ch in remote_storage.getChunks()]))
@@ -43,7 +43,7 @@ class FileProcessorTest(unittest.TestCase):
             os.remove(self.file_name)
 
     def testDifferentBlocks(self):
-        self.sendDataTest(",".join([str(i) for i in xrange(15000)]))
+        self._sendDataTest(",".join([str(i) for i in xrange(15000)]))
 
     def testSameBlocks(self):
-        self.sendDataTest("0" * 30000)
+        self._sendDataTest("0" * 30000)

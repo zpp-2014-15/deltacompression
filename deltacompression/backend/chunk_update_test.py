@@ -8,10 +8,11 @@ from deltacompression.backend import storage, chunk_update
 class DummyChunkUpdateTest(unittest.TestCase):
 
     def testSerialization(self):
-        chunk = storage.Chunk("this parrot is no more")
+        data = "this parrot is no more"
+        chunk = storage.Chunk(data)
         update = chunk_update.DummyChunkUpdate(chunk)
         self.assertEqual(update.serialize(),
-                         "{}{}".format("\x16\x00\x00\x00", chunk.get()))
+                         "{}{}".format("\x16\x00\x00\x00", data))
 
     def testDeserialization(self):
         data = "it has ceased to be"
@@ -54,8 +55,8 @@ class DeltaChunkUpdateTest(unittest.TestCase):
         binary = update.serialize()
         nupdate = chunk_update.DeltaChunkUpdate.deserialize(
             binary, hash_size=len(hash_value))
-        self.assertEqual(diff, nupdate.getDiff())
-        self.assertEqual(hash_value, nupdate.getHash())
+        self.assertEqual(nupdate.getDiff(), diff)
+        self.assertEqual(nupdate.getHash(), hash_value)
 
 
 if __name__ == "__main__":
