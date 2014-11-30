@@ -20,7 +20,7 @@ class DummyUpdaterTest(unittest.TestCase):
         data = "some data"
         chunk = storage.Chunk(data)
         update = self._updater.update(chunk)
-        self.assertEqual(update.getChunk().get(), data)
+        self.assertEqual(update.getNewChunk().get(), data)
         self.assertIs(self._updater.update(chunk), None)
 
     def testaddReceivedData(self):

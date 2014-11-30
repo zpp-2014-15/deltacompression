@@ -51,5 +51,5 @@ class DummyUpdater(DataUpdater):
     def addReceivedData(self, data):
         while data:
             update = chunk_update.DummyChunkUpdate.deserialize(data)
-            self._storage.addChunk(update.getChunk())
+            self._storage.addChunk(update.getNewChunk())
             data = data[update.getBinarySize():]
