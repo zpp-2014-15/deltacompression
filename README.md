@@ -8,6 +8,15 @@ To run, install all necessary dependencies:
 pip install -r requirements.txt
 apt-get install python-wxgtk2.8
 ````
+Moreover, you have to download an xdelta3 package from
+[here](https://code.google.com/p/xdelta/downloads/detail?name=xdelta3.0z.tar.gz&can=2&q=).
+After checking sha and unpacking, change version of python in the Makefile,
+add -fPIC at the end of line 202 in Makefile and run:
+
+````bash
+make xdelta3module.so
+````
+
 Using virtualenv?
 ================
 If you are using virtualevn you will probably have problem with wxPython.
@@ -26,7 +35,9 @@ If yo are using virtualenvwrapper just simply type:
 ````bash
 add2virtualenv .
 ````
-in repository (directory that contains README.md etc)
+in repository (directory that contains README.md etc).
+
+You should also add to PYTHONPATH the directory with xdelta3module.so.
 
 Running tests
 =============
