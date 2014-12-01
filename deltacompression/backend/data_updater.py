@@ -9,7 +9,7 @@ class DataUpdater(object):
         """Creates DataUpdater object.
 
         Args:
-            storageObject: instance of Storage
+            storageObject: instance of Storage.
         """
         self._storage = storage_object
 
@@ -17,16 +17,16 @@ class DataUpdater(object):
         """Adds chunk to the storage.
 
         Args:
-            chunk: instance of Chunk that will be added to the storage
+            chunk: instance of Chunk that will be added to the storage.
         Returns:
-            ChunkUpdate object for the given chunk
+            ChunkUpdate object for the given chunk.
         """
         raise NotImplementedError
 
     def getName(self):
         """
         Returns:
-            the name of the data updater algorithm
+            the name of the data updater algorithm.
         """
         raise NotImplementedError
 

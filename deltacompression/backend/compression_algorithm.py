@@ -16,7 +16,7 @@ class CompressionAlgorithm(object):
     def decompress(self, compressed_data):
         """
         Args:
-            compressed_data: data to be decompressed
+            compressed_data: data to be decompressed.
         Returns:
             decompressed data.
         """

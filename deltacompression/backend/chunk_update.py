@@ -21,12 +21,12 @@ class ChunkUpdate(object):
 
     @classmethod
     def deserialize(cls, data, **kwargs):
-        """Creates an ChunkUpdate objects from the given data.
+        """Creates a ChunkUpdate object from the given data.
         Args:
             data: String to be deserialized.
-            kwargs: additional, implementation specific arguments
+            kwargs: additional, implementation specific arguments.
         Returns:
-            deserialized ChunkUpdate object
+            deserialized ChunkUpdate object.
         """
         raise NotImplementedError
 
@@ -79,7 +79,7 @@ class DeltaChunkUpdate(ChunkUpdate):
         Args:
             hash_value: String, iff there is some corresponding base chunk or
                 None, if we create a chunk from scratch.
-            diff: String, content used in creating a new Chunk
+            diff: String, content used in creating a new Chunk.
         """
         self._hash = hash_value
         self._diff = diff
