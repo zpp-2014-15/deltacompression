@@ -1,6 +1,6 @@
-"""Module contains DiffAlgorithm interface and various its implementations."""
+"""Module contains DiffAlgorithm interface and its various implementations."""
 
-import struct
+import os
 
 import xdelta3
 
@@ -9,6 +9,7 @@ from deltacompression.backend import storage
 
 class DiffException(Exception):
     """An exception during executing the diff algorithm."""
+
 
 class DiffAlgorithm(object):
     """Diff algorithm interface."""
@@ -31,25 +32,21 @@ class DiffAlgorithm(object):
 class XDelta3Diff(DiffAlgorithm):
     """Diff from xdelta3."""
 
-    FMT = "<i"
-    SIZE = struct.Struct(FMT).size
+    # maximum available amount of bytes that can be used underneath
+    MAX_SIZE = 500 * 1000 * 1000
 
     def calculateDiff(self, base_chunk, new_chunk):
         result, patch = xdelta3.xd3_encode_memory(new_chunk.get(),
                                                   base_chunk.get(),
-                                                  len(new_chunk.get()))
+                                                  self.MAX_SIZE)
         if result:
-            raise DiffException("Error, {} returned".format(result))
-        return struct.pack(self.FMT, len(new_chunk.get())) + patch
-
+            raise DiffException("Error: '{}'".format(os.strerror(result)))
+        return patch
 
     def applyDiff(self, base_chunk, diff):
-        if len(diff) < self.SIZE:
-            raise DiffException("Diff too short")
-        size, = struct.unpack(self.FMT, diff[:self.SIZE])
-        result, target = xdelta3.xd3_decode_memory(diff[self.SIZE:],
+        result, target = xdelta3.xd3_decode_memory(diff,
                                                    base_chunk.get(),
-                                                   size)
+                                                   self.MAX_SIZE)
         if result:
-            raise DiffException("Error, {} returned".format(result))
+            raise DiffException("Error: '{}'".format(os.strerror(result)))
         return storage.Chunk(target)

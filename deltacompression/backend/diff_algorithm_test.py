@@ -2,7 +2,8 @@
 
 import unittest
 
-from deltacompression.backend import diff_algorithm, storage
+from deltacompression.backend import diff_algorithm
+from deltacompression.backend import storage
 
 
 class XDelta3Test(unittest.TestCase):
@@ -20,7 +21,3 @@ class XDelta3Test(unittest.TestCase):
         diff = self._diff.calculateDiff(ch1, ch2)
         nch = self._diff.applyDiff(ch1, diff)
         self.assertEqual(nch.get(), data2)
-
-    def testDiffException(self):
-        with self.assertRaises(diff_algorithm.DiffException):
-            self._diff.applyDiff(storage.Chunk("aa"), "ab")
