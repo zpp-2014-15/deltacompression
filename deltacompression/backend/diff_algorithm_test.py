@@ -2,7 +2,8 @@
 
 import unittest
 
-from deltacompression.backend import diff_algorithm, storage
+from deltacompression.backend import diff_algorithm
+from deltacompression.backend import storage
 
 
 class XDelta3Test(unittest.TestCase):

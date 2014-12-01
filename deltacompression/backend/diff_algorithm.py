@@ -1,4 +1,6 @@
-"""Module contains DiffAlgorithm interface and various its implementations."""
+"""Module contains DiffAlgorithm interface and its various implementations."""
+
+import os
 
 import xdelta3
 
@@ -7,6 +9,7 @@ from deltacompression.backend import storage
 
 class DiffException(Exception):
     """An exception during executing the diff algorithm."""
+
 
 class DiffAlgorithm(object):
     """Diff algorithm interface."""
@@ -37,7 +40,7 @@ class XDelta3Diff(DiffAlgorithm):
                                                   base_chunk.get(),
                                                   self.MAX_SIZE)
         if result:
-            raise DiffException("Error, {} returned".format(result))
+            raise DiffException("Error: '{}'".format(os.strerror(result)))
         return patch
 
     def applyDiff(self, base_chunk, diff):
@@ -45,5 +48,5 @@ class XDelta3Diff(DiffAlgorithm):
                                                    base_chunk.get(),
                                                    self.MAX_SIZE)
         if result:
-            raise DiffException("Error, {} returned".format(result))
+            raise DiffException("Error: '{}'".format(os.strerror(result)))
         return storage.Chunk(target)
