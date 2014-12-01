@@ -12,7 +12,8 @@ class HashSHA256Test(unittest.TestCase):
 
     def testSampleHash(self):
         chunk = storage.Chunk("asd")
-        exp = "688787d8ff144c502c7f5cffaafe2cc588d86079f9de88304c26b0cb99ce91c6"
+        exp = ("h\x87\x87\xd8\xff\x14LP,\x7f\\\xff\xaa\xfe,\xc5\x88\xd8`y\xf9"
+               "\xde\x880L&\xb0\xcb\x99\xce\x91\xc6")
         self.assertEqual(exp, self._sha_hash.calculateHash(chunk))
 
 

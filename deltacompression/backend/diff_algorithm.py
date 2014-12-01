@@ -21,10 +21,10 @@ class DiffAlgorithm(object):
     def applyDiff(self, base_chunk, diff):
         """Applies diff to the base_chunk.
         Args:
-            base_chunk: Chunk
-            diff: String
+            base_chunk: Chunk.
+            diff: String.
         Returns:
-            Chunk
+            Chunk.
         """
         raise NotImplementedError
 

@@ -25,13 +25,25 @@ class FileProcessorTest(unittest.TestCase):
         self._file_processor = file_processor.FileProcessor(
             self._data_updater, self._compression_algorithm, 1000, 7000)
 
-    def testFileProcessor(self):
-        with open(self.file_name, "w") as tfile:
-            cont = ",".join([str(i) for i in xrange(15000)])
-            tfile.write(cont)
+    def _sendDataTest(self, cont):
+        """Testing sending data to a remote Storage."""
 
+        with open(self.file_name, "w") as tfile:
+            tfile.write(cont)
         try:
+            remote_storage = storage.Storage(chunk_hash.HashSHA256(), None)
+            remote_updater = data_updater.DummyUpdater(remote_storage)
             compressed_data = self._file_processor.processFile(self.file_name)
-            self.assertEqual(compressed_data, cont)
+            data = self._compression_algorithm.decompress(compressed_data)
+            remote_updater.addReceivedData(data)
+            self.assertEqual(
+                set([ch.get() for ch in self._storage.getChunks()]),
+                set([ch.get() for ch in remote_storage.getChunks()]))
         finally:
             os.remove(self.file_name)
+
+    def testDifferentBlocks(self):
+        self._sendDataTest(",".join([str(i) for i in xrange(15000)]))
+
+    def testSameBlocks(self):
+        self._sendDataTest("0" * 30000)

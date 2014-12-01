@@ -1,5 +1,6 @@
 """This module contains class responsible for adding chunks to the storage."""
 
+from deltacompression.backend import chunk_update
 
 class DataUpdater(object):
     """Class responsible for adding new chunks to the storage."""
@@ -8,7 +9,7 @@ class DataUpdater(object):
         """Creates DataUpdater object.
 
         Args:
-            storageObject: instance of Storage
+            storageObject: instance of Storage.
         """
         self._storage = storage_object
 
@@ -16,28 +17,39 @@ class DataUpdater(object):
         """Adds chunk to the storage.
 
         Args:
-            chunk: instance of Chunk that will be added to the storage
+            chunk: instance of Chunk that will be added to the storage.
         Returns:
-            data representing given chunk
+            ChunkUpdate object for the given chunk.
         """
         raise NotImplementedError
 
     def getName(self):
         """
         Returns:
-            the name of the data updater algorithm
+            the name of the data updater algorithm.
         """
+        raise NotImplementedError
+
+    def addReceivedData(self, decompressed_data):
+        """Updates the storage with the decompressed data received from another
+        storage."""
         raise NotImplementedError
 
 
 class DummyUpdater(DataUpdater):
 
     def update(self, chunk):
-        if self._storage.containsChunk(chunk):
-            return self._storage.getHashOfChunk(chunk)
-        else:
+        if not self._storage.containsChunk(chunk):
             self._storage.addChunk(chunk)
-            return chunk.get()
+            return chunk_update.DummyChunkUpdate(chunk)
+        else:
+            return None
 
     def getName(self):
         return "Dummy Updater"
+
+    def addReceivedData(self, data):
+        while data:
+            update = chunk_update.DummyChunkUpdate.deserialize(data)
+            self._storage.addChunk(update.getNewChunk())
+            data = data[update.getBinarySize():]

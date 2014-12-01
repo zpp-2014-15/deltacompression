@@ -5,6 +5,7 @@ import unittest
 from deltacompression.backend import data_updater
 from deltacompression.backend import storage
 from deltacompression.backend import chunk_hash
+from deltacompression.backend import chunk_update
 
 
 class DummyUpdaterTest(unittest.TestCase):
@@ -16,13 +17,19 @@ class DummyUpdaterTest(unittest.TestCase):
         self._updater = data_updater.DummyUpdater(self._storage)
 
     def testUpdate(self):
-        chunk1 = storage.Chunk("some data")
-        hash1 = self._hash_function.calculateHash(chunk1)
-        self.assertEqual(self._updater.update(chunk1), chunk1.get())
-        self.assertEqual(self._updater.update(chunk1), hash1)
+        data = "some data"
+        chunk = storage.Chunk(data)
+        update = self._updater.update(chunk)
+        self.assertEqual(update.getNewChunk().get(), data)
+        self.assertIs(self._updater.update(chunk), None)
 
-        chunk2 = storage.Chunk("other data")
-        hash2 = self._hash_function.calculateHash(chunk2)
-        self.assertEqual(self._updater.update(chunk2), chunk2.get())
-        self.assertEqual(self._updater.update(chunk2), hash2)
-        self.assertEqual(self._updater.update(chunk1), hash1)
+    def testaddReceivedData(self):
+        cont = ["spam", "eggs"]
+        data_pieces = []
+        for chunk in [storage.Chunk(data) for data in cont]:
+            update = chunk_update.DummyChunkUpdate(chunk)
+            data_pieces.append(update.serialize())
+        data = "".join(data_pieces)
+        self._updater.addReceivedData(data)
+        self.assertEqual(set(cont),
+                         set([ch.get() for ch in self._storage.getChunks()]))

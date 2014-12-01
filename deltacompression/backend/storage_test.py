@@ -8,8 +8,15 @@ from deltacompression.backend import chunk_hash
 
 class SimpleHasher(chunk_hash.HashFunction):
 
+    DIGITS_NUM = 4
+    MAX = 10 ** DIGITS_NUM
+
     def calculateHash(self, chunk):
-        return sum(map(ord, chunk.get()))
+        num = sum(map(ord, chunk.get())) % self.MAX
+        return str(num).zfill(self.DIGITS_NUM)
+
+    def getHashSize(self):
+        return self.DIGITS_NUM
 
 
 class StorageTest(unittest.TestCase):
