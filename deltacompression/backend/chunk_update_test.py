@@ -4,7 +4,7 @@ import unittest
 
 from deltacompression.backend import storage
 from deltacompression.backend import chunk_update
-from deltacompression.backend import utils
+from deltacompression.backend import test_utils
 
 
 class DummyChunkUpdateTest(unittest.TestCase):
@@ -35,9 +35,9 @@ class DeltaChunkUpdateTest(unittest.TestCase):
     """DeltaChunkUpdate testing."""
 
     def setUp(self):
-        self._hash_function = utils.PrefixHash()
+        self._hash_function = test_utils.PrefixHash()
         self._storage = storage.Storage(self._hash_function, None)
-        self._diff_function = utils.MockupDiff()
+        self._diff_function = test_utils.MockupDiff()
 
     def testSerializationWithHash(self):
         hash_value = "Bravely bold sir Robin"

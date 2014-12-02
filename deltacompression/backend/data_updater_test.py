@@ -6,7 +6,7 @@ from deltacompression.backend import data_updater
 from deltacompression.backend import storage
 from deltacompression.backend import chunk_hash
 from deltacompression.backend import chunk_update
-from deltacompression.backend import utils
+from deltacompression.backend import test_utils
 
 
 class DummyUpdaterTest(unittest.TestCase):
@@ -41,11 +41,11 @@ class DeltaUpdaterTest(unittest.TestCase):
     def setUp(self):
         self._hash_function = chunk_hash.HashSHA256()
         self._storage = storage.Storage(self._hash_function, None)
-        self._diff_algorithm = utils.MockupDiff()
+        self._diff_algorithm = test_utils.MockupDiff()
         self._updater = data_updater.OptimalDeltaUpdater(self._storage,
                                                          self._diff_algorithm)
 
-    def testaddReceivedData(self):
+    def testAddReceivedData(self):
         cont = ["I sleep all night", "I sleep all day"]
         chunks = [storage.Chunk(data) for data in cont]
         update1 = chunk_update.DeltaChunkUpdate(None, chunks[0].get())
@@ -63,7 +63,7 @@ class OptimalDeltaUpdaterTest(unittest.TestCase):
     def setUp(self):
         self._hash_function = chunk_hash.HashSHA256()
         self._storage = storage.Storage(self._hash_function, None)
-        self._diff_algorithm = utils.PrefixDiff()
+        self._diff_algorithm = test_utils.PrefixDiff()
         self._updater = data_updater.OptimalDeltaUpdater(self._storage,
                                                          self._diff_algorithm)
 
