@@ -4,8 +4,7 @@ import unittest
 
 from deltacompression.backend import storage
 from deltacompression.backend import chunk_update
-from deltacompression.backend import diff_algorithm
-from deltacompression.backend import chunk_hash
+from deltacompression.backend import test_utils
 
 
 class DummyChunkUpdateTest(unittest.TestCase):
@@ -31,34 +30,14 @@ class DummyChunkUpdateTest(unittest.TestCase):
         self.assertEqual(update2.getNewChunk().get(), data)
 
 
-class MockupDiff(diff_algorithm.DiffAlgorithm):
-    """Dummy diff algorithm which just doesn't use the base chunk."""
-
-    def calculateDiff(self, base_chunk, new_chunk):
-        return new_chunk.get()
-
-    def applyDiff(self, base_chunk, diff):
-        return storage.Chunk(diff)
-
-
-class PrefixHash(chunk_hash.HashFunction):
-
-    LEN = 10
-
-    def calculateHash(self, chunk):
-        return chunk.get()[:self.LEN].zfill(self.LEN)
-
-    def getHashSize(self):
-        return self.LEN
-
 
 class DeltaChunkUpdateTest(unittest.TestCase):
     """DeltaChunkUpdate testing."""
 
     def setUp(self):
-        self._hash_function = PrefixHash()
+        self._hash_function = test_utils.PrefixHash()
         self._storage = storage.Storage(self._hash_function, None)
-        self._diff_function = MockupDiff()
+        self._diff_function = test_utils.MockupDiff()
 
     def testSerializationWithHash(self):
         hash_value = "Bravely bold sir Robin"
