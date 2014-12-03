@@ -1,5 +1,4 @@
-% Klasa dokumentow do skladu prac magisterskich i~licencjackich
-% na wydziale Matematyki, Mechaniki i~Informatyki UW.
+% Klasa dokumentow do skladu prac magisterskich i~licencjackich na wydziale Matematyki, Mechaniki i~Informatyki UW.
 %
 % Copyright (c) 2001 by Wydzial Matematyki, Informatyki i Mechaniki.
 %
