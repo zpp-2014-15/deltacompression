@@ -75,5 +75,3 @@ class OptimalDeltaUpdater(DeltaUpdater):
                 best_update = update
         self._storage.addChunk(chunk)
         return best_update
-
-        return "Optimal Delta Updater"

@@ -1,23 +1,20 @@
 """Contains experiment and experiment result classes."""
 
-from wx.lib import pubsub
-
 from deltacompression.backend import algorithm_factory
+from deltacompression.backend import compression_algorithm
 from deltacompression.backend import file_processor
 
 
 class Experiment(object):
+    """Hold information necessary to perform simulation."""
 
     algorithm_factory = None
-
-    ALGORITHM_CHANGED = "experiment.algorithm.changed"
-    CHUNKS_CHANGED = "experiment.chunks.changed"
-    COMPRESSION_CHANGED = "experiment.compression.changed"
-    FILES_CHANGED = "experiment.files.changed"
 
     def __init__(self):
         self._algorithm_name = "None"
         self._compression_name = "None"
+        # TODO: remove this when compression factory implemented
+        self._compression = compression_algorithm.DummyCompressionAlgorithm()
         self._file_list = []
         self._min_chunk = 1024
         self._max_chunk = 10240
@@ -27,53 +24,51 @@ class Experiment(object):
     def setChunkSizeRange(self, min_chunk, max_chunk):
         self._min_chunk = min_chunk
         self._max_chunk = max_chunk
-        pubsub.Publisher.sendMessage(self.CHUNKS_CHANGED)
 
     def getChunkSizeRange(self):
         return (self._min_chunk, self._max_chunk)
 
     def setAlgorithmName(self, algorithm_name):
         self._algorithm_name = algorithm_name
-        pubsub.Publisher.sendMessage(self.ALGORITHM_CHANGED,
-                                     self._algorithm_name)
 
     def getAlgorithmName(self):
         return self._algorithm_name
 
     def setCompressionName(self, compression_name):
         self._compression_name = compression_name
-        pubsub.Publisher.sendMessage(self.COMPRESSION_CHANGED,
-                                     self._compression_name)
 
     def getCompressionName(self):
         return self._compression_name
 
     def addFileToList(self, file_name):
         self._file_list.append(file_name)
-        pubsub.Publisher.sendMessage(self.FILES_CHANGED, self._file_list)
 
     def removeFileFromList(self, file_name):
         self._file_list.append.remove(file_name)
-        pubsub.Publisher.sendMessage(self.FILES_CHANGED, self._file_list)
 
     def clearFileList(self):
         self._file_list = []
-        pubsub.Publisher.sendMessage(self.FILES_CHANGED, self._file_list)
 
     def getFileList(self):
         return self._file_list
 
     def runExperiment(self):
+        """Runs experiment.
+
+        Returns:
+            instance of ExperimentResult.
+        """
         algorithm = self.algorithm_factory.getAlgorithmFromName(
             self._algorithm_name)
         # TODO: use compression from compression factory
         file_proc = file_processor.FileProcessor(algorithm, self._compression,
                                                  self._min_chunk,
                                                  self._max_chunk)
-        result = ExperimentResult(self._algorithm.getName(),
-                                  self._compression.getName(),
+        result = ExperimentResult(self._algorithm_name,
+                                  self._compression_name,
                                   self._min_chunk, self._max_chunk)
 
+        print self._file_list
         for file_name in self._file_list:
             returned_data = file_proc.processFile(file_name)
             result.addResult(file_name, len(returned_data))
@@ -82,23 +77,29 @@ class Experiment(object):
 
 
 class ExperimentResult(object):
+    """This is result of one experiment.
 
-    EXPERIMENT_RESULT_CHANGED = "experiment.result.changed"
+    Attributes:
+        files_with_results: list of pairs like(file, integer).
+        algorithm_name: name of used algorithm.
+        compression_name: name of used compression.
+        min_chunk: minimal size of chunk.
+        max_chunk: maximal size of chunk.
+    """
 
     algorithm_name = None
     compression_name = None
     min_chunk = None
     max_chunk = None
 
-    files_with_results = []
+    files_with_results = None
 
     def __init__(self, algorithm, compression, min_chunk, max_chunk):
         self.algorithm_name = algorithm
         self.compression = compression
         self.min_chunk = min_chunk
         self.max_chunk = max_chunk
+        self.files_with_results = []
 
     def addResult(self, file_name, data_to_send):
         self.files_with_results.append((file_name, data_to_send))
-        pubsub.Publisher.sendMessage(self.EXPERIMENT_RESULT_CHANGED,
-                                     self.files_with_results)

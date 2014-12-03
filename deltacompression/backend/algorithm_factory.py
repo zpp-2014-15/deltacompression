@@ -19,7 +19,7 @@ class AlgorithmFactory(object):
     def getAlgorithms(self):
         return self.ALL_ALGORITHMS
 
-    def getAlgrotihmFromName(self, name, storage_instance=None):
+    def getAlgorithmFromName(self, name, storage_instance=None):
         if storage_instance is None:
             storage_instance = storage.Storage(chunk_hash.HashSHA256(), None)
         if name == self.DUMMY_ALGORITHM:
@@ -27,5 +27,3 @@ class AlgorithmFactory(object):
         elif name == self.OPTIMAL_ALGORITHM:
             diff = diff_algorithm.XDelta3Diff()
             return data_updater.OptimalDeltaUpdater(storage_instance, diff)
-        else:
-            None
