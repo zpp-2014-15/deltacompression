@@ -5,7 +5,7 @@ from deltacompression.gui.views import main_view
 
 
 class MainController(object):
-    """Reponsible for updating models and changing views."""
+    """Responsible for updating models and changing views."""
 
     _MIN_CHUNK = 1024
     _MAX_CHUNK = 10240
