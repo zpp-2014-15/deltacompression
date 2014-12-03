@@ -1,11 +1,6 @@
 """Main application controller."""
 import wx
 
-from deltacompression.backend import compression_algorithm
-from deltacompression.backend import data_updater
-from deltacompression.backend import file_processor
-from deltacompression.backend import chunk_hash
-from deltacompression.backend import storage
 from deltacompression.gui.views import main_view
 
 
