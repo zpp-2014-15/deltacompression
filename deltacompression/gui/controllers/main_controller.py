@@ -8,9 +8,6 @@ from deltacompression.gui.views import main_view
 class MainController(object):
     """Responsible for updating models and changing views."""
 
-    _MIN_CHUNK = 1024
-    _MAX_CHUNK = 10240
-
     def __init__(self, app):
         self._experiment = experiment.Experiment()
         self._main_view = main_view.MainView(None)

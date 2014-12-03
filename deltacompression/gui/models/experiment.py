@@ -16,8 +16,8 @@ class Experiment(object):
         # TODO: remove this when compression factory implemented
         self._compression = compression_algorithm.DummyCompressionAlgorithm()
         self._file_list = []
-        self._min_chunk = 1024
-        self._max_chunk = 10240
+        self._min_chunk = 1024 * 32
+        self._max_chunk = 1024 * 64
 
         self.algorithm_factory = algorithm_factory.AlgorithmFactory()
 

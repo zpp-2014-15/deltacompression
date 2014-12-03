@@ -34,6 +34,7 @@ class ExperimentController(object):
 
     def _onSimulate(self, _):
         result = self._experiment.runExperiment()
+        # TODO: Handle result somehow better
         print result.algorithm_name
         print result.compression_name
         print result.min_chunk

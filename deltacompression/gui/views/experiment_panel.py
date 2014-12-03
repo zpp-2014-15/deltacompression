@@ -29,6 +29,7 @@ class ExperimentPanel(wx.Panel):
         self._min_max_chunk_label = None
         self._file_list_box = None
         self._algorithm_combo_box = None
+        self._simulate_button = None
 
         self._initUI()
 
