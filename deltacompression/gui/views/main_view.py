@@ -3,8 +3,13 @@
 import wx
 
 
+from deltacompression.gui.views import experiment_panel
+
+
 class MainView(wx.Frame):
     """This view is responsible for choosing parameters and simulating."""
+
+    experiment_panel = None
 
     _FRAME_TITLE = "Delta compression"
     _CHOOSE_DATA_BUTTON = "Choose data"
@@ -16,14 +21,19 @@ class MainView(wx.Frame):
 
     def __init__(self, parent):
         wx.Frame.__init__(self, parent, title=self._FRAME_TITLE)
-        self._choose_data_button = None
-        self._chosen_file_label = None
-        self._simulate_button = None
-        self._result_length_label = None
 
-    def buildFrame(self):
-        """Creates frame with buttons and layout."""
+        self.initUI()
+        self.Centre()
+
+    def initUI(self):
         sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.experiment_panel = experiment_panel.ExperimentPanel(self)
+        sizer.Add(self.experiment_panel, 0, wx.EXPAND | wx.ALL)
+
+        self.SetSizer(sizer)
+
+        """
         self._choose_data_button = wx.Button(self,
                                              label=self._CHOOSE_DATA_BUTTON)
         sizer.Add(self._choose_data_button, 0, wx.EXPAND | wx.ALL)
@@ -38,14 +48,11 @@ class MainView(wx.Frame):
         self._result_length_label = wx.StaticText(self,
                                                   label=self._DATA_TO_SEND % 0)
         sizer.Add(self._result_length_label)
-        self.SetSizer(sizer)
+
+        self._experiment = experiment_panel.ExperimentPanel(self)
+
         self.Centre()
-
-    def getSimulateButton(self):
-        return self._simulate_button
-
-    def getChooseDataButton(self):
-        return self._choose_data_button
+        """
 
     def _getDataFromDialog(self, dialog):
         if dialog.ShowModal() == wx.ID_OK:
