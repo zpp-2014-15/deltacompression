@@ -16,8 +16,8 @@ class Experiment(object):
     FILES_CHANGED = "experiment.files.changed"
 
     def __init__(self):
-        self._algorithm_name = None
-        self._compression_name = None
+        self._algorithm_name = "None"
+        self._compression_name = "None"
         self._file_list = []
         self._min_chunk = 1024
         self._max_chunk = 10240
@@ -29,20 +29,23 @@ class Experiment(object):
         self._max_chunk = max_chunk
         pubsub.Publisher.sendMessage(self.CHUNKS_CHANGED)
 
-    def setAlgorithm(self, algorithm_name):
+    def getChunkSizeRange(self):
+        return (self._min_chunk, self._max_chunk)
+
+    def setAlgorithmName(self, algorithm_name):
         self._algorithm_name = algorithm_name
         pubsub.Publisher.sendMessage(self.ALGORITHM_CHANGED,
                                      self._algorithm_name)
 
-    def getAlgorithm(self):
+    def getAlgorithmName(self):
         return self._algorithm_name
 
-    def setCompression(self, compression_name):
+    def setCompressionName(self, compression_name):
         self._compression_name = compression_name
         pubsub.Publisher.sendMessage(self.COMPRESSION_CHANGED,
                                      self._compression_name)
 
-    def getCompression(self):
+    def getCompressionName(self):
         return self._compression_name
 
     def addFileToList(self, file_name):
@@ -63,6 +66,7 @@ class Experiment(object):
     def runExperiment(self):
         algorithm = self.algorithm_factory.getAlgorithmFromName(
             self._algorithm_name)
+        # TODO: use compression from compression factory
         file_proc = file_processor.FileProcessor(algorithm, self._compression,
                                                  self._min_chunk,
                                                  self._max_chunk)

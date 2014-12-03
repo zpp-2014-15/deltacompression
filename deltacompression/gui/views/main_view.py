@@ -33,27 +33,6 @@ class MainView(wx.Frame):
 
         self.SetSizer(sizer)
 
-        """
-        self._choose_data_button = wx.Button(self,
-                                             label=self._CHOOSE_DATA_BUTTON)
-        sizer.Add(self._choose_data_button, 0, wx.EXPAND | wx.ALL)
-
-        self._chosen_file_label = wx.StaticText(self,
-                                                label=self._CHOSEN_FILE % None)
-        sizer.Add(self._chosen_file_label)
-
-        self._simulate_button = wx.Button(self, label=self._SIMULATE_BUTTON)
-        sizer.Add(self._simulate_button, 0, wx.EXPAND | wx.ALL)
-
-        self._result_length_label = wx.StaticText(self,
-                                                  label=self._DATA_TO_SEND % 0)
-        sizer.Add(self._result_length_label)
-
-        self._experiment = experiment_panel.ExperimentPanel(self)
-
-        self.Centre()
-        """
-
     def _getDataFromDialog(self, dialog):
         if dialog.ShowModal() == wx.ID_OK:
             result = dialog.GetPath()

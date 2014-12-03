@@ -23,13 +23,6 @@ class DataUpdater(object):
         """
         raise NotImplementedError
 
-    def getName(self):
-        """
-        Returns:
-            the name of the data updater algorithm.
-        """
-        raise NotImplementedError
-
     def addReceivedData(self, decompressed_data):
         """Updates the storage with the decompressed data received from another
         storage."""
@@ -44,9 +37,6 @@ class DummyUpdater(DataUpdater):
             return chunk_update.DummyChunkUpdate(chunk)
         else:
             return None
-
-    def getName(self):
-        return "Dummy Updater"
 
     def addReceivedData(self, data):
         while data:
@@ -86,5 +76,4 @@ class OptimalDeltaUpdater(DeltaUpdater):
         self._storage.addChunk(chunk)
         return best_update
 
-    def getName(self):
         return "Optimal Delta Updater"
