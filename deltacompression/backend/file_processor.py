@@ -30,13 +30,14 @@ class FileProcessor(object):
     def setCompressionAlgorithm(self, compression_algorithm):
         self._compression_algorithm = compression_algorithm
 
-    def processFile(self, file_name):
+    def processFile(self, file_name, compress=True):
         """Processes a single file.
 
         Args:
             file_name: path to the file to be processed.
+            compress: if true, function will return compressed data.
         Returns:
-            compressed data representing given file.
+            data representing given file.
         Raises:
             ChunkerException in case of errors during communication.
             OSError
@@ -48,4 +49,7 @@ class FileProcessor(object):
             if update:
                 data.append(update.serialize())
 
-        return self._compression_algorithm.compress("".join(data))
+        if compress:
+            return self._compression_algorithm.compress("".join(data))
+        else:
+            return "".join(data)
