@@ -42,5 +42,6 @@ class ChunkerTest(unittest.TestCase):
         with self.assertRaises(chunker.ChunkerException):
             list(self._chunker.chunkData(self.bad_file_name))
 
+
 if __name__ == "__main__":
     unittest.main()
