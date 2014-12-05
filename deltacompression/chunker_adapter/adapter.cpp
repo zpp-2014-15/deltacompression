@@ -33,6 +33,11 @@ int main(int argc, char* argv[]) {
     in.seekg(0, std::ios::end);
 
     size_t content_size = in.tellg();
+    if (content_size == 0) {
+        in.close();
+        return 0;
+    }
+
     std::unique_ptr<char[]> content(new char[content_size]);
 
     in.seekg(0, std::ios::beg);

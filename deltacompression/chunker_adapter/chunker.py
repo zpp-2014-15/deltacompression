@@ -46,9 +46,6 @@ class Chunker(object):
         if not op.isfile(file_name):
             raise ChunkerException(self.no_file_msg.format(file_name))
 
-        if op.getsize(file_name) == 0:
-            return
-
         process = subprocess.Popen([self.path, str(self._min_chunk),
                                     str(self._max_chunk), file_name],
                                    stdout=subprocess.PIPE)
