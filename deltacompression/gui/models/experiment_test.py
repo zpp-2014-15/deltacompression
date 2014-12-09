@@ -76,5 +76,5 @@ class ExperimentTest(unittest.TestCase):
                                                           "D:/some/file.asd"])
         self._experiment.removeFileFromList("D:/some/file.asd")
         self.assertEqual(self._experiment.getFileList(), ["D:/some/file.asd"])
-        self._experiment.removeFileFromList("D:/some/file.asd")
+        self._experiment.clearFileList()
         self.assertEqual(self._experiment.getFileList(), [])
