@@ -20,13 +20,15 @@ class ExperimentTest(unittest.TestCase):
 
     @mock.patch("deltacompression.backend.algorithm_factory.AlgorithmFactory",
                 autospec=True)
-    @mock.patch("deltacompression.backend.compression_factory.CompressionFactory",
-                autospec=True)
+    @mock.patch(
+        "deltacompression.backend.compression_factory.CompressionFactory",
+        autospec=True)
     @mock.patch("deltacompression.backend.file_processor.FileProcessor",
                 autospec=True)
     def testCreatingFileProcessor(self, mock_file_processor,
                                   mock_compression_factory,
                                   mock_algorithm_factory):
+        """Tests running experiment."""
         alg_factory_instance = mock_algorithm_factory.return_value
         alg_factory_instance.getAlgorithmFromName.return_value = "Ret alg"
         compr_factory_instance = mock_compression_factory.return_value
