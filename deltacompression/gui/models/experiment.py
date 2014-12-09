@@ -1,25 +1,30 @@
 """Contains experiment and experiment result classes."""
 
 from deltacompression.backend import algorithm_factory
-from deltacompression.backend import compression_algorithm
+from deltacompression.backend import compression_factory
 from deltacompression.backend import file_processor
 
 
 class Experiment(object):
-    """Hold information necessary to perform simulation."""
+    """Hold information necessary to perform simulation.
+
+    Attributes:
+        algorithm_factory: Factory that holds all algorithms.
+    """
 
     algorithm_factory = None
+    compression_factory = None
 
     def __init__(self):
         self._algorithm_name = "None"
         self._compression_name = "None"
         # TODO: remove this when compression factory implemented
-        self._compression = compression_algorithm.DummyCompressionAlgorithm()
         self._file_list = []
         self._min_chunk = 1024 * 32
         self._max_chunk = 1024 * 64
 
         self.algorithm_factory = algorithm_factory.AlgorithmFactory()
+        self.compression_factory = compression_factory.CompressionFactory()
 
     def setChunkSizeRange(self, min_chunk, max_chunk):
         self._min_chunk = min_chunk
@@ -44,7 +49,7 @@ class Experiment(object):
         self._file_list.append(file_name)
 
     def removeFileFromList(self, file_name):
-        self._file_list.append.remove(file_name)
+        self._file_list.remove(file_name)
 
     def clearFileList(self):
         self._file_list = []
@@ -61,7 +66,9 @@ class Experiment(object):
         algorithm = self.algorithm_factory.getAlgorithmFromName(
             self._algorithm_name)
         # TODO: use compression from compression factory
-        file_proc = file_processor.FileProcessor(algorithm, self._compression,
+        compression = self.compression_factory.getCompressionFromName(
+            self._compression_name)
+        file_proc = file_processor.FileProcessor(algorithm, compression,
                                                  self._min_chunk,
                                                  self._max_chunk)
         result = ExperimentResult(self._algorithm_name,
@@ -96,7 +103,7 @@ class ExperimentResult(object):
 
     def __init__(self, algorithm, compression, min_chunk, max_chunk):
         self.algorithm_name = algorithm
-        self.compression = compression
+        self.compression_name = compression
         self.min_chunk = min_chunk
         self.max_chunk = max_chunk
         self.files_with_results = []

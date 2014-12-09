@@ -4,7 +4,6 @@ from deltacompression.backend import chunk_hash
 from deltacompression.backend import data_updater
 from deltacompression.backend import diff_algorithm
 from deltacompression.backend import storage
-from deltacompression.backend import test_utils
 
 
 class AlgorithmFactory(object):
