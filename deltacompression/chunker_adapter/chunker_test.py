@@ -22,7 +22,7 @@ class ChunkerTest(unittest.TestCase):
         try:
             ncont = "".join(
                 [chunk.get() for chunk in self._chunker.chunkData(
-                    self.file_name)])
+                    [self.file_name])])
         finally:
             os.remove(self.file_name)
         self.assertEqual(cont, ncont)

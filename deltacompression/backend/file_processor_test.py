@@ -33,7 +33,8 @@ class FileProcessorTest(unittest.TestCase):
         try:
             remote_storage = storage.Storage(chunk_hash.HashSHA256(), None)
             remote_updater = data_updater.DummyUpdater(remote_storage)
-            compressed_data = self._file_processor.processFile(self.file_name)
+            compressed_data = self._file_processor.processFiles(
+                [self.file_name])
             data = self._compression_algorithm.decompress(compressed_data)
             remote_updater.addReceivedData(data)
             self.assertEqual(

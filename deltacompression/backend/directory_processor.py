@@ -34,11 +34,23 @@ class DirectoryProcessor(object):
         self._file_processor.setCompressionAlgorithm(compression_algorithm)
         self._compression_algorithm = compression_algorithm
 
-    def processDirectory(self, dir_name):
-        data = []
-        for dir_name, _, files in os.walk(dir_name):
+    def processDirectory(self, directory):
+        """Processes all files in given directory.
+
+        Args:
+            directory: directory with files.
+        Returns:
+            compressed data representing given directory.
+        Raises:
+            ChunkerException in case of errors during communication.
+            OSError
+            IOError
+        """
+        all_files = []
+        for dir_name, _, files in os.walk(directory):
             for file_name in files:
                 file_path = os.path.join(dir_name, file_name)
-                data.append(self._file_processor.processFile(file_path, False))
+                all_files.append(file_path)
 
-        return self._compression_algorithm.compress("".join(data))
+        data = self._file_processor.processFiles(all_files, False)
+        return self._compression_algorithm.compress(data)

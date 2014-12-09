@@ -11,19 +11,7 @@ size_t getChunkSize(const cool::IoVec &chunk) {
     return chunk[0].iov_len;
 }
 
-int main(int argc, char* argv[]) {
-    if (argc < 4) {
-        std::cerr << "Usage " << argv[0] << " minchunk maxchunk filename"
-                  << std::endl;
-        return EXIT_FAILURE;
-    }
-
-    int minChunk = std::stoi(std::string(argv[1]));
-    int maxChunk = std::stoi(std::string(argv[2]));
-    std::string fileName(argv[3]);
-
-    hydra::chunking::ChunkerAdapter adapter(minChunk, maxChunk);
-
+int processFile(const std::string &fileName, hydra::chunking::ChunkerAdapter &adapter) {
     std::ifstream in(fileName, std::ios::binary | std::ios::in);
     if (!in) {
         std::cerr << "File opening failed" << std::endl;
@@ -33,30 +21,50 @@ int main(int argc, char* argv[]) {
     in.seekg(0, std::ios::end);
 
     size_t content_size = in.tellg();
-    if (content_size == 0) {
+    if (content_size != 0) {
+        std::unique_ptr<char[]> content(new char[content_size]);
+
+        in.seekg(0, std::ios::beg);
+
+        std::copy(std::istreambuf_iterator<char>(in),
+                  std::istreambuf_iterator<char>(),
+                  content.get());
         in.close();
-        return 0;
+        cool::IoVec data;
+        data.push_back(content.get(), content_size);
+        adapter.add(data);
+
+        // we'll be only writing sizes of consecutive chunks to output
+        while (adapter.haveChunk()) {
+            std::cout << getChunkSize(adapter.getChunkRef()) << std::endl;
+        }
+
+        while (!adapter.isEmpty()) {
+            std::cout << getChunkSize(adapter.getTerminalChunkRef()) << std::endl;
+        }
     }
 
-    std::unique_ptr<char[]> content(new char[content_size]);
+    std::cout << -1 << std::endl;
+    return 0;
+}
 
-    in.seekg(0, std::ios::beg);
-
-    std::copy(std::istreambuf_iterator<char>(in),
-              std::istreambuf_iterator<char>(),
-              content.get());
-    in.close();
-    cool::IoVec data;
-    data.push_back(content.get(), content_size);
-    adapter.add(data);
-
-    // we'll be only writing sizes of consecutive chunks to output
-    while (adapter.haveChunk()) {
-        std::cout << getChunkSize(adapter.getChunkRef()) << std::endl;
+int main(int argc, char* argv[]) {
+    if (argc < 3) {
+        std::cerr << "Usage " << argv[0] << " minchunk maxchunk"
+                  << std::endl;
+        return EXIT_FAILURE;
     }
 
-    while (!adapter.isEmpty()) {
-        std::cout << getChunkSize(adapter.getTerminalChunkRef()) << std::endl;
+    int minChunk = std::stoi(std::string(argv[1]));
+    int maxChunk = std::stoi(std::string(argv[2]));
+
+    hydra::chunking::ChunkerAdapter adapter(minChunk, maxChunk);
+    std::string fileName;
+
+    while (std::getline(std::cin, fileName)) {
+        if (processFile(fileName, adapter)) {
+            return EXIT_FAILURE;
+        }
     }
 
     return 0;

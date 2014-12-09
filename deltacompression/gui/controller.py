@@ -41,7 +41,8 @@ class MainController(object):
 
     def _clickSimulateHook(self, _):
         if self._chosen_file:
-            returned_data = self._file_processor.processFile(self._chosen_file)
+            returned_data = self._file_processor.processFiles(
+                [self._chosen_file])
             # This is not actually MVC architecture. MVC architecture needs
             # quite a lot more work. I want to do this later.
             print len(returned_data)

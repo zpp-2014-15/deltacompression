@@ -31,11 +31,11 @@ class Chunker(object):
         self._min_chunk = min_chunk
         self._max_chunk = max_chunk
 
-    def chunkData(self, file_name):
-        """Chunks file into smaller pieces.
+    def chunkData(self, files):
+        """Chunks files into smaller pieces.
 
         Args:
-            file_name: absolute or relative path to a file.
+            files: absolute or relative paths to files.
         Returns:
             an iterable with Chunk objects
         Raises:
@@ -43,20 +43,29 @@ class Chunker(object):
             OSError
             IOError
         """
-        if not op.isfile(file_name):
-            raise ChunkerException(self.no_file_msg.format(file_name))
+        for file_name in files:
+            if not op.isfile(file_name):
+                raise ChunkerException(self.no_file_msg.format(file_name))
 
         process = subprocess.Popen([self.path, str(self._min_chunk),
-                                    str(self._max_chunk), file_name],
-                                   stdout=subprocess.PIPE)
-        out, err = process.communicate()
+                                    str(self._max_chunk)],
+                                   stdout=subprocess.PIPE,
+                                   stdin=subprocess.PIPE)
+        out, err = process.communicate("\n".join(files))
         retcode = process.wait()
         if retcode:
             raise ChunkerException(err)
         buf = cStringIO.StringIO(out)
+
         chunks = []
+        file_num = 0
         for line in buf:
-            chunks.append(int(line.strip()))
-        with open(file_name, "r") as fil:
-            for chunk in chunks:
-                yield storage.Chunk(fil.read(chunk))
+            num = int(line.strip())
+            if num == -1:
+                with open(files[file_num], "r") as fil:
+                    for chunk in chunks:
+                        yield storage.Chunk(fil.read(chunk))
+                file_num += 1
+                chunks = []
+            else:
+                chunks.append(num)
