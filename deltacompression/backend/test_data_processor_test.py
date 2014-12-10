@@ -3,6 +3,7 @@
 import os.path as op
 import itertools
 import unittest
+
 import testfixtures
 
 from deltacompression.backend import directory_processor
