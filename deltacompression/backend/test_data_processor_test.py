@@ -2,8 +2,8 @@
 
 import os.path as op
 import itertools
-import shutil
 import unittest
+import testfixtures
 
 from deltacompression.backend import directory_processor
 from deltacompression.backend import test_data_processor
@@ -42,9 +42,6 @@ class TestDataProcessorTest(unittest.TestCase):
                         "lorem/ipsum/dolor sit amet"
                        ]
                       ]
-        self._test_data_name = "prod"
-        self._test_data_path = op.join(test_utils.TEST_DIR_PATH,
-                                       self._test_data_name)
 
     def setUp(self):
         _storage = storage.Storage(chunk_hash.HashSHA256(), None)
@@ -56,56 +53,52 @@ class TestDataProcessorTest(unittest.TestCase):
         self._test_data_processor = test_data_processor.TestDataProcessor(
             self._directory_processor)
 
-    def tearDown(self):
-        if op.exists(test_utils.TEST_DIR_PATH):
-            shutil.rmtree(test_utils.TEST_DIR_PATH)
-
     def testNoVersion(self):
-        dir_content = []
+        with testfixtures.TempDirectory() as tmp_dir:
+            dir_content = []
 
-        test_utils.createDirectoryWithContent(self._test_data_name, dir_content)
-        data = list(self._test_data_processor.runSimulation(
-            self._test_data_path))
-        self.assertEqual(len(data), 0)
+            test_utils.fillTempDirectoryWithContent(tmp_dir.path, dir_content)
+            data = list(self._test_data_processor.runSimulation(tmp_dir.path))
+            self.assertEqual(len(data), 0)
 
     def testOneVersion(self):
-        dir_content = zip(
-            [op.join("v1", file_path) for file_path in self._files[0]],
-            self._contents[0])
+        with testfixtures.TempDirectory() as tmp_dir:
+            dir_content = zip(
+                [op.join("v1", file_path) for file_path in self._files[0]],
+                self._contents[0])
 
-        test_utils.createDirectoryWithContent(self._test_data_name,
-                                              dir_content)
-        data = list(self._test_data_processor.runSimulation(
-            self._test_data_path))
+            test_utils.fillTempDirectoryWithContent(tmp_dir, dir_content)
+            data = list(self._test_data_processor.runSimulation(tmp_dir.path))
 
-        self.assertEqual(len(data), 1)
-        self.assertEqual(data[0][0], op.join(self._test_data_path, "v1"))
-        self.assertNotEqual(data[0][1], "")
+            self.assertEqual(len(data), 1)
+            self.assertEqual(data[0][0], op.join(tmp_dir.path, "v1"))
+            self.assertNotEqual(data[0][1], "")
 
     def testTwoVersions(self):
         combinations = itertools.product(self._contents, self._contents,
                                          self._files, self._files)
         for cont1, cont2, files1, files2 in combinations:
             self.setUp()
-            dir_content1 = zip(
-                [op.join("v1", file_path) for file_path in files1], cont1)
-            dir_content2 = zip(
-                [op.join("v2", file_path) for file_path in files2], cont2)
+            with testfixtures.TempDirectory() as tmp_dir:
+                dir_content1 = zip(
+                    [op.join("v1", file_path) for file_path in files1], cont1)
+                dir_content2 = zip(
+                    [op.join("v2", file_path) for file_path in files2], cont2)
 
-            test_utils.createDirectoryWithContent(self._test_data_name,
-                                                  dir_content1 + dir_content2)
+                test_utils.fillTempDirectoryWithContent(
+                    tmp_dir, dir_content1 + dir_content2)
 
-            data = list(self._test_data_processor.runSimulation(
-                self._test_data_path))
+                data = list(self._test_data_processor.runSimulation(
+                    tmp_dir.path))
 
-            self.assertEqual(len(data), 2)
-            self.assertEqual(data[0][0], op.join(self._test_data_path, "v1"))
-            self.assertNotEqual(data[0][1], "")
-            self.assertEqual(data[1][0], op.join(self._test_data_path, "v2"))
-            if cont1 == cont2:
-                self.assertEqual(data[1][1], "")
-            else:
-                self.assertNotEqual(data[1][1], "")
+                self.assertEqual(len(data), 2)
+                self.assertEqual(data[0][0], op.join(tmp_dir.path, "v1"))
+                self.assertNotEqual(data[0][1], "")
+                self.assertEqual(data[1][0], op.join(tmp_dir.path, "v2"))
+                if cont1 == cont2:
+                    self.assertEqual(data[1][1], "")
+                else:
+                    self.assertNotEqual(data[1][1], "")
 
     # def testLinux(self):
     #    path = "/home/pkura/code/zpp/test"
