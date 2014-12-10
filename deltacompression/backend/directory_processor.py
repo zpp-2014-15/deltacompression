@@ -52,5 +52,5 @@ class DirectoryProcessor(object):
                 file_path = os.path.join(dir_name, file_name)
                 all_files.append(file_path)
 
-        data = self._file_processor.processFiles(all_files, False)
+        data = self._file_processor.processFiles(all_files)
         return self._compression_algorithm.compress(data)

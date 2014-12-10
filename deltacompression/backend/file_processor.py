@@ -30,12 +30,11 @@ class FileProcessor(object):
     def setCompressionAlgorithm(self, compression_algorithm):
         self._compression_algorithm = compression_algorithm
 
-    def processFiles(self, files, compress=True):
+    def processFiles(self, files):
         """Processes a list of files.
 
         Args:
             files: paths to the files to be processed.
-            compress: if true, function will return compressed data.
         Returns:
             data representing given files.
         Raises:
@@ -49,7 +48,4 @@ class FileProcessor(object):
             if update:
                 data.append(update.serialize())
 
-        if compress:
-            return self._compression_algorithm.compress("".join(data))
-        else:
-            return "".join(data)
+        return "".join(data)

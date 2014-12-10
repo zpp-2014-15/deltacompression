@@ -101,8 +101,8 @@ class TestDataProcessorTest(unittest.TestCase):
                     self.assertNotEqual(data[1][1], "")
 
     # def testLinux(self):
-    #    path = "/home/pkura/code/zpp/test"
-    #    data_sizes = []
-    #    for version_dir, data in self._test_data_processor.runSimulation(path):
-    #        data_sizes.append(len(data))
-    #    self.assertEqual(data_sizes, [539742497, 4119514])
+    #     path = "/home/pkura/code/zpp/test"
+    #     data_sizes = []
+    #     for version_dir, data in self._test_data_processor.runSimulation(path):
+    #         data_sizes.append(len(data))
+    #     self.assertEqual(data_sizes, [539742497, 4119514])
