@@ -45,12 +45,12 @@ class TestDataProcessorTest(unittest.TestCase):
                       ]
 
     def setUp(self):
-        _storage = storage.Storage(chunk_hash.HashSHA256(), None)
-        _data_updater = data_updater.DummyUpdater(_storage)
-        _compression_algorithm = compression_algorithm \
+        storage_instance = storage.Storage(chunk_hash.HashSHA256(), None)
+        data_updater_instance = data_updater.DummyUpdater(storage_instance)
+        compression_algorithm_instance = compression_algorithm \
             .DummyCompressionAlgorithm()
         self._directory_processor = directory_processor.DirectoryProcessor(
-            _data_updater, _compression_algorithm, 1000, 7000)
+            data_updater_instance, compression_algorithm_instance, 1000, 7000)
         self._test_data_processor = test_data_processor.TestDataProcessor(
             self._directory_processor)
 
@@ -104,6 +104,7 @@ class TestDataProcessorTest(unittest.TestCase):
     # def testLinux(self):
     #     path = "/home/pkura/code/zpp/test"
     #     data_sizes = []
-    #     for version_dir, data in self._test_data_processor.runSimulation(path):
+    #     for version_dir, data in \
+    #             self._test_data_processor.runSimulation(path):
     #         data_sizes.append(len(data))
     #     self.assertEqual(data_sizes, [539742497, 4119514])

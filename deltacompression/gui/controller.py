@@ -23,7 +23,6 @@ class MainController(object):
         self._compression = compression_algorithm.DummyCompressionAlgorithm()
         self._updater = data_updater.DummyUpdater(self._storage)
         self._file_processor = file_processor.FileProcessor(self._updater,
-                                                            self._compression,
                                                             self._MIN_CHUNK,
                                                             self._MAX_CHUNK)
         self._chosen_file = None

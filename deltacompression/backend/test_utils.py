@@ -1,8 +1,5 @@
 """Classes used in many other modules - e.g. mockup classes for tests."""
 
-import os
-import os.path as op
-import shutil
 import struct
 
 from deltacompression.backend import diff_algorithm

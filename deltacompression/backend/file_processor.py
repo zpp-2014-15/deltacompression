@@ -8,13 +8,11 @@ from deltacompression.chunker_adapter import chunker
 class FileProcessor(object):
     """Class responsible for adding and compressing data from single files."""
 
-    def __init__(self, data_updater, compression_algorithm, min_chunk,
-                 max_chunk):
+    def __init__(self, data_updater, min_chunk, max_chunk):
         """Creates FileProcessor object.
 
         Args:
             data_updater: instance of DataUpdater.
-            compression_algorithm: instance of CompressionAlgorithm.
             min_chunk: minimal chunk's size.
             max_chunk: maximal chunk's size.
         Raises:
@@ -22,13 +20,9 @@ class FileProcessor(object):
         """
         self._chunker = chunker.Chunker(min_chunk, max_chunk)
         self._data_updater = data_updater
-        self._compression_algorithm = compression_algorithm
 
     def setDataUpdater(self, data_updater):
         self._data_updater = data_updater
-
-    def setCompressionAlgorithm(self, compression_algorithm):
-        self._compression_algorithm = compression_algorithm
 
     def processFiles(self, files):
         """Processes a list of files.

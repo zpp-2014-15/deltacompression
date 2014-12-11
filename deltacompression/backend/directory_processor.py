@@ -25,13 +25,12 @@ class DirectoryProcessor(object):
         """
         self._compression_algorithm = compression_algorithm
         self._file_processor = file_processor.FileProcessor(
-            data_updater, compression_algorithm, min_chunk, max_chunk)
+            data_updater, min_chunk, max_chunk)
 
     def setDataUpdater(self, data_updater):
         self._file_processor.setDataUpdater(data_updater)
 
     def setCompressionAlgorithm(self, compression_algorithm):
-        self._file_processor.setCompressionAlgorithm(compression_algorithm)
         self._compression_algorithm = compression_algorithm
 
     def processDirectory(self, directory):
