@@ -22,9 +22,6 @@ class CompressionAlgorithm(object):
         """
         raise NotImplementedError
 
-    def getName(self):
-        raise NotImplementedError
-
 
 class DummyCompressionAlgorithm(CompressionAlgorithm):
 
@@ -33,6 +30,3 @@ class DummyCompressionAlgorithm(CompressionAlgorithm):
 
     def decompress(self, compressed_data):
         return compressed_data
-
-    def getName(self):
-        return "Dummy Compression Algorithm"

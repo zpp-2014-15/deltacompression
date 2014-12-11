@@ -6,13 +6,13 @@ sys.path.append(os.path.dirname(__file__))
 
 import wx
 
-from deltacompression.gui import controller
+from deltacompression.gui.controllers import main_controller
 
 
 def main():
     app = wx.App(False)
-    main_controller = controller.MainController(app)
-    main_controller.startApp()
+    con = main_controller.MainController(app)
+    con.startApp()
     app.MainLoop()
 
 
