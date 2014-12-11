@@ -87,7 +87,7 @@ class ExperimentResult(object):
     """This is result of one experiment.
 
     Attributes:
-        files_with_results: list of pairs like(file, integer).
+        files_with_results: list of pairs like (file, integer).
         algorithm_name: name of used algorithm.
         compression_name: name of used compression.
         min_chunk: minimal size of chunk.
