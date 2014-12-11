@@ -1,4 +1,4 @@
-"""This module is responsible for creating algorithms."""
+"""This module is responsible for creating compression algorithms."""
 
 from deltacompression.backend import compression_algorithm
 
