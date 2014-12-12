@@ -18,32 +18,6 @@ from deltacompression.backend import test_utils
 class TestDataProcessorTest(unittest.TestCase):
     """Test for class TestDataProcessor."""
 
-    def __init__(self, *args, **kwargs):
-        super(TestDataProcessorTest, self).__init__(*args, **kwargs)
-        self._contents = [["0" * 15000,
-                           " ".join([str(i) for i in xrange(15000, 35000)]),
-                           "abb".join([str(i) for i in xrange(1111, 33033)]),
-                           ",".join([str(i) for i in xrange(20000, 45000)])
-                          ],
-                          ["^%" * 15500,
-                           "qq".join([str(i) for i in xrange(15000, 35000)]),
-                           ";".join([str(i) for i in xrange(1111, 39033)]),
-                           ",".join([str(i) for i in xrange(40000, 65000)])
-                          ]
-                         ]
-
-        self._files = [["1.txt",
-                        "A/2.pdf",
-                        "A/B/3",
-                        "C/D/E/4.avi"
-                       ],
-                       ["Program Files/foo.ff",
-                        "home/jack/.vimrc",
-                        "qqqqqq",
-                        "lorem/ipsum/dolor sit amet"
-                       ]
-                      ]
-
     def setUp(self):
         storage_instance = storage.Storage(chunk_hash.HashSHA256(), None)
         data_updater_instance = data_updater.DummyUpdater(storage_instance)
@@ -65,8 +39,9 @@ class TestDataProcessorTest(unittest.TestCase):
     def testOneVersion(self):
         with testfixtures.TempDirectory() as tmp_dir:
             dir_content = zip(
-                [op.join("v1", file_path) for file_path in self._files[0]],
-                self._contents[0])
+                [op.join("v1", file_path) for file_path in
+                 test_utils.EXAMPLE_FILES[0]],
+                test_utils.EXAMPLE_CONTENTS[0])
 
             test_utils.fillTempDirectoryWithContent(tmp_dir, dir_content)
             data = list(self._test_data_processor.runSimulation(tmp_dir.path))
@@ -76,8 +51,10 @@ class TestDataProcessorTest(unittest.TestCase):
             self.assertNotEqual(data[0][1], "")
 
     def testTwoVersions(self):
-        combinations = itertools.product(self._contents, self._contents,
-                                         self._files, self._files)
+        combinations = itertools.product(
+            test_utils.EXAMPLE_CONTENTS, test_utils.EXAMPLE_CONTENTS,
+            test_utils.EXAMPLE_FILES, test_utils.EXAMPLE_FILES)
+
         for cont1, cont2, files1, files2 in combinations:
             self.setUp()
             with testfixtures.TempDirectory() as tmp_dir:

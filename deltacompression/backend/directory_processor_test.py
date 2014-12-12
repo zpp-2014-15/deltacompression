@@ -17,32 +17,6 @@ from deltacompression.backend import test_utils
 class DirectoryProcessorTest(unittest.TestCase):
     """Test for class DirectoryProcessor."""
 
-    def __init__(self, *args, **kwargs):
-        super(DirectoryProcessorTest, self).__init__(*args, **kwargs)
-        self._contents = [["0" * 15000,
-                           " ".join([str(i) for i in xrange(15000, 35000)]),
-                           "abb".join([str(i) for i in xrange(1111, 33033)]),
-                           ",".join([str(i) for i in xrange(20000, 45000)])
-                          ],
-                          ["^%" * 15500,
-                           "qq".join([str(i) for i in xrange(15000, 35000)]),
-                           ";".join([str(i) for i in xrange(1111, 39033)]),
-                           ",".join([str(i) for i in xrange(40000, 65000)])
-                          ]
-                         ]
-
-        self._files = [["1.txt",
-                        "A/2.pdf",
-                        "A/B/3",
-                        "C/D/E/4.avi"
-                       ],
-                       ["Program Files/foo.ff",
-                        "home/jack/.vimrc",
-                        "qqqqqq",
-                        "lorem/ipsum/dolor sit amet"
-                       ]
-                      ]
-
     def setUp(self):
         _storage = storage.Storage(chunk_hash.HashSHA256(), None)
         _data_updater = data_updater.DummyUpdater(_storage)
@@ -71,8 +45,9 @@ class DirectoryProcessorTest(unittest.TestCase):
         return data
 
     def testProcessDirectory(self):
-        combinations = itertools.product(self._contents, self._contents,
-                                         self._files, self._files)
+        combinations = itertools.product(
+            test_utils.EXAMPLE_CONTENTS, test_utils.EXAMPLE_CONTENTS,
+            test_utils.EXAMPLE_FILES, test_utils.EXAMPLE_FILES)
 
         for cont1, cont2, files1, files2 in combinations:
             self.setUp()

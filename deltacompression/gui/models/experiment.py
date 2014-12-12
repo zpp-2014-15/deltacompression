@@ -66,9 +66,8 @@ class Experiment(object):
         algorithm = self.algorithm_factory.getAlgorithmFromName(
             self._algorithm_name)
         # TODO: use compression from compression factory
-        compression = self.compression_factory.getCompressionFromName(
-            self._compression_name)
-        file_proc = file_processor.FileProcessor(algorithm, compression,
+
+        file_proc = file_processor.FileProcessor(algorithm,
                                                  self._min_chunk,
                                                  self._max_chunk)
         result = ExperimentResult(self._algorithm_name,
@@ -77,7 +76,7 @@ class Experiment(object):
 
         print self._file_list
         for file_name in self._file_list:
-            returned_data = file_proc.processFile(file_name)
+            returned_data = file_proc.processFiles([file_name])
             result.addResult(file_name, len(returned_data))
 
         return result

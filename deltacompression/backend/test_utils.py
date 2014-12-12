@@ -58,3 +58,27 @@ def fillTempDirectoryWithContent(tmp_dir, files):
 
     for name, content in files:
         tmp_dir.write(name, content)
+
+EXAMPLE_CONTENTS = [["0" * 15000,
+                     " ".join([str(i) for i in xrange(15000, 35000)]),
+                     "abb".join([str(i) for i in xrange(1111, 33033)]),
+                     ",".join([str(i) for i in xrange(20000, 45000)])
+                    ],
+                    ["^%" * 15500,
+                     "qq".join([str(i) for i in xrange(15000, 35000)]),
+                     ";".join([str(i) for i in xrange(1111, 39033)]),
+                     ",".join([str(i) for i in xrange(40000, 65000)])
+                    ]
+                   ]
+
+EXAMPLE_FILES = [["1.txt",
+                  "A/2.pdf",
+                  "A/B/3",
+                  "C/D/E/4.avi"
+                 ],
+                 ["Program Files/foo.ff",
+                  "home/jack/.vimrc",
+                  "qqqqqq",
+                  "lorem/ipsum/dolor sit amet"
+                 ]
+                ]

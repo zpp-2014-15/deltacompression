@@ -16,7 +16,7 @@ class ExperimentTest(unittest.TestCase):
                 autospec=True)
     def testCreatingDefaultFileProcessor(self, mock_file_processor):
         self._experiment.runExperiment()
-        mock_file_processor.assert_called_with(None, None, 1024 * 32, 1024 * 64)
+        mock_file_processor.assert_called_with(None, 1024 * 32, 1024 * 64)
 
     @mock.patch("deltacompression.backend.algorithm_factory.AlgorithmFactory",
                 autospec=True)
@@ -42,12 +42,10 @@ class ExperimentTest(unittest.TestCase):
         self._experiment.addFileToList("D:/asd.2")
 
         file_proc_instance = mock_file_processor.return_value
-        file_proc_instance.processFile.return_value = "asddsa"
+        file_proc_instance.processFiles.return_value = "asddsa"
         result = self._experiment.runExperiment()
 
         alg_factory_instance.getAlgorithmFromName.assert_called_with("MyAlg")
-        compr_factory_instance.getCompressionFromName.assert_called_with(
-            "Compr")
 
         self.assertItemsEqual(result.files_with_results, [("D:/asd.asd", 6),
                                                           ("D:/asd.2", 6)])
