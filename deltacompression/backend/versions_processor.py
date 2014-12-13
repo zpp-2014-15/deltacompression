@@ -6,7 +6,7 @@ import os
 import os.path as op
 
 
-class TestDataProcessor(object):
+class VersionsProcessor(object):
 
     def __init__(self, directory_processor):
         self._directory_processor = directory_processor

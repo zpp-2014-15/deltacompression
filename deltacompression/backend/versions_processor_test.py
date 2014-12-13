@@ -1,4 +1,4 @@
-"""Tests for directory_processor.py"""
+"""Tests for versions_processor.py"""
 
 import os.path as op
 import itertools
@@ -7,7 +7,7 @@ import unittest
 import testfixtures
 
 from deltacompression.backend import directory_processor
-from deltacompression.backend import test_data_processor
+from deltacompression.backend import versions_processor
 from deltacompression.backend import data_updater
 from deltacompression.backend import storage
 from deltacompression.backend import chunk_hash
@@ -15,8 +15,8 @@ from deltacompression.backend import compression_algorithm
 from deltacompression.backend import test_utils
 
 
-class TestDataProcessorTest(unittest.TestCase):
-    """Test for class TestDataProcessor."""
+class VersionsProcessorTest(unittest.TestCase):
+    """Test for class VersionsProcessor."""
 
     def setUp(self):
         storage_instance = storage.Storage(chunk_hash.HashSHA256(), None)
@@ -25,7 +25,7 @@ class TestDataProcessorTest(unittest.TestCase):
             .DummyCompressionAlgorithm()
         self._directory_processor = directory_processor.DirectoryProcessor(
             data_updater_instance, compression_algorithm_instance, 1000, 7000)
-        self._test_data_processor = test_data_processor.TestDataProcessor(
+        self._test_data_processor = versions_processor.VersionsProcessor(
             self._directory_processor)
 
     def testNoVersion(self):
