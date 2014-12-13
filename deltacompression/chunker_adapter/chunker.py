@@ -51,7 +51,7 @@ class Chunker(object):
                                     str(self._max_chunk)],
                                    stdout=subprocess.PIPE,
                                    stdin=subprocess.PIPE)
-        out, err = process.communicate("\n".join(files))
+        out, err = process.communicate("\n".join(files).encode('utf-8'))
         retcode = process.wait()
         if retcode:
             raise ChunkerException(err)
