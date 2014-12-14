@@ -12,17 +12,18 @@ size_t getChunkSize(const cool::IoVec &chunk) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc < 4) {
-        std::cerr << "Usage " << argv[0] << " minchunk maxchunk filename"
-                  << std::endl;
+    if (argc < 5) {
+        std::cerr << "Usage " << argv[0]
+                  << " minchunk maxchunk avgchunk filename" << std::endl;
         return EXIT_FAILURE;
     }
 
     int minChunk = std::stoi(std::string(argv[1]));
     int maxChunk = std::stoi(std::string(argv[2]));
-    std::string fileName(argv[3]);
+    int avgChunk = std::stoi(std::string(argv[3]));
+    std::string fileName(argv[4]);
 
-    hydra::chunking::ChunkerAdapter adapter(minChunk, maxChunk);
+    hydra::chunking::ChunkerAdapter adapter(minChunk, maxChunk, avgChunk);
 
     std::ifstream in(fileName, std::ios::binary | std::ios::in);
     if (!in) {
