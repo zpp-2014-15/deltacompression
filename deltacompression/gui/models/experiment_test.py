@@ -16,7 +16,7 @@ class ExperimentTest(unittest.TestCase):
                 autospec=True)
     def testCreatingDefaultFileProcessor(self, mock_file_processor):
         self._experiment.runExperiment()
-        mock_file_processor.assert_called_with(None, None, 1024 * 32, 1024 * 64)
+        mock_file_processor.assert_called_with(None, None, 1024 * 32, 1024 * 96)
 
     @mock.patch("deltacompression.backend.algorithm_factory.AlgorithmFactory",
                 autospec=True)

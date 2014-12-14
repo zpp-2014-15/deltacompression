@@ -18,10 +18,9 @@ class Experiment(object):
     def __init__(self):
         self._algorithm_name = "None"
         self._compression_name = "None"
-        # TODO: remove this when compression factory implemented
         self._file_list = []
         self._min_chunk = 1024 * 32
-        self._max_chunk = 1024 * 64
+        self._max_chunk = 1024 * 96
 
         self.algorithm_factory = algorithm_factory.AlgorithmFactory()
         self.compression_factory = compression_factory.CompressionFactory()
@@ -65,7 +64,6 @@ class Experiment(object):
         """
         algorithm = self.algorithm_factory.getAlgorithmFromName(
             self._algorithm_name)
-        # TODO: use compression from compression factory
         compression = self.compression_factory.getCompressionFromName(
             self._compression_name)
         file_proc = file_processor.FileProcessor(algorithm, compression,
