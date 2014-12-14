@@ -1,8 +1,8 @@
 """Module contains compression algorithms."""
 
 
-class CompressionAlgorithm(object):
-    """Class representing compression algorithm."""
+class Compression(object):
+    """Compression interface."""
 
     def compress(self, data):
         """
@@ -23,7 +23,7 @@ class CompressionAlgorithm(object):
         raise NotImplementedError
 
 
-class DummyCompressionAlgorithm(CompressionAlgorithm):
+class DummyCompression(Compression):
 
     def compress(self, data):
         return data

@@ -6,6 +6,10 @@ class ExperimentController(object):
 
     def __init__(self, panel, experiment):
         self._experiment = experiment
+        def_alg = self._experiment.algorithm_factory.DUMMY_ALGORITHM
+        def_comp = self._experiment.compression_factory.DUMMY_COMPRESSION
+        self._experiment.setAlgorithmName(def_alg)
+        self._experiment.setCompressionName(def_comp)
         self._panel = panel
         self._initSignals()
         self._updatePanel()
@@ -34,7 +38,7 @@ class ExperimentController(object):
 
     def _onSimulate(self, _):
         result = self._experiment.runExperiment()
-        # TODO: Handle result somehow better
+        # TODO: Handle result somehow
         print result.algorithm_name
         print result.compression_name
         print result.min_chunk

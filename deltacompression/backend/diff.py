@@ -1,4 +1,4 @@
-"""Module contains DiffAlgorithm interface and its various implementations."""
+"""Module contains Diff interface and its various implementations."""
 
 import os
 
@@ -8,11 +8,11 @@ from deltacompression.backend import storage
 
 
 class DiffException(Exception):
-    """An exception during executing the diff algorithm."""
+    """An exception during executing the diff."""
 
 
-class DiffAlgorithm(object):
-    """Diff algorithm interface."""
+class Diff(object):
+    """Diff interface."""
 
     def calculateDiff(self, base_chunk, new_chunk):
         """Calculates the diff between base_chunk and new_chunk."""
@@ -29,7 +29,7 @@ class DiffAlgorithm(object):
         raise NotImplementedError
 
 
-class XDelta3Diff(DiffAlgorithm):
+class XDelta3Diff(Diff):
     """Diff from xdelta3."""
 
     # maximum available amount of bytes that can be used underneath

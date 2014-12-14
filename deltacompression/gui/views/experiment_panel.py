@@ -42,9 +42,10 @@ class ExperimentPanel(wx.Panel):
         self._algorithm_combo_box.Clear()
         self._algorithm_combo_box.AppendItems(
             experiment.algorithm_factory.getAlgorithms())
-        # TODO: Add factory for compression - just like for algorithms
+
         self._compression_combo_box.Clear()
-        self._compression_combo_box.AppendItems(["None"])
+        self._compression_combo_box.AppendItems(
+            experiment.compression_factory.getCompressions())
 
         self._algorithm_combo_box.SetStringSelection(
             experiment.getAlgorithmName())
