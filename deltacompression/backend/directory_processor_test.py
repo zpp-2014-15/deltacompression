@@ -1,5 +1,5 @@
 # pylint: disable=E1120
-# no-value-for-parameter - pylint don't know how mocks work
+# no-value-for-parameter - pylint doesn't know how mocks work
 
 """Tests for directory_processor.py"""
 
@@ -13,7 +13,7 @@ from deltacompression.backend import directory_processor
 from deltacompression.backend import data_updater
 from deltacompression.backend import storage
 from deltacompression.backend import chunk_hash
-from deltacompression.backend import compression_algorithm
+from deltacompression.backend import compression
 from deltacompression.backend import test_utils
 
 
@@ -23,8 +23,7 @@ class DirectoryProcessorTest(unittest.TestCase):
     def setUp(self):
         storage_instance = storage.Storage(chunk_hash.HashSHA256(), None)
         data_updater_instance = data_updater.DummyUpdater(storage_instance)
-        compression_algorithm_instance = compression_algorithm \
-            .DummyCompressionAlgorithm()
+        compression_algorithm_instance = compression.DummyCompression()
         self._directory_processor = directory_processor.DirectoryProcessor(
             data_updater_instance, compression_algorithm_instance, 1000, 7000)
 
@@ -39,8 +38,7 @@ class DirectoryProcessorTest(unittest.TestCase):
             self._directory_processor.processDirectory(tmp_dir.path)
             args = mock_file_processor.return_value.processFiles.call_args
             self.assertEqual(
-                set(args[0][0]), set([op.join(tmp_dir.path, f)
-                                      for f in files]))
+                set(args[0][0]), set([op.join(tmp_dir.path, f) for f in files]))
 
     def testEmptyDirectory(self):
         contents = []
@@ -48,16 +46,16 @@ class DirectoryProcessorTest(unittest.TestCase):
         self._testProcessDirectory(files, contents)
 
     def testDirectoryWithOneFile(self):
-        contents = ["a" * 10000]
+        contents = ["a" * 10]
         files = ["file.txt"]
         self._testProcessDirectory(files, contents)
 
     def testDirectoryWithSomeFiles(self):
-        contents = ["a" * 10000] * 4
+        contents = ["a" * 10] * 4
         files = ["file.txt", "file2.avi", "file3", "aaa"]
         self._testProcessDirectory(files, contents)
 
     def testDirectoryWithSubdirectories(self):
-        contents = ["a" * 10000] * 5
+        contents = ["a" * 10] * 5
         files = ["file.txt", "A/file2.avi", "B/file3", "C/aaa", "A/B/C/bbb"]
         self._testProcessDirectory(files, contents)
