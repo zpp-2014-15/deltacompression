@@ -2,7 +2,7 @@
 
 from deltacompression.backend import chunk_hash
 from deltacompression.backend import data_updater
-from deltacompression.backend import diff_algorithm
+from deltacompression.backend import diff
 from deltacompression.backend import storage
 
 
@@ -25,5 +25,5 @@ class AlgorithmFactory(object):
         if name == self.DUMMY_ALGORITHM:
             return data_updater.DummyUpdater(storage_instance)
         elif name == self.OPTIMAL_ALGORITHM:
-            diff = diff_algorithm.XDelta3Diff()
-            return data_updater.OptimalDeltaUpdater(storage_instance, diff)
+            diff_inst = diff.XDelta3Diff()
+            return data_updater.OptimalDeltaUpdater(storage_instance, diff_inst)

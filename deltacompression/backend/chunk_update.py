@@ -116,10 +116,10 @@ class DeltaChunkUpdate(ChunkUpdate):
         return self._diff
 
     def getNewChunk(self, **kwargs):
-        diff_algorithm = kwargs.pop('diff_algorithm')
+        diff = kwargs.pop('diff')
         storage_obj = kwargs.pop('storage')
         if self._hash:
             base_chunk = storage_obj.getChunk(self._hash)
-            return diff_algorithm.applyDiff(base_chunk, self._diff)
+            return diff.applyDiff(base_chunk, self._diff)
         else:
             return storage.Chunk(self._diff)
