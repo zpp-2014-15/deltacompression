@@ -11,6 +11,9 @@ class ExperimentPanel(wx.Panel):
     evt_ALGORITHM_SELECTED = wx.NewEventType()
     EVT_ALGORITHM_SELECTED = wx.PyEventBinder(evt_ALGORITHM_SELECTED)
 
+    evt_COMPRESSION_SELECTED = wx.NewEventType()
+    EVT_COMPRESSION_SELECTED = wx.PyEventBinder(evt_COMPRESSION_SELECTED)
+
     evt_ADD_FILE = wx.NewEventType()
     EVT_ADD_FILE = wx.PyEventBinder(evt_ADD_FILE)
 
@@ -63,6 +66,9 @@ class ExperimentPanel(wx.Panel):
     def getSelectedAlgorithm(self):
         return self._algorithm_combo_box.GetStringSelection()
 
+    def getSelectedCompression(self):
+        return self._compression_combo_box.GetStringSelection()
+
     def getFile(self):
         return utils.getFilePath()
 
@@ -110,4 +116,5 @@ class ExperimentPanel(wx.Panel):
             self.evt_ADD_FILE, self.GetId()))
 
     def _onSelectCompression(self, _):
-        print self._compression_combo_box.GetStringSelection()
+        self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
+            self.evt_COMPRESSION_SELECTED, self.GetId()))

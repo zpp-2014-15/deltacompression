@@ -6,7 +6,7 @@ Installation
 To run, install all necessary dependencies:
 ````bash
 pip install -r requirements.txt
-apt-get install python-wxgtk2.8
+apt-get install python-wxgtk2.8 python-lzo
 ````
 Moreover, you have to download an xdelta3 package from
 [here](https://code.google.com/p/xdelta/downloads/detail?name=xdelta3.0z.tar.gz&can=2&q=).
@@ -27,6 +27,11 @@ ln -s /usr/lib/python2.7/dist-packages/wx-2.8-gtk2-unicode/ .
 ln -s /usr/lib/python2.7/dist-packages/wx.pth .
 ln -s /usr/lib/python2.7/dist-packages/wxversion.py .
 ln -s /usr/lib/python2.7/dist-packages/wxversion.pyc .
+````
+The same with python-lzo
+````bash
+cd <env>/lib/python-2.7/site-packages
+ln -s /usr/lib/python2.7/dist-packages/lzo.so .
 ````
 PYTHONPATH
 ==========
