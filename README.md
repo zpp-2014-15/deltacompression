@@ -6,7 +6,7 @@ Installation
 To run, install all necessary dependencies:
 ````bash
 pip install -r requirements.txt
-apt-get install python-wxgtk2.8
+apt-get install python-wxgtk2.8 python-tk python-matplotlib
 ````
 Moreover, you have to download an xdelta3 package from
 [here](https://code.google.com/p/xdelta/downloads/detail?name=xdelta3.0z.tar.gz&can=2&q=).
