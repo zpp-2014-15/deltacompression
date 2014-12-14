@@ -8,11 +8,11 @@ from deltacompression.backend import storage
 
 
 class DiffException(Exception):
-    """An exception during executing the diff algorithm."""
+    """An exception during executing the diff."""
 
 
 class Diff(object):
-    """Diff algorithm interface."""
+    """Diff interface."""
 
     def calculateDiff(self, base_chunk, new_chunk):
         """Calculates the diff between base_chunk and new_chunk."""

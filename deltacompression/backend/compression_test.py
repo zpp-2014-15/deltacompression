@@ -8,12 +8,12 @@ from deltacompression.backend import compression
 class DummyCompressionTest(unittest.TestCase):
 
     def setUp(self):
-        self._algorithm = compression.DummyCompression()
+        self._compression = compression.DummyCompression()
 
     def testCompression(self):
         data = "Lorem ipsum dolor sit amet"
-        self.assertEqual(self._algorithm.compress(data), data)
+        self.assertEqual(self._compression.compress(data), data)
 
     def testDecompression(self):
         data = "Lorem ipsum dolor sit amet"
-        self.assertEqual(self._algorithm.decompress(data), data)
+        self.assertEqual(self._compression.decompress(data), data)

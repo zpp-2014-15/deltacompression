@@ -8,7 +8,7 @@ from deltacompression.backend import chunk_hash
 
 
 class MockupDiff(diff.Diff):
-    """Dummy diff algorithm which just doesn't use the base chunk."""
+    """Dummy diff which just doesn't use the base chunk."""
 
     def calculateDiff(self, base_chunk, new_chunk):
         return new_chunk.get()
@@ -18,7 +18,7 @@ class MockupDiff(diff.Diff):
 
 
 class PrefixDiff(diff.Diff):
-    """A diff algorithm which compares prefixes of chunks."""
+    """A diff which compares prefixes of chunks."""
 
     FMT = "<i"
     SIZE = struct.calcsize(FMT)

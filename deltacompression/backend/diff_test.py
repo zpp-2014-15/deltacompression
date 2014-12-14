@@ -1,4 +1,4 @@
-"""Tests for the diff algorithms."""
+"""Tests for the diff.py."""
 
 import unittest
 
