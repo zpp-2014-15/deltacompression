@@ -28,24 +28,15 @@ class DirectoryProcessorTest(unittest.TestCase):
         self._directory_processor = directory_processor.DirectoryProcessor(
             data_updater_instance, compression_algorithm_instance, 1000, 7000)
 
-    def _processDirectory(self, tmp_dir, dir_path):
-        data = []
-
-        full_path = op.join(tmp_dir.path, dir_path)
-        data.append(self._directory_processor.processDirectory(full_path))
-
-        return data
-
     @mock.patch("deltacompression.backend.file_processor.FileProcessor",
                 autospec=True)
     def _testProcessDirectory(self, files, contents, mock_file_processor):
         self.setUp()
         with testfixtures.TempDirectory() as tmp_dir:
-            files = [op.join("some_dir", f) for f in files]
             dir_content = zip(files, contents)
             test_utils.fillTempDirectoryWithContent(tmp_dir, dir_content)
 
-            self._processDirectory(tmp_dir, "some_dir")
+            self._directory_processor.processDirectory(tmp_dir.path)
             args = mock_file_processor.return_value.processFiles.call_args
             self.assertEqual(
                 set(args[0][0]), set([op.join(tmp_dir.path, f)
@@ -57,16 +48,16 @@ class DirectoryProcessorTest(unittest.TestCase):
         self._testProcessDirectory(files, contents)
 
     def testDirectoryWithOneFile(self):
-        contents = [",".join([str(i) for i in xrange(15000)])]
+        contents = ["a" * 10000]
         files = ["file.txt"]
         self._testProcessDirectory(files, contents)
 
     def testDirectoryWithSomeFiles(self):
-        contents = [",".join([str(i) for i in xrange(15000)])] * 4
+        contents = ["a" * 10000] * 4
         files = ["file.txt", "file2.avi", "file3", "aaa"]
         self._testProcessDirectory(files, contents)
 
     def testDirectoryWithSubdirectories(self):
-        contents = [",".join([str(i) for i in xrange(15000)])] * 5
+        contents = ["a" * 10000] * 5
         files = ["file.txt", "A/file2.avi", "B/file3", "C/aaa", "A/B/C/bbb"]
         self._testProcessDirectory(files, contents)
