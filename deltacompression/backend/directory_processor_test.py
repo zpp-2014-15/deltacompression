@@ -1,9 +1,9 @@
 """Tests for directory_processor.py"""
 
-import itertools
 import os.path as op
 import unittest
 
+import mock
 import testfixtures
 
 from deltacompression.backend import directory_processor
@@ -18,14 +18,14 @@ class DirectoryProcessorTest(unittest.TestCase):
     """Test for class DirectoryProcessor."""
 
     def setUp(self):
-        _storage = storage.Storage(chunk_hash.HashSHA256(), None)
-        _data_updater = data_updater.DummyUpdater(_storage)
-        _compression_algorithm = compression_algorithm \
+        storage_instance = storage.Storage(chunk_hash.HashSHA256(), None)
+        data_updater_instance = data_updater.DummyUpdater(storage_instance)
+        compression_algorithm_instance = compression_algorithm \
             .DummyCompressionAlgorithm()
         self._directory_processor = directory_processor.DirectoryProcessor(
-            _data_updater, _compression_algorithm, 1000, 7000)
+            data_updater_instance, compression_algorithm_instance, 1000, 7000)
 
-    def _processDirectories(self, tmp_dir, dirs_content):
+    def _createAndProcessDirectories(self, tmp_dir, dirs_content):
         """Creates directories with given content and then processes them.
         Args:
             tmp_dir: instance of TempDirectory.
@@ -44,25 +44,64 @@ class DirectoryProcessorTest(unittest.TestCase):
 
         return data
 
-    def testProcessDirectory(self):
-        combinations = itertools.product(
-            test_utils.EXAMPLE_CONTENTS, test_utils.EXAMPLE_CONTENTS,
-            test_utils.EXAMPLE_FILES, test_utils.EXAMPLE_FILES)
+    @mock.patch("deltacompression.backend.file_processor.FileProcessor",
+                autospec=True)
+    def testEmptyDirectory(self, mock_file_processor):
+        self.setUp()
+        with testfixtures.TempDirectory() as tmp_dir:
+            contents = []
+            files = []
+            dir_content = zip(
+                [op.join("v1", file_name) for file_name in files], contents)
+            self._createAndProcessDirectories(tmp_dir, [("v1", dir_content)])
 
-        for cont1, cont2, files1, files2 in combinations:
-            self.setUp()
-            with testfixtures.TempDirectory() as tmp_dir:
-                dir_content1 = zip(
-                    [op.join("v1", file_name) for file_name in files1], cont1)
-                dir_content2 = zip(
-                    [op.join("v2", file_name) for file_name in files2], cont2)
+            args = mock_file_processor.return_value.processFiles.call_args
+            self.assertEqual(args[0][0], [])
 
-                data = self._processDirectories(tmp_dir,
-                                                [("v1", dir_content1),
-                                                 ("v2", dir_content2)])
+    @mock.patch("deltacompression.backend.file_processor.FileProcessor",
+                autospec=True)
+    def testDirectoryWithOneFile(self, mock_file_processor):
+        self.setUp()
+        with testfixtures.TempDirectory() as tmp_dir:
+            contents = [",".join([str(i) for i in xrange(15000)])]
+            files = ["file.txt"]
+            dir_content = zip(
+                [op.join("v1", file_name) for file_name in files], contents)
+            self._createAndProcessDirectories(tmp_dir, [("v1", dir_content)])
 
-                self.assertNotEqual(data[0], "")
-                if cont1 == cont2:
-                    self.assertEqual(data[1], "")
-                else:
-                    self.assertNotEqual(data[1], "")
+            args = mock_file_processor.return_value.processFiles.call_args
+            self.assertEqual(
+                args[0][0], [op.join(tmp_dir.path,
+                                     op.join("v1", f)) for f in files])
+
+    @mock.patch("deltacompression.backend.file_processor.FileProcessor",
+                autospec=True)
+    def testDirectoryWithSomeFiles(self, mock_file_processor):
+        self.setUp()
+        with testfixtures.TempDirectory() as tmp_dir:
+            contents = [",".join([str(i) for i in xrange(15000)])] * 4
+            files = ["file.txt", "file2.avi", "file3", "aaa"]
+            dir_content = zip(
+                [op.join("v1", file_name) for file_name in files], contents)
+            self._createAndProcessDirectories(tmp_dir, [("v1", dir_content)])
+
+            args = mock_file_processor.return_value.processFiles.call_args
+            self.assertEqual(
+                set(args[0][0]), set([op.join(tmp_dir.path, op.join("v1", f))
+                                      for f in files]))
+
+    @mock.patch("deltacompression.backend.file_processor.FileProcessor",
+                autospec=True)
+    def testDirectoryWithSubdirectories(self, mock_file_processor):
+        self.setUp()
+        with testfixtures.TempDirectory() as tmp_dir:
+            contents = [",".join([str(i) for i in xrange(15000)])] * 5
+            files = ["file.txt", "A/file2.avi", "B/file3", "C/aaa", "A/B/C/bbb"]
+            dir_content = zip(
+                [op.join("v1", file_name) for file_name in files], contents)
+            self._createAndProcessDirectories(tmp_dir, [("v1", dir_content)])
+
+            args = mock_file_processor.return_value.processFiles.call_args
+            self.assertEqual(
+                set(args[0][0]), set([op.join(tmp_dir.path, op.join("v1", f))
+                                      for f in files]))

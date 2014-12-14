@@ -25,7 +25,7 @@ class VersionsProcessorTest(unittest.TestCase):
             .DummyCompressionAlgorithm()
         self._directory_processor = directory_processor.DirectoryProcessor(
             data_updater_instance, compression_algorithm_instance, 1000, 7000)
-        self._test_data_processor = versions_processor.VersionsProcessor(
+        self._version_processor = versions_processor.VersionsProcessor(
             self._directory_processor)
 
     def testNoVersion(self):
@@ -33,7 +33,7 @@ class VersionsProcessorTest(unittest.TestCase):
             dir_content = []
 
             test_utils.fillTempDirectoryWithContent(tmp_dir.path, dir_content)
-            data = list(self._test_data_processor.runSimulation(tmp_dir.path))
+            data = list(self._version_processor.runSimulation(tmp_dir.path))
             self.assertEqual(len(data), 0)
 
     def testOneVersion(self):
@@ -44,7 +44,7 @@ class VersionsProcessorTest(unittest.TestCase):
                 test_utils.EXAMPLE_CONTENTS[0])
 
             test_utils.fillTempDirectoryWithContent(tmp_dir, dir_content)
-            data = list(self._test_data_processor.runSimulation(tmp_dir.path))
+            data = list(self._version_processor.runSimulation(tmp_dir.path))
 
             self.assertEqual(len(data), 1)
             self.assertEqual(data[0][0], op.join(tmp_dir.path, "v1"))
@@ -66,7 +66,7 @@ class VersionsProcessorTest(unittest.TestCase):
                 test_utils.fillTempDirectoryWithContent(
                     tmp_dir, dir_content1 + dir_content2)
 
-                data = list(self._test_data_processor.runSimulation(
+                data = list(self._version_processor.runSimulation(
                     tmp_dir.path))
 
                 self.assertEqual(len(data), 2)
@@ -77,11 +77,3 @@ class VersionsProcessorTest(unittest.TestCase):
                     self.assertEqual(data[1][1], "")
                 else:
                     self.assertNotEqual(data[1][1], "")
-
-    # def testLinux(self):
-    #     path = "/home/pkura/code/zpp/test"
-    #     data_sizes = []
-    #     for version_dir, data in \
-    #             self._test_data_processor.runSimulation(path):
-    #         data_sizes.append(len(data))
-    #     self.assertEqual(data_sizes, [539742497, 4119514])
