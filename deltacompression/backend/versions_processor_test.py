@@ -34,20 +34,16 @@ class VersionsProcessorTest(unittest.TestCase):
                     ]
 
     def setUp(self):
-        storage_instance = storage.Storage(chunk_hash.HashSHA256(), None)
-        data_updater_instance = data_updater.DummyUpdater(storage_instance)
-        chunker_params = chunker.ChunkerParameters(1000, 13000, 7000)
-        compression_algorithm_instance = compression.DummyCompression()
-        self._directory_processor = directory_processor.DirectoryProcessor(
-            data_updater_instance, compression_algorithm_instance,
-            chunker_params)
+        self.patcher = mock.patch("deltacompression.backend."
+                                  "directory_processor.DirectoryProcessor",
+                                  autospec=True)
+        self.addCleanup(self.patcher.stop)
+        self._mock = self.patcher.start()
+        self._dir_mock = self._mock.return_value
         self._version_processor = versions_processor.VersionsProcessor(
-            self._directory_processor)
+            self._dir_mock)
 
-    @mock.patch("deltacompression.backend.directory_processor"
-                ".DirectoryProcessor",
-                autospec=True)
-    def _testRunSimulation(self, dirs_content, mock_directory_processor):
+    def _testRunSimulation(self, dirs_content):
         self.setUp()
         with testfixtures.TempDirectory() as tmp_dir:
             for dir_name, dir_content in dirs_content:
@@ -56,17 +52,16 @@ class VersionsProcessorTest(unittest.TestCase):
                 test_utils.fillTempDirectoryWithContent(tmp_dir, files)
 
             list(self._version_processor.runSimulation(tmp_dir.path))
-            args = mock_directory_processor.return_value.processDirectory. \
-                call_args_list
-            processed_paths = set(args[x][0][0] for x in xrange(len(args)))
-            expected_paths = set(op.join(tmp_dir.path, dir_name)
-                                 for dir_name, _ in dirs_content)
+            args = self._dir_mock.processDirectory.call_args_list
+            processed_paths = [args[x][0][0] for x in xrange(len(args))]
+            expected_paths = [op.join(tmp_dir.path, dir_name)
+                              for dir_name, _ in dirs_content]
             self.assertEqual(processed_paths, expected_paths)
 
-    def testNoVersion2(self):
+    def testNoVersion(self):
         self._testRunSimulation([])
 
-    def testOneVersion2(self):
+    def testOneVersion(self):
 
         self._testRunSimulation([("v1", zip(self.EXAMPLE_FILES,
                                             self.EXAMPLE_CONTENTS))])
@@ -79,7 +74,7 @@ class VersionsProcessorTest(unittest.TestCase):
 
     def testManyVersions(self):
         dir_contents = []
-        for i in xrange(100):
+        for i in xrange(10):
             dir_contents.append(("v" + str(i),
                                  zip(self.EXAMPLE_FILES,
                                      self.EXAMPLE_CONTENTS)))
