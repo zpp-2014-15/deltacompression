@@ -1,4 +1,4 @@
-"""Module contains DiffAlgorithm interface and its various implementations."""
+"""Module contains Diff interface and its various implementations."""
 
 import os
 
@@ -11,7 +11,7 @@ class DiffException(Exception):
     """An exception during executing the diff algorithm."""
 
 
-class DiffAlgorithm(object):
+class Diff(object):
     """Diff algorithm interface."""
 
     def calculateDiff(self, base_chunk, new_chunk):
@@ -29,7 +29,7 @@ class DiffAlgorithm(object):
         raise NotImplementedError
 
 
-class XDelta3Diff(DiffAlgorithm):
+class XDelta3Diff(Diff):
     """Diff from xdelta3."""
 
     # maximum available amount of bytes that can be used underneath

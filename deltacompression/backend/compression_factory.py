@@ -16,4 +16,4 @@ class CompressionFactory(object):
 
     def getCompressionFromName(self, name):
         if name == self.DUMMY_COMPRESSION:
-            return compression.DummyCompressionAlgorithm()
+            return compression.DummyCompression()

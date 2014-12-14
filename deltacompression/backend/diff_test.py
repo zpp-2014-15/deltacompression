@@ -18,6 +18,6 @@ class XDelta3Test(unittest.TestCase):
         data2 = "Always look on the bright side of death"
         ch1 = storage.Chunk(data1)
         ch2 = storage.Chunk(data2)
-        diff = self._diff.calculateDiff(ch1, ch2)
-        nch = self._diff.applyDiff(ch1, diff)
+        diff_value = self._diff.calculateDiff(ch1, ch2)
+        nch = self._diff.applyDiff(ch1, diff_value)
         self.assertEqual(nch.get(), data2)

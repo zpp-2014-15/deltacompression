@@ -14,7 +14,7 @@ class FileProcessor(object):
 
         Args:
             data_updater: instance of DataUpdater.
-            compression: instance of CompressionAlgorithm.
+            compression: instance of Compression.
             min_chunk: minimal chunk's size.
             max_chunk: maximal chunk's size.
         Raises:
@@ -27,7 +27,7 @@ class FileProcessor(object):
     def setDataUpdater(self, data_updater):
         self._data_updater = data_updater
 
-    def setCompressionAlgorithm(self, compression):
+    def setCompression(self, compression):
         self._compression = compression
 
     def processFile(self, file_name):

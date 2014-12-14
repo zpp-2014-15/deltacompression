@@ -21,7 +21,7 @@ class FileProcessorTest(unittest.TestCase):
         self._storage = storage.Storage(chunk_hash.HashSHA256(), None)
         self._data_updater = data_updater.DummyUpdater(self._storage)
         self._compression = compression \
-            .DummyCompressionAlgorithm()
+            .DummyCompression()
         self._file_processor = file_processor.FileProcessor(
             self._data_updater, self._compression, 1000, 7000)
 

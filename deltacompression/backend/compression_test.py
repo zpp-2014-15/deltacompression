@@ -5,10 +5,10 @@ import unittest
 from deltacompression.backend import compression
 
 
-class DummyCompressionAlgorithmTest(unittest.TestCase):
+class DummyCompressionTest(unittest.TestCase):
 
     def setUp(self):
-        self._algorithm = compression.DummyCompressionAlgorithm()
+        self._algorithm = compression.DummyCompression()
 
     def testCompression(self):
         data = "Lorem ipsum dolor sit amet"
