@@ -2,7 +2,7 @@
 
 
 class Compression(object):
-    """Class representing compression algorithm."""
+    """Compression interface."""
 
     def compress(self, data):
         """
