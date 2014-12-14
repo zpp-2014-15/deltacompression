@@ -11,21 +11,19 @@ class DirectoryProcessor(object):
     """Class responsible for adding and compressing data from files inside
     a single directory."""
 
-    def __init__(self, data_updater, compression_algorithm, min_chunk,
-                 max_chunk):
+    def __init__(self, data_updater, compression_algorithm, chunker_params):
         """Creates DirectoryProcessor object.
 
         Args:
             data_updater: instance of DataUpdater.
             compression_algorithm: instance of CompressionAlgorithm.
-            min_chunk: minimal chunk's size.
-            max_chunk: maximal chunk's size.
+            chunker_params: instance of ChunkerParameters.
         Raises:
             ChunkerException, if the needed adapter binary is not present.
         """
         self._compression_algorithm = compression_algorithm
         self._file_processor = file_processor.FileProcessor(
-            data_updater, min_chunk, max_chunk)
+            data_updater, chunker_params)
 
     def setDataUpdater(self, data_updater):
         self._file_processor.setDataUpdater(data_updater)

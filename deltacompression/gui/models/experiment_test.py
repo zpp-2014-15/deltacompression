@@ -4,6 +4,7 @@ import unittest
 import mock
 
 from deltacompression.gui.models import experiment
+from deltacompression.chunker_adapter import chunker
 
 
 class ExperimentTest(unittest.TestCase):
@@ -29,7 +30,8 @@ class ExperimentTest(unittest.TestCase):
         compr_factory_instance.getCompressionFromName.return_value = "Ret comp"
         self._experiment = experiment.Experiment()
 
-        self._experiment.setChunkSizeRange(1, 10)
+        self._experiment.setChunkerParameters(
+            chunker.ChunkerParameters(1, 10, 7))
         self._experiment.setAlgorithmName("MyAlg")
         self._experiment.setCompressionName("Compr")
         self._experiment.addFileToList("D:/asd.asd")
@@ -47,10 +49,15 @@ class ExperimentTest(unittest.TestCase):
         self.assertEqual(result.compression_name, "Compr")
         self.assertEqual(result.min_chunk, 1)
         self.assertEqual(result.max_chunk, 10)
+        self.assertEqual(result.avg_chunk, 7)
 
-    def testSetChunkSizeRange(self):
-        self._experiment.setChunkSizeRange(1, 10)
-        self.assertEqual(self._experiment.getChunkSizeRange(), (1, 10))
+    def testSetChunkerParameters(self):
+        self._experiment.setChunkerParameters(
+            chunker.ChunkerParameters(1, 10, 7))
+        params = self._experiment.getChunkerParameters()
+        self.assertEqual(params.getMinChunk(), 1)
+        self.assertEqual(params.getMaxChunk(), 10)
+        self.assertEqual(params.getAvgChunk(), 7)
 
     def testGetSetAlgorithmAndCompression(self):
         self.assertEqual(self._experiment.getAlgorithmName(), "None")

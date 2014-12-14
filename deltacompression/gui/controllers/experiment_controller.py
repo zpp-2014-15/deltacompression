@@ -21,6 +21,8 @@ class ExperimentController(object):
                          self._onAddFile)
         self._panel.Bind(self._panel.EVT_SIMULATE,
                          self._onSimulate)
+        self._panel.Bind(self._panel.EVT_COMPRESSION_SELECTED,
+                         self._onCompressionSelected)
 
     def _updatePanel(self):
         self._panel.updateExperiment(self._experiment)
@@ -28,6 +30,11 @@ class ExperimentController(object):
     def _onAlgorithmSelected(self, _):
         alg = self._panel.getSelectedAlgorithm()
         self._experiment.setAlgorithmName(alg)
+        self._updatePanel()
+
+    def _onCompressionSelected(self, _):
+        compression = self._panel.getSelectedCompression()
+        self._experiment.setCompressionName(compression)
         self._updatePanel()
 
     def _onAddFile(self, _):
@@ -43,4 +50,5 @@ class ExperimentController(object):
         print result.compression_name
         print result.min_chunk
         print result.max_chunk
+        print result.avg_chunk
         print result.files_with_results

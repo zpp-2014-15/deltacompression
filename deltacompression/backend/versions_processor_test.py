@@ -16,7 +16,7 @@ from deltacompression.backend import storage
 from deltacompression.backend import chunk_hash
 from deltacompression.backend import compression
 from deltacompression.backend import test_utils
-
+from deltacompression.chunker_adapter import chunker
 
 class VersionsProcessorTest(unittest.TestCase):
     """Test for class VersionsProcessor."""
@@ -36,9 +36,11 @@ class VersionsProcessorTest(unittest.TestCase):
     def setUp(self):
         storage_instance = storage.Storage(chunk_hash.HashSHA256(), None)
         data_updater_instance = data_updater.DummyUpdater(storage_instance)
+        chunker_params = chunker.ChunkerParameters(1000, 13000, 7000)
         compression_algorithm_instance = compression.DummyCompression()
         self._directory_processor = directory_processor.DirectoryProcessor(
-            data_updater_instance, compression_algorithm_instance, 1000, 7000)
+            data_updater_instance, compression_algorithm_instance,
+            chunker_params)
         self._version_processor = versions_processor.VersionsProcessor(
             self._directory_processor)
 

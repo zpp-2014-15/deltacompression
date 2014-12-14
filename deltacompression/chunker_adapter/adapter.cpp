@@ -48,16 +48,17 @@ int processFile(const std::string &fileName, hydra::chunking::ChunkerAdapter &ad
 }
 
 int main(int argc, char* argv[]) {
-    if (argc < 3) {
-        std::cerr << "Usage " << argv[0] << " minchunk maxchunk"
-                  << std::endl;
+    if (argc < 4) {
+        std::cerr << "Usage " << argv[0]
+                  << " minchunk maxchunk avgchunk" << std::endl;
         return EXIT_FAILURE;
     }
 
     int minChunk = std::stoi(std::string(argv[1]));
     int maxChunk = std::stoi(std::string(argv[2]));
+    int avgChunk = std::stoi(std::string(argv[3]));
 
-    hydra::chunking::ChunkerAdapter adapter(minChunk, maxChunk);
+    hydra::chunking::ChunkerAdapter adapter(minChunk, maxChunk, avgChunk);
     std::string fileName;
 
     try {
