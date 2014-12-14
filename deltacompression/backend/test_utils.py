@@ -2,12 +2,12 @@
 
 import struct
 
-from deltacompression.backend import diff_algorithm
+from deltacompression.backend import diff
 from deltacompression.backend import storage
 from deltacompression.backend import chunk_hash
 
 
-class MockupDiff(diff_algorithm.DiffAlgorithm):
+class MockupDiff(diff.DiffAlgorithm):
     """Dummy diff algorithm which just doesn't use the base chunk."""
 
     def calculateDiff(self, base_chunk, new_chunk):
@@ -17,7 +17,7 @@ class MockupDiff(diff_algorithm.DiffAlgorithm):
         return storage.Chunk(diff)
 
 
-class PrefixDiff(diff_algorithm.DiffAlgorithm):
+class PrefixDiff(diff.DiffAlgorithm):
     """A diff algorithm which compares prefixes of chunks."""
 
     FMT = "<i"

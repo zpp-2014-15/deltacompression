@@ -1,6 +1,6 @@
 """This module is responsible for creating compression algorithms."""
 
-from deltacompression.backend import compression_algorithm
+from deltacompression.backend import compression
 
 
 class CompressionFactory(object):
@@ -16,4 +16,4 @@ class CompressionFactory(object):
 
     def getCompressionFromName(self, name):
         if name == self.DUMMY_COMPRESSION:
-            return compression_algorithm.DummyCompressionAlgorithm()
+            return compression.DummyCompressionAlgorithm()

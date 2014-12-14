@@ -1,14 +1,14 @@
-"""Tests for compression_algorithm.py"""
+"""Tests for compression.py"""
 
 import unittest
 
-from deltacompression.backend import compression_algorithm
+from deltacompression.backend import compression
 
 
 class DummyCompressionAlgorithmTest(unittest.TestCase):
 
     def setUp(self):
-        self._algorithm = compression_algorithm.DummyCompressionAlgorithm()
+        self._algorithm = compression.DummyCompressionAlgorithm()
 
     def testCompression(self):
         data = "Lorem ipsum dolor sit amet"

@@ -41,16 +41,16 @@ class DeltaUpdaterTest(unittest.TestCase):
     def setUp(self):
         self._hash_function = chunk_hash.HashSHA256()
         self._storage = storage.Storage(self._hash_function, None)
-        self._diff_algorithm = test_utils.MockupDiff()
+        self._diff = test_utils.MockupDiff()
         self._updater = data_updater.OptimalDeltaUpdater(self._storage,
-                                                         self._diff_algorithm)
+                                                         self._diff)
 
     def testAddReceivedData(self):
         cont = ["I sleep all night", "I sleep all day"]
         chunks = [storage.Chunk(data) for data in cont]
         update1 = chunk_update.DeltaChunkUpdate(None, chunks[0].get())
         hash_value = self._hash_function.calculateHash(chunks[0])
-        diff = self._diff_algorithm.calculateDiff(chunks[0], chunks[1])
+        diff = self._diff.calculateDiff(chunks[0], chunks[1])
         update2 = chunk_update.DeltaChunkUpdate(hash_value, diff)
         data = update1.serialize() + update2.serialize()
         self._updater.addReceivedData(data)
@@ -63,9 +63,9 @@ class OptimalDeltaUpdaterTest(unittest.TestCase):
     def setUp(self):
         self._hash_function = chunk_hash.HashSHA256()
         self._storage = storage.Storage(self._hash_function, None)
-        self._diff_algorithm = test_utils.PrefixDiff()
+        self._diff = test_utils.PrefixDiff()
         self._updater = data_updater.OptimalDeltaUpdater(self._storage,
-                                                         self._diff_algorithm)
+                                                         self._diff)
 
     def testUpdate(self):
         sent_bytes = 0
@@ -76,7 +76,7 @@ class OptimalDeltaUpdaterTest(unittest.TestCase):
             update = self._updater.update(chunk)
             sent_bytes += update.getBinarySize()
             target_chunk = update.getNewChunk(
-                diff_algorithm=self._diff_algorithm, storage=self._storage)
+                diff=self._diff, storage=self._storage)
             self.assertEqual(target_chunk.get(), data)
             self.assertIs(self._updater.update(chunk), None)
         self.assertEqual(sent_bytes, 160)

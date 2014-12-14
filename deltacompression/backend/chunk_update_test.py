@@ -100,14 +100,14 @@ class DeltaChunkUpdateTest(unittest.TestCase):
         diff = self._diff_function.calculateDiff(base_chunk, target_chunk)
         update = chunk_update.DeltaChunkUpdate(hash_value, diff)
         ntarget = update.getNewChunk(storage=self._storage,
-                                     diff_algorithm=self._diff_function)
+                                     diff=self._diff_function)
         self.assertEqual(ntarget.get(), target)
 
     def testGetNewChunkWithoutHash(self):
         target = "And his limbs all hacked and mangled, brave Sir Robin!"
         update = chunk_update.DeltaChunkUpdate(None, target)
         ntarget = update.getNewChunk(storage=self._storage,
-                                     diff_algorithm=self._diff_function)
+                                     diff=self._diff_function)
         self.assertEqual(ntarget.get(), target)
 
 if __name__ == "__main__":

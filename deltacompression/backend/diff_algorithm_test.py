@@ -2,7 +2,7 @@
 
 import unittest
 
-from deltacompression.backend import diff_algorithm
+from deltacompression.backend import diff
 from deltacompression.backend import storage
 
 
@@ -10,7 +10,7 @@ class XDelta3Test(unittest.TestCase):
     """Tests for class XDelta3Diff."""
 
     def setUp(self):
-        self._diff = diff_algorithm.XDelta3Diff()
+        self._diff = diff.XDelta3Diff()
 
     def testDiff(self):
         """Black-box tests."""

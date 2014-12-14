@@ -47,16 +47,16 @@ class DummyUpdater(DataUpdater):
 
 class DeltaUpdater(DataUpdater):
 
-    def __init__(self, storage_obj, diff_algorithm):
+    def __init__(self, storage_obj, diff):
         super(DeltaUpdater, self).__init__(storage_obj)
-        self._diff_algorithm = diff_algorithm
+        self._diff = diff
 
     def addReceivedData(self, data):
         while data:
             update = chunk_update.DeltaChunkUpdate.deserialize(
                 data, hash_size=self._storage.getHashFunction().getHashSize())
             new_chunk = update.getNewChunk(storage=self._storage,
-                                           diff_algorithm=self._diff_algorithm)
+                                           diff=self._diff)
             self._storage.addChunk(new_chunk)
             data = data[update.getBinarySize():]
 
@@ -68,7 +68,7 @@ class OptimalDeltaUpdater(DeltaUpdater):
             return None
         best_update = chunk_update.DeltaChunkUpdate(None, chunk.get())
         for base in self._storage.getChunks():
-            diff = self._diff_algorithm.calculateDiff(base, chunk)
+            diff = self._diff.calculateDiff(base, chunk)
             hash_value = self._storage.getHashOfChunk(base)
             update = chunk_update.DeltaChunkUpdate(hash_value, diff)
             if update.getBinarySize() < best_update.getBinarySize():
