@@ -26,7 +26,7 @@ class ExperimentPanel(wx.Panel):
 
         self._compression_combo_box = None
         self._add_file_button = None
-        self._min_max_chunk_label = None
+        self._chunk_params_label = None
         self._file_list_box = None
         self._algorithm_combo_box = None
         self._simulate_button = None
@@ -57,7 +57,7 @@ class ExperimentPanel(wx.Panel):
         self._file_list_box.AppendItems(experiment.getFileList())
 
 
-        self._min_max_chunk_label.SetLabel(
+        self._chunk_params_label.SetLabel(
             self._CHUNKER_PARAMS % experiment.getChunkerParameters()
             .getParameters())
 
@@ -87,10 +87,10 @@ class ExperimentPanel(wx.Panel):
         sizer.Add(self._add_file_button, 0, wx.EXPAND | wx.ALL)
         self._add_file_button.Bind(wx.EVT_BUTTON, self._addFileClicked)
 
-        self._min_max_chunk_label = wx.StaticText(self,
-                                                  label=self._CHUNKER_PARAMS %
-                                                  (None, None, None))
-        sizer.Add(self._min_max_chunk_label, 0, wx.EXPAND | wx.ALL)
+        self._chunk_params_label = wx.StaticText(self,
+                                                 label=self._CHUNKER_PARAMS %
+                                                 (None, None, None))
+        sizer.Add(self._chunk_params_label, 0, wx.EXPAND | wx.ALL)
 
         self._simulate_button = wx.Button(self, label=self._SIMULATE)
         sizer.Add(self._simulate_button, 0, wx.EXPAND | wx.ALL)

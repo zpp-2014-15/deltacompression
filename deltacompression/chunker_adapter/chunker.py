@@ -43,9 +43,7 @@ class Chunker(object):
         """Creates a Chunker object.
 
         Args:
-            min_chunk: minimal chunk's size.
-            max_chunk: maximal chunk's size.
-            avg_chunk: average chunk's size.
+            chunker_params: ChunkerParameters' instance
         Raises:
             ChunkerException, if the needed adapter binary is not present.
         """

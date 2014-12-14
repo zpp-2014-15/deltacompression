@@ -14,8 +14,7 @@ class FileProcessor(object):
         Args:
             data_updater: instance of DataUpdater.
             compression: instance of Compression.
-            min_chunk: minimal chunk's size.
-            max_chunk: maximal chunk's size.
+            chunker_params: instance of ChunkerParameters
         Raises:
             ChunkerException, if the needed adapter binary is not present.
         """
