@@ -8,8 +8,7 @@ from deltacompression.chunker_adapter import chunker
 class FileProcessor(object):
     """Class responsible for adding and compressing data from single files."""
 
-    def __init__(self, data_updater, compression, min_chunk,
-                 max_chunk):
+    def __init__(self, data_updater, compression, chunker_params):
         """Creates FileProcessor object.
 
         Args:
@@ -20,7 +19,7 @@ class FileProcessor(object):
         Raises:
             ChunkerException, if the needed adapter binary is not present.
         """
-        self._chunker = chunker.Chunker(min_chunk, max_chunk)
+        self._chunker = chunker.Chunker(chunker_params)
         self._data_updater = data_updater
         self._compression = compression
 

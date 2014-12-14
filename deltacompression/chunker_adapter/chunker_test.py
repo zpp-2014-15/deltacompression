@@ -14,7 +14,8 @@ class ChunkerTest(unittest.TestCase):
     bad_file_name = "___surely_there_is_no_such_file___"
 
     def setUp(self):
-        self._chunker = chunker.Chunker(1000, 7000)
+        self._chunker = chunker.Chunker(
+            chunker.ChunkerParameters(1000, 13000, 7000))
 
     def _testChunking(self, cont):
         with open(self.file_name, "w") as tfile:

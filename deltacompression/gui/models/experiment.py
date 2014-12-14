@@ -3,6 +3,7 @@
 from deltacompression.backend import algorithm_factory
 from deltacompression.backend import compression_factory
 from deltacompression.backend import file_processor
+from deltacompression.chunker_adapter import chunker
 
 
 class Experiment(object):
@@ -19,18 +20,17 @@ class Experiment(object):
         self._algorithm_name = "None"
         self._compression_name = "None"
         self._file_list = []
-        self._min_chunk = 1024 * 32
-        self._max_chunk = 1024 * 96
+        self._chunker_params = chunker.ChunkerParameters(1024 * 32, 1024 * 96,
+                                                         1024 * 64)
 
         self.algorithm_factory = algorithm_factory.AlgorithmFactory()
         self.compression_factory = compression_factory.CompressionFactory()
 
-    def setChunkSizeRange(self, min_chunk, max_chunk):
-        self._min_chunk = min_chunk
-        self._max_chunk = max_chunk
+    def setChunkerParameters(self, chunker_params):
+        self._chunker_params = chunker_params
 
-    def getChunkSizeRange(self):
-        return (self._min_chunk, self._max_chunk)
+    def getChunkerParameters(self):
+        return self._chunker_params
 
     def setAlgorithmName(self, algorithm_name):
         self._algorithm_name = algorithm_name
@@ -67,11 +67,10 @@ class Experiment(object):
         compression = self.compression_factory.getCompressionFromName(
             self._compression_name)
         file_proc = file_processor.FileProcessor(algorithm, compression,
-                                                 self._min_chunk,
-                                                 self._max_chunk)
+                                                 self._chunker_params)
         result = ExperimentResult(self._algorithm_name,
                                   self._compression_name,
-                                  self._min_chunk, self._max_chunk)
+                                  self._chunker_params)
 
         print self._file_list
         for file_name in self._file_list:
@@ -96,14 +95,16 @@ class ExperimentResult(object):
     compression_name = None
     min_chunk = None
     max_chunk = None
+    avg_chunk = None
 
     files_with_results = None
 
-    def __init__(self, algorithm, compression, min_chunk, max_chunk):
+    def __init__(self, algorithm, compression, chunker_params):
         self.algorithm_name = algorithm
         self.compression_name = compression
-        self.min_chunk = min_chunk
-        self.max_chunk = max_chunk
+        self.min_chunk = chunker_params.getMinChunk()
+        self.max_chunk = chunker_params.getMaxChunk()
+        self.avg_chunk = chunker_params.getAvgChunk()
         self.files_with_results = []
 
     def addResult(self, file_name, data_to_send):

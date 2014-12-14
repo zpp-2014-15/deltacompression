@@ -43,4 +43,5 @@ class ExperimentController(object):
         print result.compression_name
         print result.min_chunk
         print result.max_chunk
+        print result.avg_chunk
         print result.files_with_results

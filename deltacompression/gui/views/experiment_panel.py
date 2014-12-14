@@ -17,7 +17,7 @@ class ExperimentPanel(wx.Panel):
     evt_SIMULATE = wx.NewEventType()
     EVT_SIMULATE = wx.PyEventBinder(evt_SIMULATE)
 
-    _MIN_MAX_CHUNK = "Min chunk: %s, Max chunk: %s"
+    _CHUNKER_PARAMS = "Min chunk: %s, Max chunk: %s, Avg chunk: %s"
     _ADD_FILE = "Add file"
     _SIMULATE = "Simulate"
 
@@ -57,8 +57,9 @@ class ExperimentPanel(wx.Panel):
         self._file_list_box.AppendItems(experiment.getFileList())
 
 
-        self._min_max_chunk_label.SetLabel(self._MIN_MAX_CHUNK %
-                                           experiment.getChunkSizeRange())
+        self._min_max_chunk_label.SetLabel(
+            self._CHUNKER_PARAMS % experiment.getChunkerParameters()
+            .getParameters())
 
     def getSelectedAlgorithm(self):
         return self._algorithm_combo_box.GetStringSelection()
@@ -87,8 +88,8 @@ class ExperimentPanel(wx.Panel):
         self._add_file_button.Bind(wx.EVT_BUTTON, self._addFileClicked)
 
         self._min_max_chunk_label = wx.StaticText(self,
-                                                  label=self._MIN_MAX_CHUNK %
-                                                  (None, None))
+                                                  label=self._CHUNKER_PARAMS %
+                                                  (None, None, None))
         sizer.Add(self._min_max_chunk_label, 0, wx.EXPAND | wx.ALL)
 
         self._simulate_button = wx.Button(self, label=self._SIMULATE)
