@@ -7,15 +7,16 @@ import mock
 import testfixtures
 
 from deltacompression.backend import versions_processor
+from deltacompression.backend import directory_processor
 
 
 class VersionsProcessorTest(unittest.TestCase):
     """Test for class VersionsProcessor."""
 
     def setUp(self):
-        self._dir_mock = mock.create_autospec(
-            "deltacompression.backend.directory_processor.DirectoryProcessor") \
-            .return_value
+        self._dir_mock = \
+            mock.create_autospec(directory_processor.DirectoryProcessor) \
+                .return_value
         self._versions_processor = versions_processor.VersionsProcessor(
             self._dir_mock)
 

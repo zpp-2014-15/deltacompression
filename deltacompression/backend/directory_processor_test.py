@@ -8,18 +8,18 @@ import testfixtures
 
 from deltacompression.backend import directory_processor
 from deltacompression.backend import test_utils
+from deltacompression.backend import file_processor
+from deltacompression.backend import compression
 
 
 class DirectoryProcessorTest(unittest.TestCase):
     """Test for class DirectoryProcessor."""
 
     def setUp(self):
-        self._file_mock = mock.create_autospec(
-            "deltacompression.backend.file_processor.FileProcessor") \
-            .return_value
-        self._compression_mock = mock.create_autospec(
-            "deltacompression.backend.compression.DummyCompression") \
-            .return_value
+        self._file_mock = \
+            mock.create_autospec(file_processor.FileProcessor).return_value
+        self._compression_mock = \
+            mock.create_autospec(compression.DummyCompression).return_value
         self._directory_processor = directory_processor.DirectoryProcessor(
             self._file_mock, self._compression_mock)
 
