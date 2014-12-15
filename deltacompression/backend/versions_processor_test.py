@@ -53,7 +53,6 @@ class VersionsProcessorTest(unittest.TestCase):
         self._testRunSimulation([])
 
     def testOneVersion(self):
-
         self._testRunSimulation([("v1", zip(self.EXAMPLE_FILES,
                                             self.EXAMPLE_CONTENTS))])
 
