@@ -1,6 +1,3 @@
-# pylint: disable=E1120
-# no-value-for-parameter - pylint doesn't know how mocks work
-
 """Tests for directory_processor.py"""
 
 import os.path as op
@@ -10,36 +7,34 @@ import mock
 import testfixtures
 
 from deltacompression.backend import directory_processor
-from deltacompression.backend import data_updater
-from deltacompression.backend import storage
-from deltacompression.backend import chunk_hash
-from deltacompression.backend import compression
 from deltacompression.backend import test_utils
-from deltacompression.chunker_adapter import chunker
 
 
 class DirectoryProcessorTest(unittest.TestCase):
     """Test for class DirectoryProcessor."""
 
     def setUp(self):
-        storage_instance = storage.Storage(chunk_hash.HashSHA256(), None)
-        data_updater_instance = data_updater.DummyUpdater(storage_instance)
-        compression_algorithm_instance = compression.DummyCompression()
-        chunker_params = chunker.ChunkerParameters(1000, 13000, 7000)
-        self._directory_processor = directory_processor.DirectoryProcessor(
-            data_updater_instance, compression_algorithm_instance,
-            chunker_params)
+        self._file_patcher = mock.patch("deltacompression.backend."
+                                        "file_processor.FileProcessor",
+                                        autospec=True)
+        self._compression_patcher = mock.patch("deltacompression.backend."
+                                               "compression.DummyCompression",
+                                               autospec=True)
+        self.addCleanup(self._file_patcher.stop)
+        self.addCleanup(self._compression_patcher.stop)
+        self._file_mock = self._file_patcher.start().return_value
+        self._compression_mock = self._compression_patcher.start().return_value
 
-    @mock.patch("deltacompression.backend.file_processor.FileProcessor",
-                autospec=True)
-    def _testProcessDirectory(self, files, contents, mock_file_processor):
-        self.setUp()
+        self._directory_processor = directory_processor.DirectoryProcessor(
+            self._file_mock, self._compression_mock)
+
+    def _testProcessDirectory(self, files, contents):
         with testfixtures.TempDirectory() as tmp_dir:
             dir_content = zip(files, contents)
             test_utils.fillTempDirectoryWithContent(tmp_dir, dir_content)
 
             self._directory_processor.processDirectory(tmp_dir.path)
-            args = mock_file_processor.return_value.processFiles.call_args
+            args = self._file_mock.processFiles.call_args
             self.assertEqual(
                 set(args[0][0]), set([op.join(tmp_dir.path, f) for f in files]))
 

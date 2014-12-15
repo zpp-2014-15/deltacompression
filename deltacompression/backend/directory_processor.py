@@ -4,26 +4,22 @@ Module contains class needed for adding and compressing data from directory.
 
 import os
 
-from deltacompression.backend import file_processor
-
 
 class DirectoryProcessor(object):
     """Class responsible for adding and compressing data from files inside
     a single directory."""
 
-    def __init__(self, data_updater, compression_algorithm, chunker_params):
+    def __init__(self, file_processor, compression):
         """Creates DirectoryProcessor object.
 
         Args:
-            data_updater: instance of DataUpdater.
-            compression_algorithm: instance of CompressionAlgorithm.
-            chunker_params: instance of ChunkerParameters.
+            file_processor_instance: instance of FileProcessor
+            compression: instance of Compression.
         Raises:
             ChunkerException, if the needed adapter binary is not present.
         """
-        self._compression_algorithm = compression_algorithm
-        self._file_processor = file_processor.FileProcessor(
-            data_updater, chunker_params)
+        self._compression_algorithm = compression
+        self._file_processor = file_processor
 
     def setDataUpdater(self, data_updater):
         self._file_processor.setDataUpdater(data_updater)
