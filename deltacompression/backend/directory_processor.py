@@ -18,14 +18,14 @@ class DirectoryProcessor(object):
         Raises:
             ChunkerException, if the needed adapter binary is not present.
         """
-        self._compression_algorithm = compression
+        self._compression = compression
         self._file_processor = file_processor
 
     def setDataUpdater(self, data_updater):
         self._file_processor.setDataUpdater(data_updater)
 
-    def setCompressionAlgorithm(self, compression_algorithm):
-        self._compression_algorithm = compression_algorithm
+    def setCompression(self, compression):
+        self._compression = compression
 
     def processDirectory(self, directory):
         """Processes all files in given directory.
@@ -46,4 +46,4 @@ class DirectoryProcessor(object):
                 all_files.append(file_path)
 
         data = self._file_processor.processFiles(all_files)
-        return self._compression_algorithm.compress(data)
+        return self._compression.compress(data)

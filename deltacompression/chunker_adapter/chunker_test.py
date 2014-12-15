@@ -51,8 +51,7 @@ class ChunkerTest(unittest.TestCase):
                       u"__tesß_fiπœs__",
                       u"__≠€½«…→þþż↓←ę§³¢²«·§»__"]
         for file_name in file_names:
-            self._testChunking(",".join([str(i) for i in xrange(15000)]),
-                               file_name)
+            self._testChunking("a", file_name)
 
 
 if __name__ == "__main__":
