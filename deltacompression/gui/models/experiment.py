@@ -64,17 +64,17 @@ class Experiment(object):
         """
         algorithm = self.algorithm_factory.getAlgorithmFromName(
             self._algorithm_name)
-        compression = self.compression_factory.getCompressionFromName(
-            self._compression_name)
-        file_proc = file_processor.FileProcessor(algorithm, compression,
+
+        file_proc = file_processor.FileProcessor(algorithm,
                                                  self._chunker_params)
+
         result = ExperimentResult(self._algorithm_name,
                                   self._compression_name,
                                   self._chunker_params)
 
         print self._file_list
         for file_name in self._file_list:
-            returned_data = file_proc.processFile(file_name)
+            returned_data = file_proc.processFiles([file_name])
             result.addResult(file_name, len(returned_data))
 
         return result

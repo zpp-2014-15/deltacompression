@@ -9,7 +9,6 @@ from deltacompression.backend import file_processor
 from deltacompression.backend import data_updater
 from deltacompression.backend import storage
 from deltacompression.backend import chunk_hash
-from deltacompression.backend import compression
 from deltacompression.chunker_adapter import chunker
 
 
@@ -21,10 +20,9 @@ class FileProcessorTest(unittest.TestCase):
     def setUp(self):
         self._storage = storage.Storage(chunk_hash.HashSHA256(), None)
         self._data_updater = data_updater.DummyUpdater(self._storage)
-        self._compression = compression.DummyCompression()
         self._chunker_params = chunker.ChunkerParameters(1000, 13000, 7000)
         self._file_processor = file_processor.FileProcessor(
-            self._data_updater, self._compression, self._chunker_params)
+            self._data_updater, self._chunker_params)
 
     def _sendDataTest(self, cont):
         """Testing sending data to a remote Storage."""
@@ -34,8 +32,7 @@ class FileProcessorTest(unittest.TestCase):
         try:
             remote_storage = storage.Storage(chunk_hash.HashSHA256(), None)
             remote_updater = data_updater.DummyUpdater(remote_storage)
-            compressed_data = self._file_processor.processFile(self.file_name)
-            data = self._compression.decompress(compressed_data)
+            data = self._file_processor.processFiles([self.file_name])
             remote_updater.addReceivedData(data)
             self.assertEqual(
                 set([ch.get() for ch in self._storage.getChunks()]),
