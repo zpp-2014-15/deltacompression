@@ -14,7 +14,7 @@ size_t getChunkSize(const cool::IoVec &chunk) {
 int processFile(const std::string &fileName, hydra::chunking::ChunkerAdapter &adapter) {
     std::ifstream in(fileName, std::ios::binary | std::ios::in);
     if (!in) {
-        throw "Failed to open a file.";
+        throw "Failed to open the file.";
     }
     in.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     in.seekg(0, std::ios::end);
@@ -61,14 +61,15 @@ int main(int argc, char* argv[]) {
     hydra::chunking::ChunkerAdapter adapter(minChunk, maxChunk, avgChunk);
     std::string fileName;
 
-    try {
-        while (std::getline(std::cin, fileName)) {
+    while (std::getline(std::cin, fileName)) {
+        try {
             processFile(fileName, adapter);
         }
-    }
-    catch(const char *e) {
-        std::cerr << e << std::endl;
-        return EXIT_FAILURE;
+        catch(const char *e) {
+            std::cerr << "Error when processing file " << fileName << ": "
+                      << e << std::endl;
+            return EXIT_FAILURE;
+        }
     }
 
     return 0;

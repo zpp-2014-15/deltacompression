@@ -13,11 +13,7 @@ from deltacompression.backend import test_utils
 class VersionsProcessorTest(unittest.TestCase):
     """Test for class VersionsProcessor."""
 
-    EXAMPLE_CONTENTS = ["0" * 10,
-                        " " * 20,
-                        "a" * 30,
-                        "," * 40
-                       ]
+    EXAMPLE_CONTENTS = [""] * 4
 
     EXAMPLE_FILES = ["1.txt",
                      "A/2.pdf",
@@ -42,12 +38,16 @@ class VersionsProcessorTest(unittest.TestCase):
                          for file_name, content in dir_content]
                 test_utils.fillTempDirectoryWithContent(tmp_dir, files)
 
-            list(self._versions_processor.runSimulation(tmp_dir.path))
+            ret = list(self._versions_processor.runSimulation(tmp_dir.path))
+            processed_versions = [op.basename(path) for path, _ in ret]
+            expected_versions = [dir_name for dir_name, _ in dirs_content]
+            self.assertEqual(processed_versions, expected_versions)
+
             args = self._dir_mock.processDirectory.call_args_list
-            processed_paths = [args[x][0][0] for x in xrange(len(args))]
+            passed_paths = [args[x][0][0] for x in xrange(len(args))]
             expected_paths = [op.join(tmp_dir.path, dir_name)
                               for dir_name, _ in dirs_content]
-            self.assertEqual(processed_paths, expected_paths)
+            self.assertEqual(passed_paths, expected_paths)
 
     def testNoVersion(self):
         self._testRunSimulation([])
