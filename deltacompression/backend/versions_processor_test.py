@@ -9,14 +9,9 @@ import unittest
 import mock
 import testfixtures
 
-from deltacompression.backend import directory_processor
 from deltacompression.backend import versions_processor
-from deltacompression.backend import data_updater
-from deltacompression.backend import storage
-from deltacompression.backend import chunk_hash
-from deltacompression.backend import compression
 from deltacompression.backend import test_utils
-from deltacompression.chunker_adapter import chunker
+
 
 class VersionsProcessorTest(unittest.TestCase):
     """Test for class VersionsProcessor."""
