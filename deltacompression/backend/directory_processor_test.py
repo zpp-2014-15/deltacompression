@@ -14,17 +14,12 @@ class DirectoryProcessorTest(unittest.TestCase):
     """Test for class DirectoryProcessor."""
 
     def setUp(self):
-        self._file_patcher = mock.patch("deltacompression.backend."
-                                        "file_processor.FileProcessor",
-                                        autospec=True)
-        self._compression_patcher = mock.patch("deltacompression.backend."
-                                               "compression.DummyCompression",
-                                               autospec=True)
-        self.addCleanup(self._file_patcher.stop)
-        self.addCleanup(self._compression_patcher.stop)
-        self._file_mock = self._file_patcher.start().return_value
-        self._compression_mock = self._compression_patcher.start().return_value
-
+        self._file_mock = mock.create_autospec(
+            "deltacompression.backend.file_processor.FileProcessor") \
+            .return_value
+        self._compression_mock = mock.create_autospec(
+            "deltacompression.backend.compression.DummyCompression") \
+            .return_value
         self._directory_processor = directory_processor.DirectoryProcessor(
             self._file_mock, self._compression_mock)
 

@@ -13,12 +13,9 @@ class VersionsProcessorTest(unittest.TestCase):
     """Test for class VersionsProcessor."""
 
     def setUp(self):
-        self._patcher = mock.patch("deltacompression.backend."
-                                   "directory_processor.DirectoryProcessor",
-                                   autospec=True)
-        self.addCleanup(self._patcher.stop)
-        self._mock = self._patcher.start()
-        self._dir_mock = self._mock.return_value
+        self._dir_mock = mock.create_autospec(
+            "deltacompression.backend.directory_processor.DirectoryProcessor") \
+            .return_value
         self._versions_processor = versions_processor.VersionsProcessor(
             self._dir_mock)
 
