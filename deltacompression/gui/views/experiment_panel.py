@@ -17,21 +17,26 @@ class ExperimentPanel(wx.Panel):
     evt_ADD_FILE = wx.NewEventType()
     EVT_ADD_FILE = wx.PyEventBinder(evt_ADD_FILE)
 
+    evt_CHOOSE_DATA = wx.NewEventType()
+    EVT_CHOOSE_DATA = wx.PyEventBinder(evt_CHOOSE_DATA)
+
     evt_SIMULATE = wx.NewEventType()
     EVT_SIMULATE = wx.PyEventBinder(evt_SIMULATE)
 
     _CHUNKER_PARAMS = "Min chunk: %s, Max chunk: %s, Avg chunk: %s"
     _ADD_FILE = "Add file"
+    _CHOOSE_DATA = "Choose data"
     _SIMULATE = "Simulate"
 
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
-        self._compression_combo_box = None
-        self._add_file_button = None
-        self._chunk_params_label = None
-        self._file_list_box = None
         self._algorithm_combo_box = None
+        self._compression_combo_box = None
+        self._file_list_box = None
+        self._chunk_params_label = None
+        #self._choose_data_button = None
+        self._add_file_button = None
         self._simulate_button = None
 
         self._initUI()
@@ -57,7 +62,8 @@ class ExperimentPanel(wx.Panel):
             experiment.getCompressionName())
 
         self._file_list_box.Clear()
-        self._file_list_box.AppendItems(experiment.getFileList())
+        #self._file_list_box.AppendItems(experiment.getFileList())
+        self._file_list_box.AppendItems(experiment.getVersionsList())
 
 
         self._chunk_params_label.SetLabel(
@@ -72,6 +78,9 @@ class ExperimentPanel(wx.Panel):
 
     def getFile(self):
         return utils.getFilePath()
+
+    def getDirectory(self):
+        return utils.getDirectory()
 
     def _initUI(self):
         """Initialize all controls."""
@@ -89,7 +98,7 @@ class ExperimentPanel(wx.Panel):
         self._file_list_box = wx.ListBox(parent=self)
         sizer.Add(self._file_list_box, 0, wx.EXPAND | wx.ALL)
 
-        self._add_file_button = wx.Button(self, label=self._ADD_FILE)
+        self._add_file_button = wx.Button(self, label=self._CHOOSE_DATA)
         sizer.Add(self._add_file_button, 0, wx.EXPAND | wx.ALL)
         self._add_file_button.Bind(wx.EVT_BUTTON, self._addFileClicked)
 

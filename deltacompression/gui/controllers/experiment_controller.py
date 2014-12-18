@@ -38,9 +38,10 @@ class ExperimentController(object):
         self._updatePanel()
 
     def _onAddFile(self, _):
-        new_file = self._panel.getFile()
-        if new_file:
-            self._experiment.addFileToList(new_file)
+        vers_dir = self._panel.getDirectory()
+        if vers_dir:
+            #self._experiment.addFileToList(new_file)
+            self._experiment.setVersionsDir(vers_dir)
             self._updatePanel()
 
     def _onSimulate(self, _):

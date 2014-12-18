@@ -3,14 +3,18 @@
 from deltacompression.backend import algorithm_factory
 from deltacompression.backend import compression_factory
 from deltacompression.backend import file_processor
+from deltacompression.backend import directory_processor
+from deltacompression.backend import versions_processor
+from deltacompression.backend import utils
 from deltacompression.chunker_adapter import chunker
 
 
 class Experiment(object):
-    """Hold information necessary to perform simulation.
+    """Holds information necessary to perform simulation.
 
     Attributes:
         algorithm_factory: Factory that holds all algorithms.
+        compression_factory: Factory that holds all compressions
     """
 
     algorithm_factory = None
@@ -19,6 +23,8 @@ class Experiment(object):
     def __init__(self):
         self._algorithm_name = "None"
         self._compression_name = "None"
+        self._versions_dir = None
+        # TODO zmienic na versions_list
         self._file_list = []
         self._chunker_params = chunker.ChunkerParameters(1024 * 32, 1024 * 96,
                                                          1024 * 64)
@@ -56,6 +62,13 @@ class Experiment(object):
     def getFileList(self):
         return self._file_list
 
+    def setVersionsDir(self, versions_dir):
+        self._versions_dir = versions_dir
+
+    def getVersionsList(self):
+        return utils.getAllDirectories(self._versions_dir) if self._versions_dir else []
+
+
     def runExperiment(self):
         """Runs experiment.
 
@@ -65,17 +78,28 @@ class Experiment(object):
         algorithm = self.algorithm_factory.getAlgorithmFromName(
             self._algorithm_name)
 
+        compression = self.compression_factory.getCompressionFromName(
+            self._compression_name)
+
         file_proc = file_processor.FileProcessor(algorithm,
-                                                 self._chunker_params)
+            self._chunker_params)
+        dir_proc = directory_processor.DirectoryProcessor(file_proc,
+            compression)
+        versions_proc = versions_processor.VersionsProcessor(dir_proc)
 
         result = ExperimentResult(self._algorithm_name,
                                   self._compression_name,
                                   self._chunker_params)
 
-        print self._file_list
-        for file_name in self._file_list:
-            returned_data = file_proc.processFiles([file_name])
-            result.addResult(file_name, len(returned_data))
+        print self._versions_dir
+        returned_data = list(versions_proc.runSimulation(self._versions_dir))
+        for version_dir, data in returned_data:
+            result.addResult(version_dir, len(data))
+        
+        #print self._file_list
+        #for file_name in self._file_list:
+        #    returned_data = file_proc.processFiles([file_name])
+        #    result.addResult(file_name, len(returned_data))
 
         return result
 
