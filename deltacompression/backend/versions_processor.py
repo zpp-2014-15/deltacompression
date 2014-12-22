@@ -2,8 +2,7 @@
 Module contains class needed for adding and compressing data from directory.
 """
 
-import os
-import os.path as op
+from deltacompression.backend import utils
 
 
 class VersionsProcessor(object):
@@ -26,9 +25,7 @@ class VersionsProcessor(object):
             OSError
             IOError
         """
-        all_files = [op.join(directory, file_name)
-                     for file_name in os.listdir(directory)]
-        all_dirs = sorted(filter(op.isdir, all_files))
+        all_dirs = utils.getAllDirectories(directory)
 
         for version_dir in all_dirs:
             yield (version_dir, self._directory_processor.processDirectory(

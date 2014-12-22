@@ -23,9 +23,7 @@ class Experiment(object):
     def __init__(self):
         self._algorithm_name = "None"
         self._compression_name = "None"
-        self._versions_dir = None
-        # TODO zmienic na versions_list
-        self._file_list = []
+        self._versions_dir = ""
         self._chunker_params = chunker.ChunkerParameters(1024 * 32, 1024 * 96,
                                                          1024 * 64)
 
@@ -50,23 +48,17 @@ class Experiment(object):
     def getCompressionName(self):
         return self._compression_name
 
-    def addFileToList(self, file_name):
-        self._file_list.append(file_name)
-
-    def removeFileFromList(self, file_name):
-        self._file_list.remove(file_name)
-
-    def clearFileList(self):
-        self._file_list = []
-
-    def getFileList(self):
-        return self._file_list
-
     def setVersionsDir(self, versions_dir):
         self._versions_dir = versions_dir
 
+    def clearVersionsDir(self):
+        self._versions_dir = ""
+
     def getVersionsList(self):
-        return utils.getAllDirectories(self._versions_dir) if self._versions_dir else []
+        try:
+            return utils.getAllDirectories(self._versions_dir)
+        except OSError:
+            return []
 
 
     def runExperiment(self):
@@ -82,24 +74,18 @@ class Experiment(object):
             self._compression_name)
 
         file_proc = file_processor.FileProcessor(algorithm,
-            self._chunker_params)
+                                                 self._chunker_params)
         dir_proc = directory_processor.DirectoryProcessor(file_proc,
-            compression)
+                                                          compression)
         versions_proc = versions_processor.VersionsProcessor(dir_proc)
 
         result = ExperimentResult(self._algorithm_name,
                                   self._compression_name,
                                   self._chunker_params)
 
-        print self._versions_dir
         returned_data = list(versions_proc.runSimulation(self._versions_dir))
         for version_dir, data in returned_data:
             result.addResult(version_dir, len(data))
-        
-        #print self._file_list
-        #for file_name in self._file_list:
-        #    returned_data = file_proc.processFiles([file_name])
-        #    result.addResult(file_name, len(returned_data))
 
         return result
 

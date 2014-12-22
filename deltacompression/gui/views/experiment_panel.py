@@ -14,9 +14,6 @@ class ExperimentPanel(wx.Panel):
     evt_COMPRESSION_SELECTED = wx.NewEventType()
     EVT_COMPRESSION_SELECTED = wx.PyEventBinder(evt_COMPRESSION_SELECTED)
 
-    evt_ADD_FILE = wx.NewEventType()
-    EVT_ADD_FILE = wx.PyEventBinder(evt_ADD_FILE)
-
     evt_CHOOSE_DATA = wx.NewEventType()
     EVT_CHOOSE_DATA = wx.PyEventBinder(evt_CHOOSE_DATA)
 
@@ -24,7 +21,6 @@ class ExperimentPanel(wx.Panel):
     EVT_SIMULATE = wx.PyEventBinder(evt_SIMULATE)
 
     _CHUNKER_PARAMS = "Min chunk: %s, Max chunk: %s, Avg chunk: %s"
-    _ADD_FILE = "Add file"
     _CHOOSE_DATA = "Choose data"
     _SIMULATE = "Simulate"
 
@@ -33,10 +29,9 @@ class ExperimentPanel(wx.Panel):
 
         self._algorithm_combo_box = None
         self._compression_combo_box = None
-        self._file_list_box = None
+        self._versions_list_box = None
         self._chunk_params_label = None
-        #self._choose_data_button = None
-        self._add_file_button = None
+        self._choose_data_button = None
         self._simulate_button = None
 
         self._initUI()
@@ -61,9 +56,8 @@ class ExperimentPanel(wx.Panel):
         self._compression_combo_box.SetStringSelection(
             experiment.getCompressionName())
 
-        self._file_list_box.Clear()
-        #self._file_list_box.AppendItems(experiment.getFileList())
-        self._file_list_box.AppendItems(experiment.getVersionsList())
+        self._versions_list_box.Clear()
+        self._versions_list_box.AppendItems(experiment.getVersionsList())
 
 
         self._chunk_params_label.SetLabel(
@@ -95,12 +89,12 @@ class ExperimentPanel(wx.Panel):
                                          self._onSelectCompression)
         sizer.Add(self._compression_combo_box, 0, wx.EXPAND | wx.ALL)
 
-        self._file_list_box = wx.ListBox(parent=self)
-        sizer.Add(self._file_list_box, 0, wx.EXPAND | wx.ALL)
+        self._versions_list_box = wx.ListBox(parent=self)
+        sizer.Add(self._versions_list_box, 0, wx.EXPAND | wx.ALL)
 
-        self._add_file_button = wx.Button(self, label=self._CHOOSE_DATA)
-        sizer.Add(self._add_file_button, 0, wx.EXPAND | wx.ALL)
-        self._add_file_button.Bind(wx.EVT_BUTTON, self._addFileClicked)
+        self._choose_data_button = wx.Button(self, label=self._CHOOSE_DATA)
+        sizer.Add(self._choose_data_button, 0, wx.EXPAND | wx.ALL)
+        self._choose_data_button.Bind(wx.EVT_BUTTON, self._chooseDataClicked)
 
         self._chunk_params_label = wx.StaticText(self,
                                                  label=self._CHUNKER_PARAMS %
@@ -121,9 +115,9 @@ class ExperimentPanel(wx.Panel):
         self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
             self.evt_ALGORITHM_SELECTED, self.GetId()))
 
-    def _addFileClicked(self, _):
+    def _chooseDataClicked(self, _):
         self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
-            self.evt_ADD_FILE, self.GetId()))
+            self.evt_CHOOSE_DATA, self.GetId()))
 
     def _onSelectCompression(self, _):
         self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(

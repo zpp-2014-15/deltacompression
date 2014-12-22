@@ -17,12 +17,12 @@ class ExperimentController(object):
     def _initSignals(self):
         self._panel.Bind(self._panel.EVT_ALGORITHM_SELECTED,
                          self._onAlgorithmSelected)
-        self._panel.Bind(self._panel.EVT_ADD_FILE,
-                         self._onAddFile)
-        self._panel.Bind(self._panel.EVT_SIMULATE,
-                         self._onSimulate)
         self._panel.Bind(self._panel.EVT_COMPRESSION_SELECTED,
                          self._onCompressionSelected)
+        self._panel.Bind(self._panel.EVT_CHOOSE_DATA,
+                         self._onChooseData)
+        self._panel.Bind(self._panel.EVT_SIMULATE,
+                         self._onSimulate)
 
     def _updatePanel(self):
         self._panel.updateExperiment(self._experiment)
@@ -37,10 +37,9 @@ class ExperimentController(object):
         self._experiment.setCompressionName(compression)
         self._updatePanel()
 
-    def _onAddFile(self, _):
+    def _onChooseData(self, _):
         vers_dir = self._panel.getDirectory()
         if vers_dir:
-            #self._experiment.addFileToList(new_file)
             self._experiment.setVersionsDir(vers_dir)
             self._updatePanel()
 
