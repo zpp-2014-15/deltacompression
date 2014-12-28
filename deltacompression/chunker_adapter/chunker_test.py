@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for chunker.py"""
 
 import os
@@ -17,15 +18,16 @@ class ChunkerTest(unittest.TestCase):
         self._chunker = chunker.Chunker(
             chunker.ChunkerParameters(1000, 13000, 7000))
 
-    def _testChunking(self, cont):
-        with open(self.file_name, "w") as tfile:
+    def _testChunking(self, cont, file_name=None):
+        if file_name is None:
+            file_name = self.file_name
+        with open(file_name, "w") as tfile:
             tfile.write(cont)
         try:
             ncont = "".join(
-                [chunk.get() for chunk in self._chunker.chunkData(
-                    self.file_name)])
+                [chunk.get() for chunk in self._chunker.chunkData([file_name])])
         finally:
-            os.remove(self.file_name)
+            os.remove(file_name)
         self.assertEqual(cont, ncont)
 
     def testFileWithData(self):
@@ -42,6 +44,14 @@ class ChunkerTest(unittest.TestCase):
         """Testing chunker's behaviour after passing nonexistent file."""
         with self.assertRaises(chunker.ChunkerException):
             list(self._chunker.chunkData(self.bad_file_name))
+
+    def testFileWithSpecialCharacters(self):
+        file_names = [u"__tęst_filęs__",
+                      u"__teśt_fileś__",
+                      u"__tesß_fiπœs__",
+                      u"__≠€½«…→þþż↓←ę§³¢²«·§»__"]
+        for file_name in file_names:
+            self._testChunking("a", file_name)
 
 
 if __name__ == "__main__":

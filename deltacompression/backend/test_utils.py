@@ -47,3 +47,14 @@ class PrefixHash(chunk_hash.HashFunction):
 
     def getHashSize(self):
         return self.LEN
+
+
+def fillTempDirectoryWithContent(tmp_dir, files):
+    """Creates directory with subdirectories and files.
+    Args:
+        tmp_dir: instance of TempDirectory.
+        files: a list of pairs (file_name, file_content).
+    """
+
+    for name, content in files:
+        tmp_dir.write(name, content)
