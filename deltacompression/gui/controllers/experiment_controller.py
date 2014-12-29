@@ -28,16 +28,16 @@ class ExperimentController(object):
 
     def _onAlgorithmSelected(self, _):
         alg = self._panel.getSelectedAlgorithm()
-        test_nr = self._panel.getSelectedTest()
-        test = self._experiment.getTest(test_nr)
-        test.setAlgorithmName(alg)
+        selected_test_nr = self._panel.getSelectedTest()
+        selected_test = self._experiment.getTest(selected_test_nr)
+        selected_test.setAlgorithmName(alg)
         self._panel.updateAlgorithm(self._experiment)
 
     def _onCompressionSelected(self, _):
         compr = self._panel.getSelectedCompression()
-        test_nr = self._panel.getSelectedTest()
-        test = self._experiment.getTest(test_nr)
-        test.setCompressionName(compr)
+        selected_test_nr = self._panel.getSelectedTest()
+        selected_test = self._experiment.getTest(selected_test_nr)
+        selected_test.setCompressionName(compr)
         self._panel.updateCompression(self._experiment)
 
     def _onAddTest(self, _):
@@ -57,11 +57,12 @@ class ExperimentController(object):
         self._panel.updateCompression(self._experiment)
 
     def _onSimulate(self, _):
-        result = self._experiment.runExperiment()
+        results = self._experiment.runExperiment()
         # TODO: Handle result somehow
-        print result.algorithm_name
-        print result.compression_name
-        print result.min_chunk
-        print result.max_chunk
-        print result.avg_chunk
-        print result.files_with_results
+        for test_result in results:
+            print test_result.algorithm_name
+            print test_result.compression_name
+            print test_result.min_chunk
+            print test_result.max_chunk
+            print test_result.avg_chunk
+            print test_result.versions_with_results

@@ -67,16 +67,16 @@ class ExperimentPanel(wx.Panel):
         self._tests_list_box.Clear()
 
         self._chunk_params_label.SetLabel(
-            self._CHUNKER_PARAMS % experiment.getChunkerParameters()
+            self._CHUNKER_PARAMS % experiment.getChunkerParams()
             .getParameters())
 
     def updateAlgorithm(self, experiment):
-        """Updates information about algorithm of currently selected testcase
+        """Updates information about algorithm of a currently selected test
 
         Args:
             experiment: instance of Experiment.
         """
-        selected_test_nr = self.getSelectedTest() 
+        selected_test_nr = self.getSelectedTest()
         if selected_test_nr >= 0:
             test = experiment.getTest(selected_test_nr)
             self._algorithm_combo_box.SetStringSelection(
@@ -88,12 +88,12 @@ class ExperimentPanel(wx.Panel):
             self._algorithm_combo_box.Disable()
 
     def updateCompression(self, experiment):
-        """Updates information about compression of currently selected testcase
+        """Updates information about compression of a currently selected test
 
         Args:
             experiment: instance of Experiment.
         """
-        selected_test_nr = self.getSelectedTest() 
+        selected_test_nr = self.getSelectedTest()
         if selected_test_nr >= 0:
             test = experiment.getTest(selected_test_nr)
             self._compression_combo_box.SetStringSelection(
@@ -109,7 +109,7 @@ class ExperimentPanel(wx.Panel):
 
     def removeTestFromList(self, test_nr):
         self._tests_list_box.Delete(test_nr)
-        
+
     def getSelectedAlgorithm(self):
         return self._algorithm_combo_box.GetStringSelection()
 
@@ -172,6 +172,7 @@ class ExperimentPanel(wx.Panel):
 
     def _onClickRemoveTest(self, _):
         if self.getSelectedTest() != -1:
+            # a test is selected
             self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
                 self.evt_REMOVE_TEST, self.GetId()))
 
