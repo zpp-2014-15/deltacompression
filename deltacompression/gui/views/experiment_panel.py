@@ -14,6 +14,9 @@ class ExperimentPanel(wx.Panel):
     evt_COMPRESSION_SELECTED = wx.NewEventType()
     EVT_COMPRESSION_SELECTED = wx.PyEventBinder(evt_COMPRESSION_SELECTED)
 
+    evt_TEST_SELECTED = wx.NewEventType()
+    EVT_TEST_SELECTED = wx.PyEventBinder(evt_TEST_SELECTED)
+
     evt_ADD_TEST = wx.NewEventType()
     EVT_ADD_TEST = wx.PyEventBinder(evt_ADD_TEST)
 
@@ -22,9 +25,6 @@ class ExperimentPanel(wx.Panel):
 
     evt_SIMULATE = wx.NewEventType()
     EVT_SIMULATE = wx.PyEventBinder(evt_SIMULATE)
-
-    evt_TEST_SELECTED = wx.NewEventType()
-    EVT_TEST_SELECTED = wx.PyEventBinder(evt_TEST_SELECTED)
 
     _CHUNKER_PARAMS = "Min chunk: %s, Max chunk: %s, Avg chunk: %s"
     _ADD_TEST = "Add test"
@@ -136,7 +136,7 @@ class ExperimentPanel(wx.Panel):
         sizer.Add(self._compression_combo_box, flag=wx.EXPAND)
 
         self._tests_list_box = wx.ListBox(parent=self)
-        self._tests_list_box.Bind(wx.EVT_LISTBOX, self._onTestSelected)
+        self._tests_list_box.Bind(wx.EVT_LISTBOX, self._onSelectTest)
         sizer.Add(self._tests_list_box, flag=wx.EXPAND)
 
         self._add_test_button = wx.Button(self, label=self._ADD_TEST)
@@ -166,6 +166,10 @@ class ExperimentPanel(wx.Panel):
         self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
             self.evt_COMPRESSION_SELECTED, self.GetId()))
 
+    def _onSelectTest(self, _):
+        self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
+            self.evt_TEST_SELECTED, self.GetId()))
+
     def _onClickAddTest(self, _):
         self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
             self.evt_ADD_TEST, self.GetId()))
@@ -179,7 +183,3 @@ class ExperimentPanel(wx.Panel):
     def _onClickSimulate(self, _):
         self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
             self.evt_SIMULATE, self.GetId()))
-
-    def _onTestSelected(self, _):
-        self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
-            self.evt_TEST_SELECTED, self.GetId()))
