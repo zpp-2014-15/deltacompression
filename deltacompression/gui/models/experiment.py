@@ -19,16 +19,22 @@ class Experiment(object):
 
     algorithm_factory = None
     compression_factory = None
+    def_alg = None
+    def_compr = None
 
     def __init__(self):
-        self._algorithm_name = "None"
-        self._compression_name = "None"
-        self._versions_dir = ""
+        self._tests_list = []
+        #self._algorithm_name = "None"
+        #self._compression_name = "None"
+        #self._versions_dir = ""
+        self._selected_test_nr = -1
         self._chunker_params = chunker.ChunkerParameters(1024 * 32, 1024 * 96,
                                                          1024 * 64)
 
         self.algorithm_factory = algorithm_factory.AlgorithmFactory()
+        self.def_alg = self.algorithm_factory.DUMMY_ALGORITHM
         self.compression_factory = compression_factory.CompressionFactory()
+        self.def_compr = self.compression_factory.DUMMY_COMPRESSION
 
     def setChunkerParameters(self, chunker_params):
         self._chunker_params = chunker_params
@@ -36,58 +42,30 @@ class Experiment(object):
     def getChunkerParameters(self):
         return self._chunker_params
 
-    def setAlgorithmName(self, algorithm_name):
-        self._algorithm_name = algorithm_name
+    def setSelectedTest(self, test_nr):
+        self._selected_test_nr = test_nr
 
-    def getAlgorithmName(self):
-        return self._algorithm_name
+    # przemyslec bledy jak spoza zakresu liczby
+    def getSelectedTestNr(self):
+        return self._selected_test_nr
 
-    def setCompressionName(self, compression_name):
-        self._compression_name = compression_name
+    def getTest(self, index):
+        return self._tests_list[index]
 
-    def getCompressionName(self):
-        return self._compression_name
+    def getSelectedTest(self):
+        return self.getTest(self.getSelectedTestNr())
 
-    def setVersionsDir(self, versions_dir):
-        self._versions_dir = versions_dir
+    def getTestsNr(self):
+        return len(self._tests_list)
 
-    def clearVersionsDir(self):
-        self._versions_dir = ""
+    def addTestToList(self, test):
+        self._tests_list.append(test)
 
-    def getVersionsList(self):
-        try:
-            return utils.getAllDirectories(self._versions_dir)
-        except OSError:
-            return []
+    def removeTestFromList(self):
+        pass
 
-
-    def runExperiment(self):
-        """Runs experiment.
-
-        Returns:
-            instance of ExperimentResult.
-        """
-        algorithm = self.algorithm_factory.getAlgorithmFromName(
-            self._algorithm_name)
-
-        compression = self.compression_factory.getCompressionFromName(
-            self._compression_name)
-
-        file_proc = file_processor.FileProcessor(algorithm,
-                                                 self._chunker_params)
-        dir_proc = directory_processor.DirectoryProcessor(file_proc,
-                                                          compression)
-        versions_proc = versions_processor.VersionsProcessor(dir_proc)
-
-        result = ExperimentResult(self._algorithm_name,
-                                  self._compression_name,
-                                  self._chunker_params)
-
-        returned_data = list(versions_proc.runSimulation(self._versions_dir))
-        for version_dir, data in returned_data:
-            result.addResult(version_dir, len(data))
-
-        return result
+    def getTestsNamesList(self):
+        return [test.getDirName() for test in self._tests_list]
 
 
 class ExperimentResult(object):
