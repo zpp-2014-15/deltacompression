@@ -8,53 +8,53 @@ class ExperimentController(object):
 
     def __init__(self, panel, experiment):
         self._experiment = experiment
-        def_alg = self._experiment.algorithm_factory.DUMMY_ALGORITHM
-        def_comp = self._experiment.compression_factory.DUMMY_COMPRESSION
-        #self._experiment.setAlgorithmName(def_alg)
-        #self._experiment.setCompressionName(def_comp)
         self._panel = panel
         self._initSignals()
-        self._updatePanel()
+        self._panel.initializeExperiment(experiment)
 
     def _initSignals(self):
         self._panel.Bind(self._panel.EVT_ALGORITHM_SELECTED,
                          self._onAlgorithmSelected)
         self._panel.Bind(self._panel.EVT_COMPRESSION_SELECTED,
                          self._onCompressionSelected)
-        self._panel.Bind(self._panel.EVT_ADD_TEST,
-                         self._onAddTest)
-        self._panel.Bind(self._panel.EVT_SIMULATE,
-                         self._onSimulate)
         self._panel.Bind(self._panel.EVT_TEST_SELECTED,
                          self._onTestSelected)
-
-    def _updatePanel(self):
-        self._panel.updateExperiment(self._experiment)
+        self._panel.Bind(self._panel.EVT_ADD_TEST,
+                         self._onAddTest)
+        self._panel.Bind(self._panel.EVT_REMOVE_TEST,
+                         self._onRemoveTest)
+        self._panel.Bind(self._panel.EVT_SIMULATE,
+                         self._onSimulate)
 
     def _onAlgorithmSelected(self, _):
         alg = self._panel.getSelectedAlgorithm()
-        test = self._experiment.getSelectedTest()
+        test_nr = self._panel.getSelectedTest()
+        test = self._experiment.getTest(test_nr)
         test.setAlgorithmName(alg)
-        self._updatePanel()
+        self._panel.updateAlgorithm(self._experiment)
 
     def _onCompressionSelected(self, _):
         compr = self._panel.getSelectedCompression()
-        test = self._experiment.getSelectedTest()
-        test.setCompressionName(compr)
-        self._updatePanel()
-
-    def _onTestSelected(self, _):
         test_nr = self._panel.getSelectedTest()
-        self._experiment.setSelectedTest(test_nr)
-        self._updatePanel()
+        test = self._experiment.getTest(test_nr)
+        test.setCompressionName(compr)
+        self._panel.updateCompression(self._experiment)
 
     def _onAddTest(self, _):
         vers_dir = self._panel.getDirectory()
         if vers_dir:
             new_test = test.Test(vers_dir, self._experiment)
             self._experiment.addTestToList(new_test)
-            self._experiment.setSelectedTest(self._experiment.getTestsNr() - 1)
-            self._updatePanel()
+            self._panel.addTestToList(new_test)
+
+    def _onRemoveTest(self, _):
+        test_nr = self._panel.getSelectedTest()
+        self._experiment.removeTestFromList(test_nr)
+        self._panel.removeTestFromList(test_nr)
+
+    def _onTestSelected(self, _):
+        self._panel.updateAlgorithm(self._experiment)
+        self._panel.updateCompression(self._experiment)
 
     def _onSimulate(self, _):
         result = self._experiment.runExperiment()

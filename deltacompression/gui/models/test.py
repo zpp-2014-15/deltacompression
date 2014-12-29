@@ -1,6 +1,7 @@
 """Contains test and test result classes"""
 
 class Test(object):
+    """Holds information about a single test case"""
     
     def __init__(self, dir_name, experiment):
         self._dir_name = dir_name

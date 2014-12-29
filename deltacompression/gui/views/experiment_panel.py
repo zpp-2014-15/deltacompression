@@ -17,6 +17,9 @@ class ExperimentPanel(wx.Panel):
     evt_ADD_TEST = wx.NewEventType()
     EVT_ADD_TEST = wx.PyEventBinder(evt_ADD_TEST)
 
+    evt_REMOVE_TEST = wx.NewEventType()
+    EVT_REMOVE_TEST = wx.PyEventBinder(evt_REMOVE_TEST)
+
     evt_SIMULATE = wx.NewEventType()
     EVT_SIMULATE = wx.PyEventBinder(evt_SIMULATE)
 
@@ -25,6 +28,7 @@ class ExperimentPanel(wx.Panel):
 
     _CHUNKER_PARAMS = "Min chunk: %s, Max chunk: %s, Avg chunk: %s"
     _ADD_TEST = "Add test"
+    _REMOVE_TEST = "Remove test"
     _SIMULATE = "Simulate"
 
     def __init__(self, parent):
@@ -35,12 +39,13 @@ class ExperimentPanel(wx.Panel):
         self._tests_list_box = None
         self._chunk_params_label = None
         self._add_test_button = None
+        self._remove_test_button = None
         self._simulate_button = None
 
         self._initUI()
 
-    def updateExperiment(self, experiment):
-        """Updates information associated with experiment.
+    def initializeExperiment(self, experiment):
+        """Sets all widgets to initial values.
 
         Args:
             experiment: instance of Experiment.
@@ -48,37 +53,63 @@ class ExperimentPanel(wx.Panel):
         self._algorithm_combo_box.Clear()
         self._algorithm_combo_box.AppendItems(
             experiment.algorithm_factory.getAlgorithms())
-        self._algorithm_combo_box.Enable()
+        self._algorithm_combo_box.SetStringSelection(
+            experiment.def_alg)
+        self._algorithm_combo_box.Disable()
 
         self._compression_combo_box.Clear()
         self._compression_combo_box.AppendItems(
             experiment.compression_factory.getCompressions())
-        self._compression_combo_box.Enable()
+        self._compression_combo_box.SetStringSelection(
+            experiment.def_compr)
+        self._compression_combo_box.Disable()
 
         self._tests_list_box.Clear()
-        self._tests_list_box.AppendItems(experiment.getTestsNamesList())
-
-        selected_test_nr = experiment.getSelectedTestNr()
-        if selected_test_nr >= 0:
-            test = experiment.getTest(selected_test_nr)            
-            self._tests_list_box.SetSelection(selected_test_nr)
-            self._algorithm_combo_box.SetStringSelection(
-                test.getAlgorithmName())
-            self._compression_combo_box.SetStringSelection(
-                test.getCompressionName())
-        else:
-            self._algorithm_combo_box.SetStringSelection(
-                experiment.def_alg)
-            self._algorithm_combo_box.Disable()
-
-            self._compression_combo_box.SetStringSelection(
-                experiment.def_compr)
-            self._compression_combo_box.Disable()
 
         self._chunk_params_label.SetLabel(
             self._CHUNKER_PARAMS % experiment.getChunkerParameters()
             .getParameters())
 
+    def updateAlgorithm(self, experiment):
+        """Updates information about algorithm of currently selected testcase
+
+        Args:
+            experiment: instance of Experiment.
+        """
+        selected_test_nr = self.getSelectedTest() 
+        if selected_test_nr >= 0:
+            test = experiment.getTest(selected_test_nr)
+            self._algorithm_combo_box.SetStringSelection(
+                test.getAlgorithmName())
+            self._algorithm_combo_box.Enable()
+        else:
+            self._algorithm_combo_box.SetStringSelection(
+                experiment.def_alg)
+            self._algorithm_combo_box.Disable()
+
+    def updateCompression(self, experiment):
+        """Updates information about compression of currently selected testcase
+
+        Args:
+            experiment: instance of Experiment.
+        """
+        selected_test_nr = self.getSelectedTest() 
+        if selected_test_nr >= 0:
+            test = experiment.getTest(selected_test_nr)
+            self._compression_combo_box.SetStringSelection(
+                test.getCompressionName())
+            self._compression_combo_box.Enable()
+        else:
+            self._compression_combo_box.SetStringSelection(
+                experiment.def_compr)
+            self._compression_combo_box.Disable()
+
+    def addTestToList(self, test):
+        self._tests_list_box.Append(test.getDirName())
+
+    def removeTestFromList(self, test_nr):
+        self._tests_list_box.Delete(test_nr)
+        
     def getSelectedAlgorithm(self):
         return self._algorithm_combo_box.GetStringSelection()
 
@@ -87,9 +118,6 @@ class ExperimentPanel(wx.Panel):
 
     def getSelectedTest(self):
         return self._tests_list_box.GetSelection()
-
-    def getFile(self):
-        return utils.getFilePath()
 
     def getDirectory(self):
         return utils.getDirectory()
@@ -115,6 +143,10 @@ class ExperimentPanel(wx.Panel):
         sizer.Add(self._add_test_button, flag=wx.EXPAND)
         self._add_test_button.Bind(wx.EVT_BUTTON, self._onClickAddTest)
 
+        self._remove_test_button = wx.Button(self, label=self._REMOVE_TEST)
+        sizer.Add(self._remove_test_button, flag=wx.EXPAND)
+        self._remove_test_button.Bind(wx.EVT_BUTTON, self._onClickRemoveTest)
+
         self._chunk_params_label = wx.StaticText(self,
                                                  label=self._CHUNKER_PARAMS %
                                                  (None, None, None))
@@ -138,12 +170,15 @@ class ExperimentPanel(wx.Panel):
         self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
             self.evt_ADD_TEST, self.GetId()))
 
+    def _onClickRemoveTest(self, _):
+        if self.getSelectedTest() != -1:
+            self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
+                self.evt_REMOVE_TEST, self.GetId()))
+
     def _onClickSimulate(self, _):
         self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
             self.evt_SIMULATE, self.GetId()))
 
     def _onTestSelected(self, _):
-        if self.getSelectedTest() >= 0:
-            # test was selected, not deselected
-            self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
-                self.evt_TEST_SELECTED, self.GetId()))
+        self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
+            self.evt_TEST_SELECTED, self.GetId()))

@@ -10,29 +10,28 @@ from deltacompression.chunker_adapter import chunker
 
 
 class Experiment(object):
-    """Holds information necessary to perform simulation.
+    """Holds information about entire simulation.
 
     Attributes:
-        algorithm_factory: Factory that holds all algorithms.
+        algorithm_factory: Factory that holds all algorithms
         compression_factory: Factory that holds all compressions
+        def_alg: Default delta compression algorithm's name
+        def_compr: Default compression's name
     """
 
     algorithm_factory = None
     compression_factory = None
-    def_alg = None
-    def_compr = None
+    def_alg = ""
+    def_compr = ""
 
     def __init__(self):
         self._tests_list = []
-        #self._algorithm_name = "None"
-        #self._compression_name = "None"
-        #self._versions_dir = ""
-        self._selected_test_nr = -1
         self._chunker_params = chunker.ChunkerParameters(1024 * 32, 1024 * 96,
                                                          1024 * 64)
 
         self.algorithm_factory = algorithm_factory.AlgorithmFactory()
         self.def_alg = self.algorithm_factory.DUMMY_ALGORITHM
+
         self.compression_factory = compression_factory.CompressionFactory()
         self.def_compr = self.compression_factory.DUMMY_COMPRESSION
 
@@ -42,30 +41,14 @@ class Experiment(object):
     def getChunkerParameters(self):
         return self._chunker_params
 
-    def setSelectedTest(self, test_nr):
-        self._selected_test_nr = test_nr
-
-    # przemyslec bledy jak spoza zakresu liczby
-    def getSelectedTestNr(self):
-        return self._selected_test_nr
-
     def getTest(self, index):
         return self._tests_list[index]
-
-    def getSelectedTest(self):
-        return self.getTest(self.getSelectedTestNr())
-
-    def getTestsNr(self):
-        return len(self._tests_list)
 
     def addTestToList(self, test):
         self._tests_list.append(test)
 
-    def removeTestFromList(self):
-        pass
-
-    def getTestsNamesList(self):
-        return [test.getDirName() for test in self._tests_list]
+    def removeTestFromList(self, test_nr):
+        self._tests_list.pop(test_nr)
 
 
 class ExperimentResult(object):
