@@ -40,14 +40,14 @@ class Test(object):
             getCompressionFromName(self._compression_name)
 
         file_proc = file_processor.FileProcessor(
-            algorithm, self._experiment.getChunkerParams())
+            algorithm, self._experiment.getChunkerParameters())
         dir_proc = directory_processor.DirectoryProcessor(file_proc,
                                                           compression)
         versions_proc = versions_processor.VersionsProcessor(dir_proc)
 
         result = TestResult(self._algorithm_name,
                             self._compression_name,
-                            self._experiment.getChunkerParams())
+                            self._experiment.getChunkerParameters())
 
         returned_data = list(versions_proc.runSimulation(self._dir_name))
         for version_dir, data in returned_data:
@@ -60,7 +60,7 @@ class TestResult(object):
     """This is result of one test.
 
     Attributes:
-        files_with_results: list of pairs like (file, integer).
+        versions_with_results: list of pairs like (version_dir_name, integer).
         algorithm_name: name of used algorithm.
         compression_name: name of used compression.
         min_chunk: minimal size of chunk.

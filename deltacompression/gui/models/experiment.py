@@ -9,10 +9,10 @@ class Experiment(object):
     """Holds information about entire simulation.
 
     Attributes:
-        algorithm_factory: Factory that holds all algorithms
-        compression_factory: Factory that holds all compressions
-        def_alg: Default delta compression algorithm's name
-        def_compr: Default compression's name
+        algorithm_factory: Factory that holds all algorithms.
+        compression_factory: Factory that holds all compressions.
+        def_alg: Default delta compression algorithm's name.
+        def_compr: Default compression's name.
     """
 
     algorithm_factory = None
@@ -31,13 +31,14 @@ class Experiment(object):
         self.compression_factory = compression_factory.CompressionFactory()
         self.def_compr = self.compression_factory.DUMMY_COMPRESSION
 
-    def setChunkerParams(self, chunker_params):
+    def setChunkerParameters(self, chunker_params):
         self._chunker_params = chunker_params
 
-    def getChunkerParams(self):
+    def getChunkerParameters(self):
         return self._chunker_params
 
     def getTest(self, index):
+        # always used when 0 <= index < len(tests_list)
         return self._tests_list[index]
 
     def addTestToList(self, test):
@@ -45,6 +46,9 @@ class Experiment(object):
 
     def removeTestFromList(self, test_nr):
         self._tests_list.pop(test_nr)
+
+    def getTestsList(self):
+        return self._tests_list
 
     def runExperiment(self):
         for test in self._tests_list:

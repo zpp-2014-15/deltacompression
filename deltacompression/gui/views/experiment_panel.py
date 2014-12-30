@@ -67,7 +67,7 @@ class ExperimentPanel(wx.Panel):
         self._tests_list_box.Clear()
 
         self._chunk_params_label.SetLabel(
-            self._CHUNKER_PARAMS % experiment.getChunkerParams()
+            self._CHUNKER_PARAMS % experiment.getChunkerParameters()
             .getParameters())
 
     def updateAlgorithm(self, experiment):
@@ -126,17 +126,18 @@ class ExperimentPanel(wx.Panel):
         """Initialize all controls."""
         sizer = wx.BoxSizer(wx.VERTICAL)
 
+        self._tests_list_box = wx.ListBox(parent=self)
+        self._tests_list_box.Bind(wx.EVT_LISTBOX, self._onSelectTest)
+
         self._algorithm_combo_box = wx.ComboBox(choices=[], parent=self)
         self._algorithm_combo_box.Bind(wx.EVT_COMBOBOX, self._onSelectAlgorithm)
-        sizer.Add(self._algorithm_combo_box, flag=wx.EXPAND)
 
         self._compression_combo_box = wx.ComboBox(choices=[], parent=self)
         self._compression_combo_box.Bind(wx.EVT_COMBOBOX,
                                          self._onSelectCompression)
-        sizer.Add(self._compression_combo_box, flag=wx.EXPAND)
 
-        self._tests_list_box = wx.ListBox(parent=self)
-        self._tests_list_box.Bind(wx.EVT_LISTBOX, self._onSelectTest)
+        sizer.Add(self._algorithm_combo_box, flag=wx.EXPAND)
+        sizer.Add(self._compression_combo_box, flag=wx.EXPAND)
         sizer.Add(self._tests_list_box, flag=wx.EXPAND)
 
         self._add_test_button = wx.Button(self, label=self._ADD_TEST)
