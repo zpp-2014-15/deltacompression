@@ -15,13 +15,13 @@ class ExperimentSetController(object):
         experiment_set.setController(self)
 
     def _initSignals(self):
-        self._panel.Bind(self._panel.EVT_ADD_TEST,
+        self._panel.Bind(self._panel.EVT_ADD_EXPERIMENT,
                          self._onAddTest)
         self._panel.Bind(self._panel.EVT_SIMULATE,
                          self._onSimulate)
 
     def _onAddTest(self, _):
-        vers_dir = self._panel.getDirectory()
+        vers_dir = self._panel.getSelectedDir()
         if vers_dir:
             alg = self._panel.getSelectedAlgorithm()
             compr = self._panel.getSelectedCompression()

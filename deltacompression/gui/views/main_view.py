@@ -11,9 +11,12 @@ class MainView(wx.Frame):
     """This view is responsible for choosing parameters and simulating."""
 
     _FRAME_TITLE = "Delta compression"
+    _FRAME_SIZE  = (650, 400)
+    _EXPERIMENT_PANEL = "Add Experiment"
+    _RESULTS_PANEL = "Results"
 
     def __init__(self, parent):
-        wx.Frame.__init__(self, parent, title=self._FRAME_TITLE)
+        wx.Frame.__init__(self, parent, title=self._FRAME_TITLE, size=self._FRAME_SIZE)
 
         self.views_keeper = None
         self.experiment_set_panel = None
@@ -25,13 +28,12 @@ class MainView(wx.Frame):
     def initUI(self):
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.views_keeper = wx.Notebook(self)
+        self.views_keeper = wx.Notebook(self, style=wx.NB_FIXEDWIDTH)
 
         self.experiment_set_panel = experiment_panel.ExperimentsPanel(self.views_keeper)
-        self.views_keeper.AddPage(self.experiment_set_panel, 'Add an experiment')
+        self.views_keeper.AddPage(self.experiment_set_panel, self._EXPERIMENT_PANEL)
         self.results_panel = results_panel.ResultsPanel(self.views_keeper)
-        self.views_keeper.AddPage(self.results_panel, 'Results')
-
+        self.views_keeper.AddPage(self.results_panel, self._RESULTS_PANEL)
         sizer.Add(self.views_keeper, 1, wx.EXPAND)
 
         self.SetSizer(sizer)
