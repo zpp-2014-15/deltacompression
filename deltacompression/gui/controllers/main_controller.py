@@ -3,7 +3,7 @@
 from deltacompression.gui.controllers import experiment_controller
 from deltacompression.gui.controllers import result_controller
 from deltacompression.gui.models import experiment
-from deltacompression.gui.models import result
+from deltacompression.gui.models import experiment_result
 from deltacompression.gui.views import main_view
 
 
@@ -12,7 +12,7 @@ class MainController(object):
 
     def __init__(self, app):
         self._experiment_set = experiment.ExperimentSet()
-        self._result_set = result.ExperimentResultSet()
+        self._result_set = experiment_result.ExperimentResultSet()
         self._main_view = main_view.MainView(None)
         self._experiment_set_controller = \
             experiment_controller.ExperimentSetController(

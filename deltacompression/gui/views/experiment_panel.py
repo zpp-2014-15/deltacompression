@@ -4,14 +4,7 @@ import wx
 import sys
 
 from deltacompression.gui.views import utils
-from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 
-
-class AutoWidthListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin):
-    def __init__(self, parent):
-        wx.ListCtrl.__init__(self, parent, -1, style=wx.LC_REPORT)
-        ListCtrlAutoWidthMixin.__init__(self)
-        
 
 class ExperimentsPanel(wx.Panel):
     """Displays experiment and allows to edit it."""
@@ -96,7 +89,7 @@ class ExperimentsPanel(wx.Panel):
 
         text1 = wx.StaticText(self, label="Algorithm")
         text2 = wx.StaticText(self, label="Compression")
-        text3 = wx.StaticText(self, label="Path")
+        text3 = wx.StaticText(self, label="Directory")
         exp_info_sizer.Add(text1, flag=wx.ALL, border=10, pos=(0, 0), span=(1, 1))
         exp_info_sizer.Add(text2, flag=wx.ALL, border=10, pos=(1, 0), span=(1, 1))
         exp_info_sizer.Add(text3, flag=wx.ALL, border=10, pos=(2, 0), span=(1, 1))
@@ -116,8 +109,7 @@ class ExperimentsPanel(wx.Panel):
         exp_info_sizer.AddGrowableCol(2)
         vbox.Add(exp_info_sizer, 0, flag=wx.EXPAND)
 
-        self._tests_list = AutoWidthListCtrl(self) # check styles
-        self._tests_list.setResizeColumn(0)
+        self._tests_list = utils.AutoWidthListCtrl(self) # check styles
         vbox.Add(self._tests_list, 1, flag=wx.EXPAND|wx.TOP, border=20)
 
         self._chunk_params_label = wx.StaticText(self,

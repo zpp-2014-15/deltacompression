@@ -30,8 +30,23 @@ class ExperimentResult(object):
     def addVersionResult(self, dir_name, data_to_send):
         self.versions_with_results.append((dir_name, data_to_send))
 
+    def printData(self):
+        print self.dir_name
+        print self.algorithm_name
+        print self.compression_name
+        print self.min_chunk
+        print self.max_chunk
+        print self.avg_chunk
+        print self.versions_with_results
+
 
 class ExperimentResultSet(object):
     
     def __init__(self):
         self._result_list = []
+
+    def addResultToList(self, exp_result):
+        self._result_list.append(exp_result)
+
+    def getNthResult(self, n):
+        return self._result_list[n]

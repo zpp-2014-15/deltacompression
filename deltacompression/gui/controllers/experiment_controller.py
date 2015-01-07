@@ -34,13 +34,8 @@ class ExperimentSetController(object):
     def _onSimulate(self, _):
         results = self._experiment_set.runExperiments()
         # TODO: Handle result somehow
-        for test_result in results:
-            print test_result.algorithm_name
-            print test_result.compression_name
-            print test_result.min_chunk
-            print test_result.max_chunk
-            print test_result.avg_chunk
-            print test_result.versions_with_results
+        for experiment_result in results:
+            experiment_result.printData()
 
     def onExperimentPerformed(self, exp_result):
         self._panel.removeExperimentFromList(0)
