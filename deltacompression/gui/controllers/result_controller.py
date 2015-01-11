@@ -1,4 +1,8 @@
+"""Controls result list model and view."""
+
+
 class ResultSetController(object):
+    """Controller responsible for updating results' model and view."""
     def __init__(self, main_controller, panel, result_set):
         self._main_controller = main_controller
         self._result_set = result_set
@@ -11,8 +15,8 @@ class ResultSetController(object):
     def _onAnalyseExperiments(self, _):
         items_checked = self._panel.getCheckedResults()
         # combine with charts
-        for n in items_checked:
-            result = self._result_set.getNthResult(n)
+        for index in items_checked:
+            result = self._result_set.getNthResult(index)
             result.printData()
 
     def onExperimentPerformed(self, exp_result):

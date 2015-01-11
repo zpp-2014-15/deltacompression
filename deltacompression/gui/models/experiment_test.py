@@ -1,54 +1,70 @@
-"""Tests for experiment.py"""
+"""Test for experiment.py"""
 
 import unittest
+import mock
 
-from deltacompression.gui.models import experiment
-from deltacompression.gui.models import test
+from deltacompression.backend import directory_processor
 from deltacompression.chunker_adapter import chunker
-
+from deltacompression.gui.models import experiment
+from deltacompression.gui.models import queue
 
 class ExperimentTest(unittest.TestCase):
-    """Tests of Experiment class."""
+    """Tests of Test class"""
 
     def setUp(self):
-        self._experiment = experiment.Experiment()
+        self._dir_name = "/home/me/test/"
+        self._exp_queue = queue.ExperimentQueue()
+        self._experiment = experiment.Experiment(self._exp_queue,
+                                                 self._dir_name,
+                                                 self._exp_queue.def_alg,
+                                                 self._exp_queue.def_compr)
 
-    def testGetSetChunkerParameters(self):
-        self._experiment.setChunkerParameters(
+    @mock.patch("deltacompression.backend.algorithm_factory.AlgorithmFactory",
+                autospec=True)
+    @mock.patch(
+        "deltacompression.backend.compression_factory.CompressionFactory",
+        autospec=True)
+    @mock.patch("deltacompression.backend.versions_processor.VersionsProcessor",
+                autospec=True)
+    def testCreatingVersionsProcessor(self, mock_versions_processor,
+                                      mock_compr_factory, mock_alg_factory):
+        """Tests running a single test."""
+        mock_alg_factory().getAlgorithmFromName.return_value = "Ret alg"
+        mock_compr_factory().getCompressionFromName.return_value = "Ret compr"
+        mock_versions_processor(directory_processor.DirectoryProcessor). \
+            runSimulation.return_value = (("/v1/", "data1"), ("/v2/", "data2"))
+
+        self._exp_queue = queue.ExperimentQueue()
+        self._exp_queue.setChunkerParameters(
             chunker.ChunkerParameters(1, 10, 7))
-        params = self._experiment.getChunkerParameters()
-        self.assertEqual(params.getMinChunk(), 1)
-        self.assertEqual(params.getMaxChunk(), 10)
-        self.assertEqual(params.getAvgChunk(), 7)
 
-    def testTestsList(self):
-        """Tests if adding to/removing from tests list works properly."""
-        test1 = test.Test("path1", self._experiment)
-        test2 = test.Test("path2", self._experiment)
-        test3 = test.Test("path3", self._experiment)
-        test1.setAlgorithmName("algorithmus1")
-        test2.setAlgorithmName("algorithmus2")
-        test2.setCompressionName("compressionus2")
-        test3.setCompressionName("compressionus3")
+        self._experiment = experiment.Experiment(self._exp_queue,
+                                                 self._dir_name,
+                                                 self._exp_queue.def_alg,
+                                                 self._exp_queue.def_compr)
+        self._experiment.setAlgorithmName("MyAlg")
+        self._experiment.setCompressionName("Compr")
 
-        self.assertEqual(self._experiment.getTestsList(), [])
-        self._experiment.addTestToList(test1)
-        self.assertEqual(self._experiment.getTestsList(), [test1])
-        self._experiment.addTestToList(test2)
-        self.assertEqual(self._experiment.getTestsList(), [test1, test2])
-        self.assertEqual(self._experiment.getTest(1), test2)
-        self._experiment.addTestToList(test3)
-        self.assertEqual(self._experiment.getTestsList(), [test1, test2, test3])
+        result = self._experiment.run()
 
-        self.assertNotEqual(self._experiment.getTest(0).getAlgorithmName(),
-                            self._experiment.getTest(1).getAlgorithmName())
-        self.assertNotEqual(self._experiment.getTest(1).getCompressionName(),
-                            self._experiment.getTest(2).getCompressionName())
+        mock_alg_factory().getAlgorithmFromName.assert_called_with("MyAlg")
+        mock_compr_factory().getCompressionFromName.assert_called_with("Compr")
 
-        self._experiment.removeTestFromList(1)
-        self.assertEqual(self._experiment.getTestsList(), [test1, test3])
-        self.assertEqual(self._experiment.getTest(1), test3)
-        self._experiment.removeTestFromList(1)
-        self.assertEqual(self._experiment.getTestsList(), [test1])
-        self._experiment.removeTestFromList(0)
-        self.assertEqual(self._experiment.getTestsList(), [])
+        self.assertItemsEqual(result.versions_with_results, [("/v1/", 5),
+                                                             ("/v2/", 5)])
+        self.assertEqual(result.algorithm_name, "MyAlg")
+        self.assertEqual(result.compression_name, "Compr")
+        self.assertEqual(result.min_chunk, 1)
+        self.assertEqual(result.max_chunk, 10)
+        self.assertEqual(result.avg_chunk, 7)
+
+    def testGetSetAlgorithmAndCompression(self):
+        self.assertEqual(self._experiment.getAlgorithmName(),
+                         self._exp_queue.def_alg)
+        self._experiment.setAlgorithmName("asd")
+        self.assertEqual(self._experiment.getAlgorithmName(), "asd")
+
+        self.assertEqual(self._experiment.getCompressionName(),
+                         self._exp_queue.def_compr)
+        self._experiment.setCompressionName("dsa")
+        self.assertEqual(self._experiment.getCompressionName(), "dsa")

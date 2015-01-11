@@ -4,23 +4,24 @@ import wx
 
 
 from deltacompression.gui.views import experiment_panel
-from deltacompression.gui.views import results_panel
+from deltacompression.gui.views import result_panel
 
 
 class MainView(wx.Frame):
     """This view is responsible for choosing parameters and simulating."""
 
     _FRAME_TITLE = "Delta compression"
-    _FRAME_SIZE  = (650, 400)
+    _FRAME_SIZE = (650, 400)
     _EXPERIMENT_PANEL = "Add Experiment"
-    _RESULTS_PANEL = "Results"
+    _RESULT_PANEL = "Results"
 
     def __init__(self, parent):
-        wx.Frame.__init__(self, parent, title=self._FRAME_TITLE, size=self._FRAME_SIZE)
+        wx.Frame.__init__(self, parent, title=self._FRAME_TITLE,
+                          size=self._FRAME_SIZE)
 
         self.views_keeper = None
-        self.experiment_set_panel = None
-        self.results_panel = None
+        self.experiment_panel = None
+        self.result_panel = None
 
         self.initUI()
         self.Centre()
@@ -28,12 +29,14 @@ class MainView(wx.Frame):
     def initUI(self):
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.views_keeper = wx.Notebook(self, style=wx.NB_FIXEDWIDTH)
+        self.views_keeper = wx.Notebook(self)
 
-        self.experiment_set_panel = experiment_panel.ExperimentsPanel(self.views_keeper)
-        self.views_keeper.AddPage(self.experiment_set_panel, self._EXPERIMENT_PANEL)
-        self.results_panel = results_panel.ResultsPanel(self.views_keeper)
-        self.views_keeper.AddPage(self.results_panel, self._RESULTS_PANEL)
+        self.experiment_panel = experiment_panel.ExperimentPanel(
+            self.views_keeper)
+        self.views_keeper.AddPage(self.experiment_panel,
+                                  self._EXPERIMENT_PANEL)
+        self.result_panel = result_panel.ResultPanel(self.views_keeper)
+        self.views_keeper.AddPage(self.result_panel, self._RESULT_PANEL)
         sizer.Add(self.views_keeper, 1, wx.EXPAND)
 
         self.SetSizer(sizer)

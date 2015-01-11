@@ -1,3 +1,6 @@
+"""Contains experiment result class."""
+
+
 class ExperimentResult(object):
     """This is result of one experiment.
 
@@ -5,8 +8,7 @@ class ExperimentResult(object):
         versions_with_results: list of pairs like (version_dir_name, integer).
         algorithm_name: name of used algorithm.
         compression_name: name of used compression.
-        min_chunk: minimal size of chunk.
-        max_chunk: maximal size of chunk.
+        min/avg/max_chunk: minimal/avarage/maximal size of chunk.
     """
 
     def __init__(self, dir_name, algorithm, compression, chunker_params):
@@ -40,13 +42,14 @@ class ExperimentResult(object):
         print self.versions_with_results
 
 
-class ExperimentResultSet(object):
-    
+class ExperimentResultList(object):
+    """List of ExperimentResult objects."""
+
     def __init__(self):
         self._result_list = []
 
     def addResultToList(self, exp_result):
         self._result_list.append(exp_result)
 
-    def getNthResult(self, n):
-        return self._result_list[n]
+    def getNthResult(self, index):
+        return self._result_list[index]
