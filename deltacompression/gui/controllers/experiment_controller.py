@@ -1,5 +1,7 @@
 """Controls experiment model and view."""
 
+from deltacompression.gui.views import chart_view
+
 
 class ExperimentController(object):
     """Controller responsible for updating experiment and associated panel."""
@@ -45,10 +47,5 @@ class ExperimentController(object):
 
     def _onSimulate(self, _):
         result = self._experiment.runExperiment()
-        # TODO: Handle result somehow
-        print result.algorithm_name
-        print result.compression_name
-        print result.min_chunk
-        print result.max_chunk
-        print result.avg_chunk
-        print result.files_with_results
+        chart = chart_view.BarChartView(result)
+        chart.show()

@@ -19,18 +19,17 @@ make xdelta3module.so
 
 Using virtualenv?
 ================
-If you are using virtualevn you will probably have problem with wxPython.
-You should add this library to your virtualenv:
+If you are using virtualevn you will probably have problem with installation of wxPython and python-lzo.
+1. Simple solution
+Install those packages from repository and just simply create virtualenv with option --system-site-packages
+2. Second solution
+Add symbolic link to required libraries
 ````bash
 cd <env>/lib/python-2.7/site-packages
 ln -s /usr/lib/python2.7/dist-packages/wx-2.8-gtk2-unicode/ .
 ln -s /usr/lib/python2.7/dist-packages/wx.pth .
 ln -s /usr/lib/python2.7/dist-packages/wxversion.py .
 ln -s /usr/lib/python2.7/dist-packages/wxversion.pyc .
-````
-The same with python-lzo
-````bash
-cd <env>/lib/python-2.7/site-packages
 ln -s /usr/lib/python2.7/dist-packages/lzo.so .
 ````
 PYTHONPATH
