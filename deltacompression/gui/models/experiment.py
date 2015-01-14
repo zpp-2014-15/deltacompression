@@ -6,7 +6,6 @@ from deltacompression.backend import file_processor
 from deltacompression.backend import directory_processor
 from deltacompression.backend import versions_processor
 from deltacompression.chunker_adapter import chunker
-from deltacompression.gui.models import experiment_result
 
 
 class Experiment(object):
@@ -75,10 +74,10 @@ class Experiment(object):
         for version_dir, data in simulation_data:
             versions_with_results.append((version_dir, len(data)))
 
-        result = experiment_result.ExperimentResult(
-            self._dir_name, self._algorithm_name, self._compression_name,
-            self.getChunkerParameters(), versions_with_results)
-
+        result = ExperimentResult(self._dir_name, self._algorithm_name,
+                                  self._compression_name,
+                                  self.getChunkerParameters(),
+                                  versions_with_results)
         return result
 
 
