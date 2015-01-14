@@ -34,9 +34,6 @@ class ExperimentQueueController(object):
             alg = self._panel.getSelectedAlgorithm()
             compr = self._panel.getSelectedCompression()
             exp = experiment.Experiment(vers_dir, alg, compr)
-
-            self._panel.updateExperimentsList(
-                self._exp_queue.getExperimentsList() + [exp])
             self._exp_queue.addExperiment(exp)
 
     def _onQueueChanged(self, _):
