@@ -1,19 +1,42 @@
-"""Contains experiment class."""
+"""Contains experiment and experiment result classes."""
 
+from deltacompression.backend import algorithm_factory
+from deltacompression.backend import compression_factory
 from deltacompression.backend import file_processor
 from deltacompression.backend import directory_processor
 from deltacompression.backend import versions_processor
+from deltacompression.chunker_adapter import chunker
 from deltacompression.gui.models import experiment_result
 
 
 class Experiment(object):
-    """Holds information about a single experiment (a single test case)."""
+    """Holds information about a single experiment.
 
-    def __init__(self, experiment_queue, dir_name, alg_name, compr_name):
-        self._experiment_queue = experiment_queue
+    Attributes:
+        algorithm_factory: Factory that holds all algorithms.
+        compression_factory: Factory that holds all compressions.
+        def_alg: Default delta compression algorithm's name.
+        def_compr: Default compression's name.
+    """
+
+    algorithm_factory = algorithm_factory.AlgorithmFactory()
+    compression_factory = compression_factory.CompressionFactory()
+
+    def_alg = algorithm_factory.DUMMY_ALGORITHM
+    def_compr = compression_factory.DUMMY_COMPRESSION
+
+    def __init__(self, dir_name, alg_name=def_alg, compr_name=def_compr):
+        self._chunker_params = chunker.ChunkerParameters(1024 * 32, 1024 * 96,
+                                                         1024 * 64)
         self._dir_name = dir_name
         self._algorithm_name = alg_name
         self._compression_name = compr_name
+
+    def setChunkerParameters(self, chunker_params):
+        self._chunker_params = chunker_params
+
+    def getChunkerParameters(self):
+        return self._chunker_params
 
     def setAlgorithmName(self, algorithm_name):
         self._algorithm_name = algorithm_name
@@ -36,23 +59,58 @@ class Experiment(object):
         Returns:
             instance of ExperimentResult.
         """
-        algorithm = self._experiment_queue.algorithm_factory. \
+        algorithm = self.algorithm_factory. \
             getAlgorithmFromName(self._algorithm_name)
-        compression = self._experiment_queue.compression_factory. \
+        compression = self.compression_factory. \
             getCompressionFromName(self._compression_name)
 
         file_proc = file_processor.FileProcessor(
-            algorithm, self._experiment_queue.getChunkerParameters())
+            algorithm, self.getChunkerParameters())
         dir_proc = directory_processor.DirectoryProcessor(file_proc,
                                                           compression)
         versions_proc = versions_processor.VersionsProcessor(dir_proc)
 
+        versions_with_results = []
+        simulation_data = versions_proc.runSimulation(self._dir_name)
+        for version_dir, data in simulation_data:
+            versions_with_results.append((version_dir, len(data)))
+
         result = experiment_result.ExperimentResult(
             self._dir_name, self._algorithm_name, self._compression_name,
-            self._experiment_queue.getChunkerParameters())
-
-        simulation_data = list(versions_proc.runSimulation(self._dir_name))
-        for version_dir, data in simulation_data:
-            result.addVersionResult(version_dir, len(data))
+            self.getChunkerParameters(), versions_with_results)
 
         return result
+
+
+class ExperimentResult(object):
+    """This is result of one experiment."""
+
+    def __init__(self, dir_name, algorithm, compression, chunker_params,
+                 version_results):
+        self.dir_name = dir_name
+        self.algorithm_name = algorithm
+        self.compression_name = compression
+        self.min_chunk = chunker_params.getMinChunk()
+        self.max_chunk = chunker_params.getMaxChunk()
+        self.avg_chunk = chunker_params.getAvgChunk()
+        self.versions_with_results = version_results
+        """List of pairs like (version_dir_name, integer)"""
+
+    def getAlgorithmName(self):
+        return self.algorithm_name
+
+    def getCompressionName(self):
+        return self.compression_name
+
+    def getDirName(self):
+        return self.dir_name
+
+    def printData(self):
+        # temporary method, to print out some info
+        print self.dir_name
+        print self.algorithm_name
+        print self.compression_name
+        print self.min_chunk
+        print self.max_chunk
+        print self.avg_chunk
+        print self.versions_with_results
