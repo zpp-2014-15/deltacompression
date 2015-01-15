@@ -2,11 +2,20 @@
 
 import wx
 
+from deltacompression.gui.models import experiment
 from deltacompression.gui.views import utils
 
 
 class ExperimentPanel(wx.Panel):
-    """Displays experiment and allows to edit it."""
+    """Displays experiment and allows to edit it.
+
+    Attributes:
+        evt_ADD_EXPERIMENT: event meaning that a new experiment was added.
+        EVT_ADD_EXPERIMENT: evt_ADD_EXPERIMENT's binder.
+
+        _CHUNKER_PARAMS: String, text displaying chunker params.
+        _ADD_EXPERIMENT: String, name of add_experiment_button.
+    """
 
     evt_ADD_EXPERIMENT = wx.NewEventType()
     EVT_ADD_EXPERIMENT = wx.PyEventBinder(evt_ADD_EXPERIMENT)
@@ -26,21 +35,18 @@ class ExperimentPanel(wx.Panel):
 
         self._initUI()
 
-    def initializeWidgets(self, experiment):
-        """Sets all widgets to initial values.
+    def _updateWidgets(self):
+        """Sets all widgets to proper values (sets choices correctly, etc.)."""
 
-        Args:
-            experiment: instance of Experiment - used to set choices correctly.
-        """
         self._algorithm_combo_box.AppendItems(
-            experiment.algorithm_factory.getAlgorithms())
+            experiment.Experiment.alg_factory.getAlgorithms())
         self._algorithm_combo_box.SetStringSelection(
-            experiment.def_alg)
+            experiment.Experiment.def_alg)
 
         self._compression_combo_box.AppendItems(
-            experiment.compression_factory.getCompressions())
+            experiment.Experiment.compr_factory.getCompressions())
         self._compression_combo_box.SetStringSelection(
-            experiment.def_compr)
+            experiment.Experiment.def_compr)
 
         self._experiments_list.InsertColumn(0, 'Path')
         self._experiments_list.InsertColumn(1, 'Algorithm', width=200)
@@ -49,10 +55,15 @@ class ExperimentPanel(wx.Panel):
         # assumption that chunker parameters of all experiments are the same
         # might change in the future
         self._chunk_params_label.SetLabel(
-            self._CHUNKER_PARAMS % experiment.getChunkerParameters()
+            self._CHUNKER_PARAMS % experiment.Experiment.chunker_params
             .getParameters())
 
     def updateExperimentsList(self, exp_list):
+        """Repaints the experiments list.
+
+        Args:
+            exp_list: list of Experiment object.
+        """
         self._experiments_list.DeleteAllItems()
         for idx, exp in enumerate(exp_list):
             self._experiments_list.InsertStringItem(idx, exp.getDirName())
@@ -79,7 +90,7 @@ class ExperimentPanel(wx.Panel):
         return utils.getDirectory()
 
     def _initUI(self):
-        """Initializes all controls."""
+        """Creates all controls."""
         vbox = wx.BoxSizer(wx.VERTICAL)
 
         exp_info_sizer = wx.GridBagSizer(vgap=5, hgap=0)
@@ -127,6 +138,8 @@ class ExperimentPanel(wx.Panel):
         vbox.Add(self._chunk_params_label, flag=wx.EXPAND)
 
         self.SetSizer(vbox)
+
+        self._updateWidgets()
 
     def _onClickAddExperiment(self, _):
         self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(

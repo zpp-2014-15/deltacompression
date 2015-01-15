@@ -6,7 +6,16 @@ from deltacompression.gui.views import utils
 
 
 class ResultPanel(wx.Panel):
-    """Displays result list and allows to analyse selected results."""
+    """Displays result list and allows to analyse selected results.
+
+    Attributes:
+        evt_ANALYSE: event meaning that analyse button was clicked.
+        EVT_ANALYSE: evt_ANALYSE's binder.
+
+        _ANALYSE: String, name of the analyse button.
+        _SELECT_ALL: String, name of select_all_button.
+        _DESELECT_ALL: String, name of deselect_all_button.
+    """
 
     evt_ANALYSE = wx.NewEventType()
     EVT_ANALYSE = wx.PyEventBinder(evt_ANALYSE)
@@ -55,12 +64,20 @@ class ResultPanel(wx.Panel):
         self.SetSizer(sizer)
 
     def addResultToList(self, result):
+        """Adds result to the results list, visible in UI.
+
+        Args:
+            result: instance of ExperimentResult.
+        """
         index = self._results_list.InsertStringItem(sys.maxint,
                                                     result.getDirName())
         self._results_list.SetStringItem(index, 1, result.getAlgorithmName())
         self._results_list.SetStringItem(index, 2, result.getCompressionName())
 
     def getCheckedResults(self):
+        """Returns a list of indexes (starting from 0):
+        which results are checked on the list.
+        """
         items_nr = self._results_list.GetItemCount()
         checked_items = []
         for i in xrange(items_nr):
@@ -69,7 +86,11 @@ class ResultPanel(wx.Panel):
         return checked_items
 
     def _selectAllResults(self, select=True):
-        """(de)selects all results, depending on 'select' variable"""
+        """(De)selects all results, depending on 'select' variable.
+
+        Args:
+            select: Bool.
+        """
         items_nr = self._results_list.GetItemCount()
         for i in xrange(items_nr):
             self._results_list.CheckItem(i, select)

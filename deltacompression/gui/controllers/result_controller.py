@@ -4,6 +4,13 @@
 class ResultController(object):
     """Controller responsible for updating results' model and view."""
     def __init__(self, main_controller, panel, result_list):
+        """Creates ResultController object.
+
+        Args:
+            main_controller: instance of MainController.
+            panel: instance of ResultPanel.
+            result_list: list of ExperimentResult objects.
+        """
         self._main_controller = main_controller
         self._result_list = result_list
         self._panel = panel

@@ -18,7 +18,7 @@ class ExperimentQueue(object):
         """Adds experiment to the queue so that it will be performed.
 
         Args:
-            experiment: instance of Experiment
+            experiment: instance of Experiment.
         """
         raise NotImplementedError
 

@@ -8,7 +8,14 @@ from deltacompression.gui.views import result_panel
 
 
 class MainView(wx.Frame):
-    """This view is responsible for choosing parameters and simulating."""
+    """This view is responsible for choosing parameters and simulating.
+
+    Attributes:
+        _FRAME_TITLE: String, title of the main frame.
+        _FRAME_SIZE: instance of wx.Size, initial main frame size.
+        _EXPERIMENT_PANEL: String, name of experiment_panel's tab.
+        _RESULT_PANEL: String, name of result_panel's tab.
+    """
 
     _FRAME_TITLE = "Delta compression"
     _FRAME_SIZE = (650, 400)

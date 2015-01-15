@@ -3,24 +3,31 @@
 from wx.lib.pubsub import Publisher
 
 from deltacompression.gui.models import experiment
-from deltacompression.gui.views import chart_view
 
 
 class ExperimentQueueController(object):
-    """Controller responsible for updating experiment and associated panel."""
+    """Controller responsible for updating experiment and associated panel
+
+    Attributes:
+        EVT_QUEUE_CHANGED: String, name of the Publisher topic.
+        EVT_EXPERIMENT_PERFORMED: String, name of the Publisher topic.
+    """
 
     EVT_QUEUE_CHANGED = 'queue_changed'
     EVT_EXPERIMENT_PERFORMED = 'experiment_performed'
 
     def __init__(self, main_controller, panel, experiment_queue):
+        """Creates ExperimentQueueController object.
+
+        Args:
+            main_controller: instance of MainController.
+            panel: instance of ExperimentPanel.
+            experiment_queue: instance of ExperimentQueue.
+        """
         self._main_controller = main_controller
         self._exp_queue = experiment_queue
         self._panel = panel
         self._initSignals()
-
-        experiment_instance = experiment.Experiment("path")
-        self._panel.initializeWidgets(experiment_instance)
-
 
     def _initSignals(self):
         # Signal sent by user (view)
