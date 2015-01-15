@@ -46,5 +46,3 @@ class ExperimentQueueController(object):
     def _onExperimentPerformed(self, msg):
         exp_result = msg.data
         self._main_controller.onExperimentPerformed(exp_result)
-        chart = chart_view.BarChartView(exp_result)
-        chart.show()
