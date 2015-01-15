@@ -63,15 +63,15 @@ class ResultPanel(wx.Panel):
     def getCheckedResults(self):
         items_nr = self._results_list.GetItemCount()
         checked_items = []
-        for i in range(items_nr):
+        for i in xrange(items_nr):
             if self._results_list.IsChecked(i):
                 checked_items.append(i)
         return checked_items
 
     def _selectAllResults(self, select=True):
-        # (de)selects all results, depending on 'select' variable
+        """(de)selects all results, depending on 'select' variable"""
         items_nr = self._results_list.GetItemCount()
-        for i in range(items_nr):
+        for i in xrange(items_nr):
             self._results_list.CheckItem(i, select)
 
     def _onSelectAll(self, _):

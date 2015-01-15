@@ -3,10 +3,14 @@
 from wx.lib.pubsub import Publisher
 
 from deltacompression.gui.models import experiment
+from deltacompression.gui.views import chart_view
 
 
 class ExperimentQueueController(object):
     """Controller responsible for updating experiment and associated panel."""
+
+    EVT_QUEUE_CHANGED = 'queue_changed'
+    EVT_EXPERIMENT_PERFORMED = 'experiment_performed'
 
     def __init__(self, main_controller, panel, experiment_queue):
         self._main_controller = main_controller
@@ -24,9 +28,9 @@ class ExperimentQueueController(object):
                          self._onAddExperiment)
 
         # Signals sent by queue (model)
-        Publisher().subscribe(self._onQueueChanged, "queue_changed")
+        Publisher().subscribe(self._onQueueChanged, self.EVT_QUEUE_CHANGED)
         Publisher().subscribe(self._onExperimentPerformed,
-                              "experiment_performed")
+                              self.EVT_EXPERIMENT_PERFORMED)
 
     def _onAddExperiment(self, _):
         vers_dir = self._panel.getSelectedDir()
@@ -42,3 +46,5 @@ class ExperimentQueueController(object):
     def _onExperimentPerformed(self, msg):
         exp_result = msg.data
         self._main_controller.onExperimentPerformed(exp_result)
+        chart = chart_view.BarChartView(exp_result)
+        chart.show()

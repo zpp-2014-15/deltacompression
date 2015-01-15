@@ -32,19 +32,16 @@ class ExperimentPanel(wx.Panel):
         Args:
             experiment: instance of Experiment - used to set choices correctly.
         """
-        self._algorithm_combo_box.Clear()
         self._algorithm_combo_box.AppendItems(
             experiment.algorithm_factory.getAlgorithms())
         self._algorithm_combo_box.SetStringSelection(
             experiment.def_alg)
 
-        self._compression_combo_box.Clear()
         self._compression_combo_box.AppendItems(
             experiment.compression_factory.getCompressions())
         self._compression_combo_box.SetStringSelection(
             experiment.def_compr)
 
-        self._experiments_list.ClearAll()
         self._experiments_list.InsertColumn(0, 'Path')
         self._experiments_list.InsertColumn(1, 'Algorithm', width=200)
         self._experiments_list.InsertColumn(2, 'Compression', width=150)
@@ -63,6 +60,10 @@ class ExperimentPanel(wx.Panel):
                 idx, 1, exp.getAlgorithmName())
             self._experiments_list.SetStringItem(
                 idx, 2, exp.getCompressionName())
+        # 'Refreshes' main loop, so that repainting view is done before
+        # other long events, like e.g. running an experiment.
+        # When we implement running experiments in the background, it
+        # probably won't be needed.
         wx.SafeYield()
 
     def getSelectedAlgorithm(self):

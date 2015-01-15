@@ -25,6 +25,13 @@ class Experiment(object):
     def_compr = compression_factory.DUMMY_COMPRESSION
 
     def __init__(self, dir_name, alg_name=def_alg, compr_name=def_compr):
+        """Creates Experiment object.
+
+        Args:
+            dir_name: path to the directory with versions
+            alg_name: name of the algorithm from AlgorithmFactory
+            compr_name: name of the compression from CompressionFactory
+        """
         self._chunker_params = chunker.ChunkerParameters(1024 * 32, 1024 * 96,
                                                          1024 * 64)
         self._dir_name = dir_name
@@ -86,6 +93,13 @@ class ExperimentResult(object):
 
     def __init__(self, dir_name, algorithm, compression, chunker_params,
                  version_results):
+        """Creates ExperimentResult object.
+
+        Args:
+            dir_name, algorithm, compression, chunker_params:
+            same meaning as in Experiment class
+            version_results: list of pairs like (version_dir_name, integer)
+        """
         self.dir_name = dir_name
         self.algorithm_name = algorithm
         self.compression_name = compression
@@ -93,7 +107,6 @@ class ExperimentResult(object):
         self.max_chunk = chunker_params.getMaxChunk()
         self.avg_chunk = chunker_params.getAvgChunk()
         self.versions_with_results = version_results
-        """List of pairs like (version_dir_name, integer)"""
 
     def getAlgorithmName(self):
         return self.algorithm_name
@@ -105,7 +118,7 @@ class ExperimentResult(object):
         return self.dir_name
 
     def printData(self):
-        # temporary method, to print out some info
+        """Temporary method, to print out some info."""
         print self.dir_name
         print self.algorithm_name
         print self.compression_name

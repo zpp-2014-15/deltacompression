@@ -2,6 +2,8 @@
 
 from wx.lib.pubsub import Publisher
 
+from deltacompression.gui.controllers import queue_controller
+
 
 class ExperimentQueue(object):
     """Holds information about entire simulation
@@ -9,13 +11,28 @@ class ExperimentQueue(object):
     """
 
     def getExperimentsList(self):
+        """Returns a list of experiments to be performed."""
         raise NotImplementedError
 
     def addExperiment(self, experiment):
+        """Adds experiment to the queue so that it will be performed.
+
+        Args:
+            experiment: instance of Experiment
+        """
         raise NotImplementedError
 
-    def removeExperiment(self, experiment):
-        raise NotImplementedError
+    def _sendQueueChangedEvt(self):
+        """Sends a signal to the controller."""
+        Publisher().sendMessage(
+            queue_controller.ExperimentQueueController.EVT_QUEUE_CHANGED)
+
+    def _sendExperimentPerformedEvt(self, exp_result):
+        """Sends a signal to the controller."""
+        Publisher().sendMessage(
+            queue_controller.ExperimentQueueController. \
+            EVT_EXPERIMENT_PERFORMED,
+            exp_result)
 
 
 class DummyExperimentQueue(ExperimentQueue):
@@ -29,12 +46,9 @@ class DummyExperimentQueue(ExperimentQueue):
 
     def addExperiment(self, experiment):
         self._experiment = experiment
-        Publisher().sendMessage("queue_changed")
+        self._sendQueueChangedEvt()
 
         exp_result = experiment.run()
-        self.removeExperiment(experiment)
-        Publisher().sendMessage("experiment_performed", exp_result)
-        Publisher().sendMessage("queue_changed")
-
-    def removeExperiment(self, experiment):
         self._experiment = None
+        self._sendExperimentPerformedEvt(exp_result)
+        self._sendQueueChangedEvt()
