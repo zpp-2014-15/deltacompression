@@ -2,6 +2,9 @@
 
 import wx
 
+from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
+
+
 _DIRECTORY_TO_CHOOSE = "Choose a directory"
 _FILE_TO_CHOOSE = "Choose a file"
 
@@ -30,3 +33,21 @@ def getFilePath():
     """
     dialog = wx.FileDialog(None, _FILE_TO_CHOOSE, style=wx.DD_DEFAULT_STYLE)
     return _getDataFromDialog(dialog)
+
+
+class AutoWidthListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin):
+    """Mixin list class used in multiple panels. It automatically
+    resizes the first column to take extra space after resizing."""
+
+    def __init__(self, parent):
+        wx.ListCtrl.__init__(self, parent, -1, style=wx.LC_REPORT)
+        ListCtrlAutoWidthMixin.__init__(self)
+        self.setResizeColumn(0)
+
+
+class CheckListCtrl(AutoWidthListCtrl, CheckListCtrlMixin):
+    """Mixin list class used in multiple panels.
+    It's like AutoWidthListCtrl where you can check list items."""
+    def __init__(self, parent):
+        AutoWidthListCtrl.__init__(self, parent)
+        CheckListCtrlMixin.__init__(self)

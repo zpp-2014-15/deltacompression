@@ -2,67 +2,80 @@
 
 import wx
 
+from deltacompression.gui.models import experiment
 from deltacompression.gui.views import utils
 
 
 class ExperimentPanel(wx.Panel):
-    """Displays experiment and allows to edit it."""
+    """Displays experiment and allows to edit it.
 
-    evt_ALGORITHM_SELECTED = wx.NewEventType()
-    EVT_ALGORITHM_SELECTED = wx.PyEventBinder(evt_ALGORITHM_SELECTED)
+    Attributes:
+        evt_ADD_EXPERIMENT: event meaning that a new experiment was added.
+        EVT_ADD_EXPERIMENT: evt_ADD_EXPERIMENT's binder.
 
-    evt_COMPRESSION_SELECTED = wx.NewEventType()
-    EVT_COMPRESSION_SELECTED = wx.PyEventBinder(evt_COMPRESSION_SELECTED)
+        _CHUNKER_PARAMS: String, text displaying chunker params.
+        _ADD_EXPERIMENT: String, name of add_experiment_button.
+    """
 
-    evt_ADD_FILE = wx.NewEventType()
-    EVT_ADD_FILE = wx.PyEventBinder(evt_ADD_FILE)
-
-    evt_SIMULATE = wx.NewEventType()
-    EVT_SIMULATE = wx.PyEventBinder(evt_SIMULATE)
+    evt_ADD_EXPERIMENT = wx.NewEventType()
+    EVT_ADD_EXPERIMENT = wx.PyEventBinder(evt_ADD_EXPERIMENT)
 
     _CHUNKER_PARAMS = "Min chunk: %s, Max chunk: %s, Avg chunk: %s"
-    _ADD_FILE = "Add file"
-    _SIMULATE = "Simulate"
+    _ADD_EXPERIMENT = "Add Experiment"
 
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
-        self._compression_combo_box = None
-        self._add_file_button = None
-        self._chunk_params_label = None
-        self._file_list_box = None
         self._algorithm_combo_box = None
-        self._simulate_button = None
+        self._compression_combo_box = None
+        self._dir_picker = None
+        self._experiments_list = None
+        self._chunk_params_label = None
+        self._add_experiment_button = None
 
         self._initUI()
 
-    def updateExperiment(self, experiment):
-        """Updates information associated with experiment.
+    def _updateWidgets(self):
+        """Sets all widgets to proper values (sets choices correctly, etc.)."""
+
+        self._algorithm_combo_box.AppendItems(
+            experiment.Experiment.alg_factory.getAlgorithms())
+        self._algorithm_combo_box.SetStringSelection(
+            experiment.Experiment.def_alg)
+
+        self._compression_combo_box.AppendItems(
+            experiment.Experiment.compr_factory.getCompressions())
+        self._compression_combo_box.SetStringSelection(
+            experiment.Experiment.def_compr)
+
+        self._experiments_list.InsertColumn(0, 'Path')
+        self._experiments_list.InsertColumn(1, 'Algorithm', width=200)
+        self._experiments_list.InsertColumn(2, 'Compression', width=150)
+
+        # assumption that chunker parameters of all experiments are the same
+        # might change in the future
+        self._chunk_params_label.SetLabel(
+            self._CHUNKER_PARAMS % experiment.Experiment.chunker_params
+            .getParameters())
+
+    def updateExperimentsList(self, exp_list):
+        """Repaints the experiments list.
 
         Args:
-            experiment: instance of Experiment.
+            exp_list: list of Experiment object.
         """
-        self._algorithm_combo_box.Clear()
-        self._algorithm_combo_box.AppendItems(
-            experiment.algorithm_factory.getAlgorithms())
-
-        self._compression_combo_box.Clear()
-        self._compression_combo_box.AppendItems(
-            experiment.compression_factory.getCompressions())
-
-        self._algorithm_combo_box.SetStringSelection(
-            experiment.getAlgorithmName())
-
-        self._compression_combo_box.SetStringSelection(
-            experiment.getCompressionName())
-
-        self._file_list_box.Clear()
-        self._file_list_box.AppendItems(experiment.getFileList())
-
-
-        self._chunk_params_label.SetLabel(
-            self._CHUNKER_PARAMS % experiment.getChunkerParameters()
-            .getParameters())
+        self._experiments_list.DeleteAllItems()
+        for idx, exp in enumerate(exp_list):
+            self._experiments_list.InsertStringItem(idx, exp.getDirName())
+            self._experiments_list.SetStringItem(
+                idx, 1, exp.getAlgorithmName())
+            self._experiments_list.SetStringItem(
+                idx, 2, exp.getCompressionName())
+        # 'Refreshes' main loop, so that repainting view is done before
+        # other long events, like e.g. running an experiment.
+        # When we implement running experiments in the background, it
+        # probably won't be needed.
+        wx.SafeYield()
 
     def getSelectedAlgorithm(self):
         return self._algorithm_combo_box.GetStringSelection()
@@ -70,52 +83,64 @@ class ExperimentPanel(wx.Panel):
     def getSelectedCompression(self):
         return self._compression_combo_box.GetStringSelection()
 
-    def getFile(self):
-        return utils.getFilePath()
+    def getSelectedDir(self):
+        return self._dir_picker.GetPath()
+
+    def getDirectory(self):
+        return utils.getDirectory()
 
     def _initUI(self):
-        """Initialize all controls."""
-        sizer = wx.BoxSizer(wx.VERTICAL)
+        """Creates all controls."""
+        vbox = wx.BoxSizer(wx.VERTICAL)
 
-        self._algorithm_combo_box = wx.ComboBox(choices=[], parent=self)
-        self._algorithm_combo_box.Bind(wx.EVT_COMBOBOX, self._onSelectAlgorithm)
-        sizer.Add(self._algorithm_combo_box, 0, wx.EXPAND | wx.ALL)
+        exp_info_sizer = wx.GridBagSizer(vgap=5, hgap=0)
 
-        self._compression_combo_box = wx.ComboBox(choices=[], parent=self)
-        self._compression_combo_box.Bind(wx.EVT_COMBOBOX,
-                                         self._onSelectCompression)
-        sizer.Add(self._compression_combo_box, 0, wx.EXPAND | wx.ALL)
+        text1 = wx.StaticText(self, label="Algorithm")
+        text2 = wx.StaticText(self, label="Compression")
+        text3 = wx.StaticText(self, label="Directory")
+        exp_info_sizer.Add(text1, flag=wx.ALL, border=10,
+                           pos=(0, 0), span=(1, 1))
+        exp_info_sizer.Add(text2, flag=wx.ALL, border=10,
+                           pos=(1, 0), span=(1, 1))
+        exp_info_sizer.Add(text3, flag=wx.ALL, border=10,
+                           pos=(2, 0), span=(1, 1))
 
-        self._file_list_box = wx.ListBox(parent=self)
-        sizer.Add(self._file_list_box, 0, wx.EXPAND | wx.ALL)
+        self._algorithm_combo_box = wx.ComboBox(choices=[], parent=self,
+                                                style=wx.CB_READONLY)
+        exp_info_sizer.Add(self._algorithm_combo_box, flag=wx.EXPAND,
+                           pos=(0, 1), span=(1, 3))
 
-        self._add_file_button = wx.Button(self, label=self._ADD_FILE)
-        sizer.Add(self._add_file_button, 0, wx.EXPAND | wx.ALL)
-        self._add_file_button.Bind(wx.EVT_BUTTON, self._addFileClicked)
+        self._compression_combo_box = wx.ComboBox(choices=[], parent=self,
+                                                  style=wx.CB_READONLY)
+        exp_info_sizer.Add(self._compression_combo_box, flag=wx.EXPAND,
+                           pos=(1, 1), span=(1, 3))
+
+        self._dir_picker = wx.DirPickerCtrl(self)
+        exp_info_sizer.Add(self._dir_picker, flag=wx.EXPAND,
+                           pos=(2, 1), span=(1, 3))
+
+        self._add_experiment_button = wx.Button(self,
+                                                label=self._ADD_EXPERIMENT,
+                                                size=(200, -1))
+        self._add_experiment_button.Bind(wx.EVT_BUTTON,
+                                         self._onClickAddExperiment)
+        exp_info_sizer.Add(self._add_experiment_button, flag=wx.EXPAND,
+                           pos=(0, 4), span=(3, 5))
+        exp_info_sizer.AddGrowableCol(2)
+        vbox.Add(exp_info_sizer, 0, flag=wx.EXPAND)
+
+        self._experiments_list = utils.AutoWidthListCtrl(self)
+        vbox.Add(self._experiments_list, 1, flag=wx.EXPAND|wx.TOP, border=20)
 
         self._chunk_params_label = wx.StaticText(self,
                                                  label=self._CHUNKER_PARAMS %
                                                  (None, None, None))
-        sizer.Add(self._chunk_params_label, 0, wx.EXPAND | wx.ALL)
+        vbox.Add(self._chunk_params_label, flag=wx.EXPAND)
 
-        self._simulate_button = wx.Button(self, label=self._SIMULATE)
-        sizer.Add(self._simulate_button, 0, wx.EXPAND | wx.ALL)
-        self._simulate_button.Bind(wx.EVT_BUTTON, self._simulateClicked)
+        self.SetSizer(vbox)
 
-        self.SetSizer(sizer)
+        self._updateWidgets()
 
-    def _simulateClicked(self, _):
+    def _onClickAddExperiment(self, _):
         self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
-            self.evt_SIMULATE, self.GetId()))
-
-    def _onSelectAlgorithm(self, _):
-        self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
-            self.evt_ALGORITHM_SELECTED, self.GetId()))
-
-    def _addFileClicked(self, _):
-        self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
-            self.evt_ADD_FILE, self.GetId()))
-
-    def _onSelectCompression(self, _):
-        self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
-            self.evt_COMPRESSION_SELECTED, self.GetId()))
+            self.evt_ADD_EXPERIMENT, self.GetId()))
