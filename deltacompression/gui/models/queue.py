@@ -1,6 +1,6 @@
 """Contains queue of experiments"""
 
-from wx.lib.pubsub import Publisher
+from wx.lib.pubsub import Publisher # pylint: disable=E0611
 
 from deltacompression.gui.controllers import queue_controller
 

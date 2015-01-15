@@ -1,6 +1,6 @@
 """Controls experiment model and view."""
 
-from wx.lib.pubsub import Publisher
+from wx.lib.pubsub import Publisher # pylint: disable=E0611
 
 from deltacompression.gui.models import experiment
 
