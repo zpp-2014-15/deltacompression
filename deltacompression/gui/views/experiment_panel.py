@@ -35,7 +35,7 @@ class ExperimentPanel(wx.Panel):
 
         self._initUI()
 
-    def _updateWidgets(self):
+    def _setContent(self):
         """Sets all widgets to proper values (sets choices correctly, etc.)."""
 
         self._algorithm_combo_box.AppendItems(
@@ -48,9 +48,9 @@ class ExperimentPanel(wx.Panel):
         self._compression_combo_box.SetStringSelection(
             experiment.Experiment.def_compr)
 
-        self._experiments_list.InsertColumn(0, 'Path')
-        self._experiments_list.InsertColumn(1, 'Algorithm', width=200)
-        self._experiments_list.InsertColumn(2, 'Compression', width=150)
+        self._experiments_list.InsertColumn(0, "Path")
+        self._experiments_list.InsertColumn(1, "Algorithm", width=200)
+        self._experiments_list.InsertColumn(2, "Compression", width=150)
 
         # assumption that chunker parameters of all experiments are the same
         # might change in the future
@@ -139,7 +139,7 @@ class ExperimentPanel(wx.Panel):
 
         self.SetSizer(vbox)
 
-        self._updateWidgets()
+        self._setContent()
 
     def _onClickAddExperiment(self, _):
         self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(

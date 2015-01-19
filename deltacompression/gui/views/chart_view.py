@@ -1,5 +1,6 @@
 """Views for charts."""
 
+# pylint: disable=E1101
 import pygal
 import tempfile
 import webbrowser
