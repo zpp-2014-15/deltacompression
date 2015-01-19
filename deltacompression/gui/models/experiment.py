@@ -114,12 +114,6 @@ class ExperimentResult(object):
     def getDirName(self):
         return self.dir_name
 
-    def printData(self):
-        """Temporary method, to print out some info."""
-        print self.dir_name
-        print self.algorithm_name
-        print self.compression_name
-        print self.min_chunk
-        print self.max_chunk
-        print self.avg_chunk
-        print self.versions_with_results
+    def getDescription(self):
+        return "Alg: {}, Comp: {}".format(self.algorithm_name,
+                                          self.compression_name)

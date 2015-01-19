@@ -1,5 +1,7 @@
 """Controls result list model and view."""
 
+from deltacompression.gui.views import chart_view
+
 
 class ResultController(object):
     """Controller responsible for updating results' model and view."""
@@ -19,12 +21,27 @@ class ResultController(object):
     def _initSignals(self):
         self._panel.Bind(self._panel.EVT_ANALYSE, self._onAnalyseExperiments)
 
+    def _checkValidity(self, results):
+        if not results:
+            return False
+        ver = [n for n, _ in results[0].versions_with_results]
+        for res in results:
+            res_ver = [n for n, _ in res.versions_with_results]
+            if ver != res_ver:
+                return False
+        return True
+
     def _onAnalyseExperiments(self, _):
-        items_checked = self._panel.getCheckedResults()
-        # combine with charts
-        for index in items_checked:
-            result = self._result_list[index]
-            result.printData()
+        checked = self._panel.getCheckedIndices()
+
+        results = [self._result_list[i] for i in checked]
+
+        if not self._checkValidity(results):
+            self._panel.onIncorrectItems()
+            return
+
+        chart = chart_view.BarChartView(results)
+        chart.show()
 
     def onExperimentPerformed(self, exp_result):
         self._panel.addResultToList(exp_result)
