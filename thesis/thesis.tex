@@ -12,9 +12,9 @@
 \usepackage{polski}
 
 %Jesli uzywasz kodowania polskich znakow ISO-8859-2 nastepna linia powinna byc odkomentowana
-\usepackage[latin2]{inputenc}
+%\usepackage[latin2]{inputenc}
 %Jesli uzywasz kodowania polskich znakow CP-1250 to ta linia powinna byc  odkomentowana
-%\usepackage[cp1250]{inputenc}
+\usepackage[cp1250]{inputenc}
 
 % Uwaga: ka¿dy z nas czworga ma oddzielny egzemplarz i wpisuje swoje dane
 \author{Imiê i nazwisko}
@@ -32,7 +32,7 @@
 % (podaæ tytu³/stopieñ imiê i nazwisko opiekuna
 % Instytut
 % ew. Wydzia³ ew. Uczelnia (je¿eli nie MIM UW))
-\opiekun{dra Roberta D±browskiego\\
+\opiekun{dra Roberta D¹browskiego\\
   Instytut Informatyki\\
   }
 
@@ -74,7 +74,26 @@ TODO
 \chapter*{Wstêp}
 \addcontentsline{toc}{chapter}{Wstêp}
 
-Tu mo¿na daæ opis ca³ego projektu (nie musi byæ krótki, jak móg³by sugerowaæ tytu³ rozdzia³u).
+Celem projektu jest dostarczenie wygodnego w u¿yciu symulatora, który umo¿liwia testowanie algorytmów delta kodowania, wraz z przyk³adowymi implementacjami.
+Pozwala to odpowiedzieæ na pytanie czy warto zastosowaæ delta kodowanie w rozproszonym systemie kopii zapasowych, 
+który korzysta ju¿ z bloków o zmiennej d³ugoœci oraz kompresji.
+Takie optymalizacje s¹ istotne, gdy przesy³amy dane podczas replikacji kopii zapasowych.
+Niejednokrotnie w¹skim gard³em jest szybkoœæ ³¹cza, zw³aszcza gdy dane s¹ przesy³ane miêdzy odleg³ymi centrami danych.
+
+Bloki zmiennej d³ugoœci pozwalaj¹ w znacznym stopniu zmniejszyæ iloœæ danych, która zastanie przes³ane podczas replikacji.
+Za³ó¿my pocz¹tkowo, ¿e plik jest dzielony na bloki o sta³ym rozmiarze.
+WyobraŸmy sobie du¿y plik, który zosta³ ju¿ umieszczony na serwerze kopii zapasowych.
+U¿ytkownik dodaje w œrodku tego pliku jeden znak i przesy³a now¹ wersjê pliku na serwer.
+Serwer dzieli ten plik na bloki i przesy³a tylko nowe do innych serwerów replikuj¹cych.
+Wstawienie jednej litery spowodowa³o, ¿e oko³o po³owa bloków zosta³a przes³ana po dodaniu tylko jednej litery.
+Bloki o zmiennej d³ugoœci mog¹ to znacznie poprawiæ. Je¿eli odpowiednio podzieli siê plik na bloki to okazuje siê, ¿e
+wystarczy przes³aæ tylko jeden blok, który zosta³ zmieniony przez t¹ dodan¹ literê.
+W tym miejscu mo¿na dodatkowo zastosowaæ delta kodowanie.
+Je¿eli blok zosta³ zmodyfikowany w niewielkim stopniu to zamiast przesy³aæ go ca³ego, lepiej przes³aæ numer bloku oraz ró¿nicê wzglêdem niego.
+Na koniec przed przes³aniem jakichkolwiek danych nale¿y je skompresowaæ.
+
+Zaimplementowany system pozwala testowaæ wszelkie parametry takiego systemu kopii zapasowych.
+Miêdzy innymi ró¿ne kompresje, sposoby dzielenia plików na bloki, lecz przede wszystkim algorytmy delta kodowania.
 
 \chapter{Blabla}\label{r:pojecia}
 
