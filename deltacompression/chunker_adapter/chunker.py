@@ -72,7 +72,7 @@ class Chunker(object):
                                    stdout=subprocess.PIPE,
                                    stdin=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
-        out, err = process.communicate("\n".join(files).encode('utf-8'))
+        out, err = process.communicate("\n".join(files).encode("utf-8"))
         retcode = process.wait()
         if retcode:
             raise ChunkerException(err)

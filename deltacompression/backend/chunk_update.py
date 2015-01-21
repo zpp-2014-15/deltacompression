@@ -101,7 +101,7 @@ class DeltaChunkUpdate(ChunkUpdate):
         size, dist_byte = struct.unpack(cls.FMT, data[:cls.LEN_SIZE])
         diff_beg = cls.LEN_SIZE
         if dist_byte:
-            hash_size = kwargs.pop('hash_size')
+            hash_size = kwargs.pop("hash_size")
             hash_value = data[cls.LEN_SIZE:cls.LEN_SIZE + hash_size]
             diff_beg += hash_size
         else:
@@ -116,8 +116,8 @@ class DeltaChunkUpdate(ChunkUpdate):
         return self._diff
 
     def getNewChunk(self, **kwargs):
-        diff = kwargs.pop('diff')
-        storage_obj = kwargs.pop('storage')
+        diff = kwargs.pop("diff")
+        storage_obj = kwargs.pop("storage")
         if self._hash:
             base_chunk = storage_obj.getChunk(self._hash)
             return diff.applyDiff(base_chunk, self._diff)

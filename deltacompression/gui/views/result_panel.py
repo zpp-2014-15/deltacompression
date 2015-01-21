@@ -20,9 +20,12 @@ class ResultPanel(wx.Panel):
     evt_ANALYSE = wx.NewEventType()
     EVT_ANALYSE = wx.PyEventBinder(evt_ANALYSE)
 
-    _ANALYSE = 'Analyse'
-    _SELECT_ALL = 'Select all'
-    _DESELECT_ALL = 'Deselect all'
+    _ANALYSE = "Analyse"
+    _SELECT_ALL = "Select all"
+    _DESELECT_ALL = "Deselect all"
+    _INCORRECT_ITEMS = ("The set of versions should be the same for all of "
+                        "the experiments and there should be at least one "
+                        "experiment.")
 
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
@@ -39,9 +42,9 @@ class ResultPanel(wx.Panel):
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         self._results_list = utils.CheckListCtrl(self)
-        self._results_list.InsertColumn(0, 'Path')
-        self._results_list.InsertColumn(1, 'Algorithm', width=200)
-        self._results_list.InsertColumn(2, 'Compression', width=150)
+        self._results_list.InsertColumn(0, "Path")
+        self._results_list.InsertColumn(1, "Algorithm", width=200)
+        self._results_list.InsertColumn(2, "Compression", width=150)
         sizer.Add(self._results_list, 1, wx.EXPAND)
 
         hbox = wx.BoxSizer(wx.HORIZONTAL)
@@ -74,7 +77,7 @@ class ResultPanel(wx.Panel):
         self._results_list.SetStringItem(index, 1, result.getAlgorithmName())
         self._results_list.SetStringItem(index, 2, result.getCompressionName())
 
-    def getCheckedResults(self):
+    def getCheckedIndices(self):
         """Returns a list of indexes (starting from 0):
         which results are checked on the list.
         """
@@ -104,3 +107,7 @@ class ResultPanel(wx.Panel):
     def _onClickAnalyse(self, _):
         self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
             self.evt_ANALYSE, self.GetId()))
+
+    def onIncorrectItems(self):
+        wx.MessageBox(self._INCORRECT_ITEMS, "Info",
+                      wx.OK | wx.ICON_INFORMATION)

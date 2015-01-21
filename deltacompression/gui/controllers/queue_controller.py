@@ -13,8 +13,8 @@ class ExperimentQueueController(object):
         EVT_EXPERIMENT_PERFORMED: String, name of the Publisher topic.
     """
 
-    EVT_QUEUE_CHANGED = 'queue_changed'
-    EVT_EXPERIMENT_PERFORMED = 'experiment_performed'
+    EVT_QUEUE_CHANGED = "queue_changed"
+    EVT_EXPERIMENT_PERFORMED = "experiment_performed"
 
     def __init__(self, main_controller, panel, experiment_queue):
         """Creates ExperimentQueueController object.

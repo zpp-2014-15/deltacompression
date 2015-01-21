@@ -26,10 +26,10 @@ class VersionsProcessor(object):
             OSError
             IOError
         """
-        all_files = [op.join(directory, file_name)
+        all_files = [(op.join(directory, file_name), file_name)
                      for file_name in os.listdir(directory)]
-        all_dirs = sorted(filter(op.isdir, all_files))
+        all_dirs = sorted((x, y) for (x, y) in all_files if op.isdir(x))
 
-        for version_dir in all_dirs:
+        for full_path, version_dir in all_dirs:
             yield (version_dir, self._directory_processor.processDirectory(
-                version_dir))
+                full_path))
