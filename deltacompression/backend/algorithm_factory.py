@@ -8,8 +8,8 @@ from deltacompression.backend import storage
 
 class AlgorithmFactory(object):
 
-    DUMMY_ALGORITHM = "No delta compression"
-    OPTIMAL_ALGORITHM = "Optimal delta compression"
+    DUMMY_ALGORITHM = "No delta encoding"
+    OPTIMAL_ALGORITHM = "Optimal delta encoding"
 
     ALL_ALGORITHMS = [
         DUMMY_ALGORITHM,

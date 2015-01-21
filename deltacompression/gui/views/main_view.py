@@ -17,7 +17,7 @@ class MainView(wx.Frame):
         _RESULT_PANEL: String, name of result_panel's tab.
     """
 
-    _FRAME_TITLE = "Delta compression"
+    _FRAME_TITLE = "Delta encoding"
     _FRAME_SIZE = (650, 400)
     _EXPERIMENT_PANEL = "Add Experiment"
     _RESULT_PANEL = "Results"
