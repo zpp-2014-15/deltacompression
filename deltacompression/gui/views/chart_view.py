@@ -20,6 +20,8 @@ class BarChartView(object):
             bar_chart.add(result.getDescription(),
                           [float(d) / 1024 / 1024 for _, d in
                            result.versions_with_results])
+        bar_chart.config.legend_at_bottom = True
+        bar_chart.config.legend_at_bottom_columns = True
         rendered = bar_chart.render()
         file_name = tempfile.mktemp(suffix=".svg")
         svg_file = open(file_name, "w")
