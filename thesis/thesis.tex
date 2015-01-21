@@ -71,6 +71,8 @@ TODO
 %\listoffigures
 %\listoftables
 
+
+
 \chapter*{Wstêp}
 \addcontentsline{toc}{chapter}{Wstêp}
 
@@ -94,6 +96,40 @@ Na koniec przed przes³aniem jakichkolwiek danych nale¿y je skompresowaæ.
 
 Zaimplementowany system pozwala testowaæ wszelkie parametry takiego systemu kopii zapasowych.
 Miêdzy innymi ró¿ne kompresje, sposoby dzielenia plików na bloki, lecz przede wszystkim algorytmy delta kodowania.
+
+
+
+\chapter*{Funkcjonalnoœci systemu}
+\addcontentsline{toc}{chapter}{Funkcjonalnoœci systemu}
+
+\begin{itemize}
+  \item Mo¿liwoœæ wyboru sposobu przechowywania kopii zapasowych.
+	
+	Symulator zosta³ zaprojektowany w sposób, który pozawala na wybranie czy ma u¿ywaæ tylko pamiêci RAM, czy te¿ dysku b¹dŸ rozproszonej bazy danych typu klucz-wartoœæ.
+	Pozwala to na wykonywanie zarówno ma³ych testów, które dzia³aj¹ szybko w pamiêci RAM jak i du¿ych testów, które wymagaj¹ znacznie wiêkszej iloœci pamiêci.
+	
+	
+  \item Symulowanie replikacji bez u¿ycia delta kodowania, z u¿yciem optymalnego delta kodowania oraz z heurystycznym delta kodowaniem.
+	
+	System pozwala na przetestowanie zaimplementowanych algorytmów oraz udostêpnia intuicyjny interfejs dziêki czemu mo¿na w prosty sposób zaimplementowaæ kolejny
+	algorytm.
+	
+	
+  \item Kompresja danych przed przes³aniem.
+	
+	Po zastosowani odpowiedniego algorytmu dane przed wys³aniem mog¹ byæ dodatkowo kompresowane przy pomocy algorytmów lzo lub zip.
+	
+	\item Wygodny graficzny interfejs u¿ytkownika
+	
+	Za pomoc¹ graficznego interfejsu u¿ytkownik mo¿e wybraæ interesuj¹ce go konfiguracje, które chce przetestowaæ oraz wygenerowaæ wykres przedstawiaj¹cy wyniki.
+	
+	\item Prezentacja wyników w formie wykresów
+	
+	Wyniki wykonanych symulacji mo¿na wyœwietliæ w postaci interaktywnych wykresów.
+	S¹ one œwietnym narzêdziem, które umo¿liwia zbadanie faktycznych rezultatów symulacji.
+	
+	
+\end{itemize}
 
 \chapter{Blabla}\label{r:pojecia}
 
