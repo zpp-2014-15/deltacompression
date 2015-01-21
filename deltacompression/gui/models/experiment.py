@@ -115,5 +115,4 @@ class ExperimentResult(object):
         return self.dir_name
 
     def getDescription(self):
-        return "Alg: {}, Comp: {}".format(self.algorithm_name,
-                                          self.compression_name)
+        return "{}, {}".format(self.algorithm_name, self.compression_name)
