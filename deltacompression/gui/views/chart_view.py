@@ -14,7 +14,7 @@ class BarChartView(object):
 
     def show(self):
         """Method for showing a chart in a browser."""
-        bar_chart = pygal.Bar(y_title="Data to send in B")
+        bar_chart = pygal.Bar(y_title="Data to send in bytes")
         bar_chart.title = "Result of experiment"
         bar_chart.x_labels = self._versions
         for result in self._results:
