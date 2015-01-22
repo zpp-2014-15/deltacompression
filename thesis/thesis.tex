@@ -11,6 +11,7 @@
 
 \usepackage{polski}
 \usepackage{url}
+\usepackage{graphicx}
 \urlstyle{same}
 
 %Jesli uzywasz kodowania polskich znakow ISO-8859-2 nastepna linia powinna byc odkomentowana
@@ -136,6 +137,33 @@ Miêdzy innymi ró¿ne kompresje, sposoby dzielenia plików na bloki, lecz przede ws
 \end{itemize}
 
 Zostawione, aby ³atwo odtworzyæ schemat ze stylami.
+
+\chapter{Architektura}
+\section{Model MVC}
+Architektura tworzonego przez nas symulatora oparta jest o wzorzec Model-View-Controller, zapewniaj¹cy niezale¿noœæ kodu odpowiedzialnego za interakcjê z u¿ytkownikiem i kodu zajmuj¹cego siê logik¹ biznesow¹ aplikacji. Oprócz standardowych dla wzorca MVC czêœci: model, widok i kontroler w architekturze naszego projektu mo¿emy wyró¿niæ Storage - osobn¹ czêœæ odpowiedzialn¹ za sk³adowanie danych w trakcie trwania symulacji oraz Chunker - czêœæ przetwarzaj¹c¹ pliki z dysku twardego. Zale¿noœci miêdzy poszczególnymi komponentami pokazane s¹ na poni¿szym schemacie.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Architecture.png}
+    \caption{Schemat architektury}
+    \label{fig:architecture}
+\end{figure}
+
+\section{Chunker}
+Chunker jest osobnym modu³em zajmuj¹cym siê dzieleniem plików na bloki zmiennej d³ugoœci w taki sposób, aby wprowadzenie modyfikacji w pliku nie wymaga³o przes³ania du¿ej iloœci danych. Zosta³ nam dostarczony przez firmê 9LivesData, umo¿liwia on potencjaln¹ integracjê z rzeczywistym systemem rozproszonych kopii zapasowych.
+
+\section{Storage}
+Storage odpowiada za gromadzenie bloków danych powsta³ych w trakcie fazy dzielenia plików przez Chunker. Ta czêœæ jest wa¿na, poniewa¿ istot¹ algorytmów delta kodowania jest zapisywanie nowych bloków bazuj¹c na podobnych, istniej¹cych ju¿ blokach.
+
+\chapter{Technologie}
+
+\section{Jêzyki programowania}
+System zosta³ napisany g³ównie w jêzyku Python w wersji 2.7. W jêzyku C++ zosta³ napisany adapter odpowiedzialny za obs³ugê chunkera dostarczonego przez firmê 9LivesData w postaci biblioteki programistycznej, którego zadaniem jest dzielenie danych na bloki zmiennej d³ugoœci.
+
+\section{Biblioteki}
+Obs³uga symulatora odbywa siê za pomoc¹ graficznego interfejsu u¿ytkownika stworzonego z u¿yciem pakietu wxPython. Po przeprowadzonej symulacji generowane s¹ ró¿norodne statystyki opisuj¹ce wyniki eksperymentu i wyœwietlane w zwizualizowanej formie, zosta³o to zrealizowane dziêki pygal - bibliotece do tworzenia wykresów w formacie SVG.
+
+\section{Przetwarzanie danych}
+Podczas trwania symulacji potrzebne jest przechowywanie danych. W przypadku ich ograniczonego rozmiaru mo¿emy je przechowywaæ po prostu w pamiêci operacyjnej, co gwarantuje du¿¹ wydajnoœæ. Natomiast gdy mamy do czynienia z danymi wiêkszych rozmiarów, musimy korzystaæ z rozwi¹zania wykorzystuj¹cego dysk twardy. W naszym przypadku wybraliœmy MongoDB, jest to nierelacyjna baza danych, która umo¿liwia efektywne przechowywanie danych typu klucz-wartoœæ, w naszym przypadku kluczem jest hash, a wartoœci¹ jest ca³y blok o danym hashu.
 
 \chapter{Organizacja pracy}
 \addcontentsline{toc}{chapter}{Organizacja pracy}
