@@ -40,5 +40,4 @@ class FileProcessor(object):
             update = self._data_updater.update(chunk)
             if update:
                 data.append(update.serialize())
-
         return "".join(data)
