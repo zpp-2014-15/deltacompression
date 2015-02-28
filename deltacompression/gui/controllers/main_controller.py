@@ -10,7 +10,7 @@ class MainController(object):
     """Responsible for updating models and changing views."""
 
     def __init__(self, app):
-        self._exp_queue = queue.DummyExperimentQueue()
+        self._exp_queue = queue.AsyncExperimentQueue()
         self._main_view = main_view.MainView(None)
         self._exp_controller = \
             queue_controller.ExperimentQueueController(
