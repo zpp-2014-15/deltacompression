@@ -1,5 +1,7 @@
 """This module contains class responsible for adding chunks to the storage."""
 
+import collections
+
 from deltacompression.backend import chunk_update
 
 class DataUpdater(object):
@@ -77,25 +79,15 @@ class OptimalDeltaUpdater(DeltaUpdater):
         return best_update
 
 
-class SimilarityIndexParams(object):
-    """All the parameters of delta updater with similarity index.
-
-    Attributes:
-        fmod: value for calculating value of feature
-        ssize: number of features per superfeature.
-        win: size of the rolling window in bytes.
-        prim: prime for the Rabin fingerprint.
-        qmod: prime for the Rabin fingerprint modulo operation.
-        pis: list of coprime pairs (multiplier, adder) for every pi function;
-             its length should be divisible by ssize.
-    """
-    fmod = None
-    ssize = None
-    win = None
-    prim = None
-    qmod = None
-    pis = None
-
+# ssize: number of features per superfeature.
+# win: size of the rolling window in bytes.
+# prim: prime for the Rabin fingerprint.
+# qmod: prime for the Rabin fingerprint modulo operation.
+# pis: list of coprime pairs (multiplier, adder) for every pi function;
+        # its length should be divisible by ssize.
+# fmod: value for modulo operation in pi functions
+SimilarityIndexParams = collections.namedtuple("SimilarityIndexParams",
+                                               "ssize win prim qmod pis fmod")
 
 class SimilarityIndexDeltaUpdater(DeltaUpdater):
     """A class for a delta encoding algorithm which uses similarity index."""

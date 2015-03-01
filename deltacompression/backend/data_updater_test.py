@@ -89,13 +89,9 @@ class SimilarityIndexDeltaUpdaterTest(unittest.TestCase):
         self._hash_function = chunk_hash.HashSHA256()
         self._storage = storage.Storage(self._hash_function, None)
         self._diff = test_utils.PrefixDiff()
-        par = data_updater.SimilarityIndexParams()
-        par.fmod = 4
-        par.ssize = 2
-        par.win = 2
-        par.qmod = 13
-        par.prim = 5
-        par.pis = [(1, 2), (3, 4)]
+        par = data_updater.SimilarityIndexParams(fmod=4, ssize=2, win=2,
+                                                 qmod=13, prim=5, pis=[(1, 2),
+                                                                       (3, 4)])
         self._par = par
         self._updater = data_updater.SimilarityIndexDeltaUpdater(self._storage,
                                                                  self._diff,

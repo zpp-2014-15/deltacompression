@@ -48,19 +48,21 @@ class AlgorithmFactory(object):
             return data_updater.OptimalDeltaUpdater(storage_instance, diff_inst)
         elif name == self.SIMILARITY_INDEX_ALGORITHM:
             diff_inst = diff.XDelta3Diff()
-            par = data_updater.SimilarityIndexParams()
-            par.fmod = 2 ** 20
-            snum = 4
-            par.ssize = 2
-            par.win = 16
 
+            # TODO the whole algorithm should be parametrized by the 2 values
+            # below
+            ssize = 2
+            snum = 4
             random.seed(99453459353)
             beg = 1000000000
             end = 100000000000
-            par.qmod = generate_prime(beg, end)
-            par.prim = generate_prime(beg, end)
-            primes = generate_primes(snum * par.ssize, beg, end)
-            par.pis = [tuple(primes[x:x+2]) for x in xrange(0, len(primes), 2)]
+            qmod, prim = tuple([generate_prime(beg, end) for _ in xrange(2)])
+            primes = generate_primes(snum * ssize, beg, end)
+            pis = [tuple(primes[x:x+2]) for x in xrange(0, len(primes), 2)]
+
+            par = data_updater.SimilarityIndexParams(fmod=2 ** 20, ssize=ssize,
+                                                     win=16, qmod=qmod, pis=pis,
+                                                     prim=prim)
             return data_updater.SimilarityIndexDeltaUpdater(storage_instance,
                                                             diff_inst,
                                                             par)
