@@ -107,7 +107,6 @@ class SimilarityIndexDeltaUpdater(DeltaUpdater):
             par: SimilarityIndexParams object.
         """
         super(SimilarityIndexDeltaUpdater, self).__init__(storage_obj, diff)
-        # TODO some validation of parameters?
         self._par = par
         # mapping chunk's hash to its superfeatures' list
         self._sfeatures = {}
@@ -149,11 +148,18 @@ class SimilarityIndexDeltaUpdater(DeltaUpdater):
             value = (value * self._par.prim + feature) % self._par.qmod
         return value
 
-    def getCandidates(self, sfeatures):
+    def getBestBase(self, sfeatures, all_sfeatures, all_hashes):
         hashes = set([])
         for sfeature in sfeatures:
-            hashes |= set(self._hashes.get(sfeature, []))
-        return hashes
+            hashes |= set(all_hashes.get(sfeature, []))
+
+        best = (0, None)
+        for hval in hashes:
+            common = len(set(all_sfeatures.get(hval, [])) & set(sfeatures))
+            if common > best[0]:
+                best = common, hval
+
+        return best[1]
 
     def update(self, chunk):
         if self._storage.containsChunk(chunk):
@@ -161,17 +167,13 @@ class SimilarityIndexDeltaUpdater(DeltaUpdater):
         features = self.calculateFeatures(chunk)
         sfeatures = [self.createSuperfeature(features[x:x + self._par.ssize])
                      for x in xrange(0, len(features), self._par.ssize)]
-        best = (0, None)
-        for hval in self.getCandidates(sfeatures):
-            common = len(set(self._sfeatures.get(hval, [])) & set(sfeatures))
-            if common > best[0]:
-                best = common, hval
 
+        best_hash = self.getBestBase(sfeatures, self._sfeatures, self._hashes)
         best_update = chunk_update.DeltaChunkUpdate(None, chunk.get())
-        if best[1]:
-            base = self._storage.getChunk(best[1])
+        if best_hash:
+            base = self._storage.getChunk(best_hash)
             diff = self._diff.calculateDiff(base, chunk)
-            update = chunk_update.DeltaChunkUpdate(best[1], diff)
+            update = chunk_update.DeltaChunkUpdate(best_hash, diff)
             if update.getBinarySize() < best_update.getBinarySize():
                 best_update = update
 

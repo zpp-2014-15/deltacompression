@@ -1,9 +1,26 @@
 """This module is responsible for creating algorithms."""
 
+import pyprimes
+import random
+
 from deltacompression.backend import chunk_hash
 from deltacompression.backend import data_updater
 from deltacompression.backend import diff
 from deltacompression.backend import storage
+
+
+def generate_prime(beg, end):
+    cand = random.randrange(beg, end)
+    while not pyprimes.isprime(cand):
+        cand = random.randrange(beg, end)
+    return cand
+
+
+def generate_primes(amount, beg, end):
+    primes = []
+    for _ in xrange(amount):
+        primes.append(generate_prime(beg, end))
+    return primes
 
 
 class AlgorithmFactory(object):
@@ -33,19 +50,17 @@ class AlgorithmFactory(object):
             diff_inst = diff.XDelta3Diff()
             par = data_updater.SimilarityIndexParams()
             par.fmod = 2 ** 20
-            # TODO it should be more flexible
+            snum = 4
             par.ssize = 2
             par.win = 16
-            par.qmod = 982451653
-            par.prim = 613651369
-            par.pis = [(32452867, 633910099),
-                       (512927377, 49979687),
-                       (413158523, 879190841),
-                       (472882027, 899809363),
-                       (15485867, 817504243),
-                       (334214467, 179424673),
-                       (838041647, 353868019),
-                       (756065179, 533000389)]
+
+            random.seed(99453459353)
+            beg = 1000000000
+            end = 100000000000
+            par.qmod = generate_prime(beg, end)
+            par.prim = generate_prime(beg, end)
+            primes = generate_primes(snum * par.ssize, beg, end)
+            par.pis = [tuple(primes[x:x+2]) for x in xrange(0, len(primes), 2)]
             return data_updater.SimilarityIndexDeltaUpdater(storage_instance,
                                                             diff_inst,
                                                             par)
