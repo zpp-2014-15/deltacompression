@@ -91,8 +91,7 @@ class Experiment(object):
                                   self._compression_name,
                                   self.chunker_params,
                                   versions_with_results,
-                                  logs.getReads(),
-                                  logs.getWrites())
+                                  logs)
         return result
 
 
@@ -100,7 +99,7 @@ class ExperimentResult(object):
     """This is result of one experiment."""
 
     def __init__(self, dir_name, algorithm, compression, chunker_params,
-                 version_results, reads, writes):
+                 version_results, logs):
         """Creates ExperimentResult object.
 
         Args:
@@ -114,9 +113,8 @@ class ExperimentResult(object):
         self.min_chunk = chunker_params.getMinChunk()
         self.max_chunk = chunker_params.getMaxChunk()
         self.avg_chunk = chunker_params.getAvgChunk()
-        self.reads = reads
-        self.writes = writes
         self.versions_with_results = version_results
+        self.logs = logs
 
     def getAlgorithmName(self):
         return self.algorithm_name

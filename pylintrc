@@ -291,7 +291,7 @@ valid-metaclass-classmethod-first-arg=mcs
 [DESIGN]
 
 # Maximum number of arguments for function / method
-max-args=6
+max-args=7
 
 # Argument names that match this expression will be ignored. Default to name
 # with leading underscore
@@ -313,7 +313,7 @@ max-statements=50
 max-parents=10
 
 # Maximum number of attributes for a class (see R0902).
-max-attributes=7
+max-attributes=8
 
 # Minimum number of public methods for a class (see R0903).
 min-public-methods=2
