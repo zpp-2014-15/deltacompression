@@ -24,6 +24,9 @@ class DirectoryProcessor(object):
     def setDataUpdater(self, data_updater):
         self._file_processor.setDataUpdater(data_updater)
 
+    def getLogger(self):
+        return self._file_processor.getLogger()
+
     def setCompression(self, compression):
         self._compression = compression
 

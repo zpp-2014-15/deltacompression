@@ -29,7 +29,8 @@ class VersionsProcessor(object):
         all_files = [(op.join(directory, file_name), file_name)
                      for file_name in os.listdir(directory)]
         all_dirs = sorted((x, y) for (x, y) in all_files if op.isdir(x))
+        logger = self._directory_processor.getLogger()
 
         for full_path, version_dir in all_dirs:
-            yield (version_dir, self._directory_processor.processDirectory(
-                full_path))
+            processed = self._directory_processor.processDirectory(full_path)
+            yield (version_dir + " " + str(logger.getDedup()), processed)

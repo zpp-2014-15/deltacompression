@@ -23,6 +23,9 @@ class FileProcessor(object):
     def setDataUpdater(self, data_updater):
         self._data_updater = data_updater
 
+    def getLogger(self):
+        return self._data_updater.getLogger()
+
     def processFiles(self, files):
         """Processes a list of files.
 

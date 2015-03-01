@@ -5,6 +5,10 @@ from deltacompression.backend import compression_factory
 from deltacompression.backend import file_processor
 from deltacompression.backend import directory_processor
 from deltacompression.backend import versions_processor
+from deltacompression.backend import storage
+from deltacompression.backend import io_logger
+from deltacompression.backend import chunk_hash
+
 from deltacompression.chunker_adapter import chunker
 
 
@@ -63,7 +67,10 @@ class Experiment(object):
         Returns:
             instance of ExperimentResult.
         """
-        algorithm = self.alg_factory.getAlgorithmFromName(self._algorithm_name)
+        storage_instance = storage.Storage(chunk_hash.HashSHA256(),
+                                           io_logger.IOLogger())
+        algorithm = self.alg_factory.getAlgorithmFromName(self._algorithm_name,
+                                                          storage_instance)
         compression = self.compr_factory. \
             getCompressionFromName(self._compression_name)
 
@@ -78,10 +85,14 @@ class Experiment(object):
         for version_dir, data in simulation_data:
             versions_with_results.append((version_dir, len(data)))
 
+        logs = storage_instance.getLogger()
+
         result = ExperimentResult(self._dir_name, self._algorithm_name,
                                   self._compression_name,
                                   self.chunker_params,
-                                  versions_with_results)
+                                  versions_with_results,
+                                  logs.getReads(),
+                                  logs.getWrites())
         return result
 
 
@@ -89,7 +100,7 @@ class ExperimentResult(object):
     """This is result of one experiment."""
 
     def __init__(self, dir_name, algorithm, compression, chunker_params,
-                 version_results):
+                 version_results, reads, writes):
         """Creates ExperimentResult object.
 
         Args:
@@ -103,6 +114,8 @@ class ExperimentResult(object):
         self.min_chunk = chunker_params.getMinChunk()
         self.max_chunk = chunker_params.getMaxChunk()
         self.avg_chunk = chunker_params.getAvgChunk()
+        self.reads = reads
+        self.writes = writes
         self.versions_with_results = version_results
 
     def getAlgorithmName(self):

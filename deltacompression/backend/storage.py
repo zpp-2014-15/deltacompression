@@ -19,6 +19,9 @@ class Storage(object):
         self._logger = logger
         self._storage = {}
 
+    def getLogger(self):
+        return self._logger
+
     def getChunk(self, hash_value):
         """Retrieves Chunk.
 
@@ -31,6 +34,8 @@ class Storage(object):
         """
         if hash_value not in self._storage:
             raise StorageException("Chunk does not exist.")
+        if self._logger:
+            self._logger.incReads()
         return self._storage[hash_value]
 
     def containsHash(self, hash_value):
@@ -54,10 +59,18 @@ class Storage(object):
             StorageException if chunk already exists.
         """
         hash_value = self._hash_function.calculateHash(chunk)
+
         if hash_value in self._storage:
             raise StorageException("Chunk with given hash already exists.")
+
+        if self._logger:
+            self._logger.incWrites()
         self._storage[hash_value] = chunk
         return hash_value
+
+    def incDedup(self):
+        if self._logger:
+            self._logger.incDedup()
 
     def containsChunk(self, chunk):
         """
@@ -85,7 +98,10 @@ class Storage(object):
         Returns:
             An iterable for all the contained Chunks.
         """
-        return self._storage.viewvalues()
+        values = self._storage.viewvalues()
+        if self._logger:
+            self._logger.incReads(len(values))
+        return values
 
     def getHashFunction(self):
         return self._hash_function

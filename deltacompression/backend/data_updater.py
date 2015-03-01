@@ -23,6 +23,9 @@ class DataUpdater(object):
         """
         raise NotImplementedError
 
+    def getLogger(self):
+        return self._storage.getLogger()
+
     def addReceivedData(self, decompressed_data):
         """Updates the storage with the decompressed data received from another
         storage."""
@@ -36,7 +39,7 @@ class DummyUpdater(DataUpdater):
             self._storage.addChunk(chunk)
             return chunk_update.DummyChunkUpdate(chunk)
         else:
-            return None
+            self._storage.incDedup()
 
     def addReceivedData(self, data):
         while data:
@@ -65,7 +68,9 @@ class OptimalDeltaUpdater(DeltaUpdater):
 
     def update(self, chunk):
         if self._storage.containsChunk(chunk):
+            self._storage.incDedup()
             return None
+
         best_update = chunk_update.DeltaChunkUpdate(None, chunk.get())
         for base in self._storage.getChunks():
             diff = self._diff.calculateDiff(base, chunk)
