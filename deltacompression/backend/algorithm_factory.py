@@ -34,7 +34,7 @@ class AlgorithmFactory(object):
             par = data_updater.SimilarityIndexParams()
             par.fmod = 2 ** 20
             # TODO it should be more flexible
-            par.ssize = 4
+            par.ssize = 2
             par.win = 16
             par.qmod = 982451653
             par.prim = 613651369

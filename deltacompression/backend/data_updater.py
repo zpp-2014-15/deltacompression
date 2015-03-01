@@ -132,7 +132,7 @@ class SimilarityIndexDeltaUpdater(DeltaUpdater):
             val = (val * par.prim + ord(byte)) % par.qmod
 
         for i, byte in enumerate(data[par.win:]):
-            val = (val + (par.qmod - ord(data[i - par.win])) * ppow) % par.qmod
+            val = (val + (par.qmod - ord(data[i])) * ppow) % par.qmod
             val = (val * par.prim + ord(byte)) % par.qmod
             for i, (mul, add) in enumerate(par.pis):
                 fval = (val * mul + add) % par.fmod
