@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # directory with linux git repository
-LINUX_DIR=~/code/zpp/linux/linux
+LINUX_DIR=
 
 if [ $LINUX_DIR == "" ]
 then
