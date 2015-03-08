@@ -2,7 +2,7 @@
 
 import collections
 
-from deltacompression.backend import features
+from deltacompression.backend import features_calculator
 from deltacompression.backend import chunk_update
 
 
@@ -102,6 +102,10 @@ class SimilarityIndexDeltaUpdater(DeltaUpdater):
         """
         super(SimilarityIndexDeltaUpdater, self).__init__(storage_obj, diff)
         self._par = par
+        flatten_pis = [x[0] for x in par.pis] + [x[1] for x in par.pis]
+        values = flatten_pis + [par.prim, par.qmod, par.fmod]
+        if [x for x in values if x > 10 ** 9]:
+            raise ValueError("All the parameters must not exceed 10^9")
         # mapping chunk's hash to its superfeatures' list
         self._sfeatures = {}
         # mapping superfeatures to lists of hashes
@@ -115,28 +119,9 @@ class SimilarityIndexDeltaUpdater(DeltaUpdater):
             a list of consecutive features.
         """
         par = self._par
-        # TODO big ints
-        return features.calculateFeatures(chunk.get(), par.prim, par.qmod,
-                                          par.win, par.fmod, par.pis)
-        # data = chunk.get()
-        # val = 0
-        # ppow = (par.prim ** (par.win - 1)) % par.qmod
-        # best = [-1] * len(par.pis)
-        # features = [0] * len(par.pis)
-
-        # for byte in data[:par.win]:
-            # val = (val * par.prim + ord(byte)) % par.qmod
-
-        # for i, byte in enumerate(data[par.win:]):
-            # val = (val + (par.qmod - ord(data[i])) * ppow) % par.qmod
-            # val = (val * par.prim + ord(byte)) % par.qmod
-            # for i, (mul, add) in enumerate(par.pis):
-                # fval = (val * mul + add) % par.fmod
-                # if fval > best[i]:
-                    # best[i] = fval
-                    # features[i] = val
-
-        # return features
+        return features_calculator.calculateFeatures(chunk.get(), par.prim,
+                                                     par.qmod, par.win,
+                                                     par.fmod, par.pis)
 
     def createSuperfeature(self, features):
         """Create a superfeature from the feature's list."""
