@@ -54,8 +54,8 @@ class AlgorithmFactory(object):
             ssize = 2
             snum = 4
             random.seed(99453459353)
-            beg = 1000000000
-            end = 100000000000
+            beg = 10000000
+            end = 1000000000
             qmod, prim = tuple([generate_prime(beg, end) for _ in xrange(2)])
             primes = generate_primes(snum * ssize, beg, end)
             pis = [tuple(primes[x:x+2]) for x in xrange(0, len(primes), 2)]

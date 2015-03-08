@@ -2,7 +2,9 @@
 
 import collections
 
+from deltacompression.backend import features
 from deltacompression.backend import chunk_update
+
 
 class DataUpdater(object):
     """Class responsible for adding new chunks to the storage."""
@@ -113,25 +115,28 @@ class SimilarityIndexDeltaUpdater(DeltaUpdater):
             a list of consecutive features.
         """
         par = self._par
-        data = chunk.get()
-        val = 0
-        ppow = (par.prim ** (par.win - 1)) % par.qmod
-        best = [-1] * len(par.pis)
-        features = [0] * len(par.pis)
+        # TODO big ints
+        return features.calculateFeatures(chunk.get(), par.prim, par.qmod,
+                                          par.win, par.fmod, par.pis)
+        # data = chunk.get()
+        # val = 0
+        # ppow = (par.prim ** (par.win - 1)) % par.qmod
+        # best = [-1] * len(par.pis)
+        # features = [0] * len(par.pis)
 
-        for byte in data[:par.win]:
-            val = (val * par.prim + ord(byte)) % par.qmod
+        # for byte in data[:par.win]:
+            # val = (val * par.prim + ord(byte)) % par.qmod
 
-        for i, byte in enumerate(data[par.win:]):
-            val = (val + (par.qmod - ord(data[i])) * ppow) % par.qmod
-            val = (val * par.prim + ord(byte)) % par.qmod
-            for i, (mul, add) in enumerate(par.pis):
-                fval = (val * mul + add) % par.fmod
-                if fval > best[i]:
-                    best[i] = fval
-                    features[i] = val
+        # for i, byte in enumerate(data[par.win:]):
+            # val = (val + (par.qmod - ord(data[i])) * ppow) % par.qmod
+            # val = (val * par.prim + ord(byte)) % par.qmod
+            # for i, (mul, add) in enumerate(par.pis):
+                # fval = (val * mul + add) % par.fmod
+                # if fval > best[i]:
+                    # best[i] = fval
+                    # features[i] = val
 
-        return features
+        # return features
 
     def createSuperfeature(self, features):
         """Create a superfeature from the feature's list."""
