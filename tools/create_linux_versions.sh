@@ -3,24 +3,28 @@
 # directory with linux git repository
 LINUX_DIR=
 
-if [ $LINUX_DIR == "" ]
+if [ -z $LINUX_DIR ]
 then
     echo "Error: variable LINUX_DIR not set."
     exit
 fi
 
-if [ "$2" == "" ]
+if [ -z $2 ]
 then
-    echo "Usage: $0 <destination directory> <number of versions>"
+    echo "Usage: $0 <destination directory> <number of versions> [<number of commits between master and the earliest version>]"
     exit
 fi
 
-DESTINATION=`mkdir "$1" 2> /dev/null; cd "$1"; pwd`
 VERSIONS=$2
-CUR_DIR=`pwd`
-COMMITS=40000
 
-cd $LINUX_DIR
+if [ $VERSIONS -le 1 ]
+then
+    echo "Number of versions must be greater than or equal to 2."
+    exit
+fi
+
+DESTINATION=`mkdir -p "$1"; cd "$1"; pwd`
+COMMITS=${3:-40000}
 
 for i in `seq 1 $VERSIONS`
 do
@@ -32,4 +36,3 @@ do
 done
 
 git checkout master 2> /dev/null
-cd $CUR_DIR
