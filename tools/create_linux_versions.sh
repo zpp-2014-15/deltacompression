@@ -1,11 +1,12 @@
 #!/bin/bash
 
-# directory with linux git repository
-LINUX_DIR=
-
 if [ -z $LINUX_DIR ]
 then
-    echo "Error: variable LINUX_DIR not set."
+    echo "Variable LINUX_DIR is not set. You can fix it by adding line"
+    echo ""
+    echo "  export LINUX_DIR=<your linux git repository path>"
+    echo ""
+    echo "to ~/.bashrc or writing it in terminal."
     exit
 fi
 
@@ -23,16 +24,19 @@ then
     exit
 fi
 
-DESTINATION=`mkdir -p "$1"; cd "$1"; pwd`
+DESTINATION=$(readlink -m $1)
+mkdir -p $DESTINATION
+
 COMMITS=${3:-40000}
+
+cd $LINUX_DIR
 
 for i in `seq 1 $VERSIONS`
 do
-    git checkout master~$(( COMMITS*(VERSIONS-i)/(VERSIONS-1) )) 2> /dev/null
+    git checkout master~$(( COMMITS*(VERSIONS-i)/(VERSIONS-1) )) > /dev/null 2> /dev/null
     FILES=`ls -A | egrep -v '^.git$'` 
 
     mkdir $DESTINATION/v$i
     cp -R $FILES $DESTINATION/v$i
 done
-
-git checkout master 2> /dev/null
+git checkout master > /dev/null 2> /dev/null
