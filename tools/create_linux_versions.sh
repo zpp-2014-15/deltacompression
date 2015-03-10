@@ -33,10 +33,10 @@ cd $LINUX_DIR
 
 for i in `seq 1 $VERSIONS`
 do
-    git checkout master~$(( COMMITS*(VERSIONS-i)/(VERSIONS-1) )) > /dev/null 2> /dev/null
+    git checkout master~$(( COMMITS*(VERSIONS-i)/(VERSIONS-1) )) &> /dev/null
     FILES=`ls -A | egrep -v '^.git$'` 
 
     mkdir $DESTINATION/v$i
     cp -R $FILES $DESTINATION/v$i
 done
-git checkout master > /dev/null 2> /dev/null
+git checkout master &> /dev/null
