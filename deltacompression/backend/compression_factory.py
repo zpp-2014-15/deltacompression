@@ -4,6 +4,7 @@ from deltacompression.backend import compression
 
 
 class CompressionFactory(object):
+    """A factory class for compressions"""
 
     DUMMY_COMPRESSION = "No compression"
     LZO_COMPRESSION = "Lzo compression"
