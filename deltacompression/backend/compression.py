@@ -1,5 +1,6 @@
 """Module contains compression algorithms."""
 import lzo
+import pylzma
 import zlib
 
 
@@ -50,3 +51,12 @@ class ZipCompression(Compression):
 
     def decompress(self, compressed_data):
         return zlib.decompress(compressed_data)
+
+
+class LzmaCompression(Compression):
+
+    def compress(self, data):
+        return pylzma.compress(data)
+
+    def decompress(self, compressed_data):
+        return pylzma.decompress(compressed_data)
