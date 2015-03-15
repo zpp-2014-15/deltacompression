@@ -2,6 +2,7 @@
 
 from deltacompression.backend import chunk_update
 
+
 class DataUpdater(object):
     """Class responsible for adding new chunks to the storage."""
 
@@ -14,7 +15,15 @@ class DataUpdater(object):
         self._storage = storage_object
 
     def update(self, chunk):
-        """Adds chunk to the storage.
+        if self._storage.containsChunk(chunk):
+            self.getLogger().incDeduplications()
+            return None
+        else:
+            self.getLogger().incTotalBlocks()
+            return self.addNewChunk(chunk)
+
+    def addNewChunk(self, new_chunk):
+        """Adds new chunk to the storage.
 
         Args:
             chunk: instance of Chunk that will be added to the storage.
@@ -34,12 +43,9 @@ class DataUpdater(object):
 
 class DummyUpdater(DataUpdater):
 
-    def update(self, chunk):
-        if not self._storage.containsChunk(chunk):
-            self._storage.addChunk(chunk)
-            return chunk_update.DummyChunkUpdate(chunk)
-        else:
-            self._storage.incDedup()
+    def addNewChunk(self, chunk):
+        self._storage.addChunk(chunk)
+        return chunk_update.DummyChunkUpdate(chunk)
 
     def addReceivedData(self, data):
         while data:
@@ -66,11 +72,7 @@ class DeltaUpdater(DataUpdater):
 
 class OptimalDeltaUpdater(DeltaUpdater):
 
-    def update(self, chunk):
-        if self._storage.containsChunk(chunk):
-            self._storage.incDedup()
-            return None
-
+    def addNewChunk(self, chunk):
         best_update = chunk_update.DeltaChunkUpdate(None, chunk.get())
         for base in self._storage.getChunks():
             diff = self._diff.calculateDiff(base, chunk)
