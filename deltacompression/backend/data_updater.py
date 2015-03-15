@@ -1,6 +1,7 @@
 """This module contains class responsible for adding chunks to the storage."""
 
 import collections
+import itertools
 
 from deltacompression.backend import features_calculator
 from deltacompression.backend import chunk_update
@@ -102,8 +103,8 @@ class SimilarityIndexDeltaUpdater(DeltaUpdater):
         """
         super(SimilarityIndexDeltaUpdater, self).__init__(storage_obj, diff)
         self._par = par
-        flatten_pis = [x[0] for x in par.pis] + [x[1] for x in par.pis]
-        values = flatten_pis + [par.prim, par.qmod, par.fmod]
+
+        values = itertools.chain([par.prim, par.qmod, par.fmod], *par.pis)
         if [x for x in values if x > 10 ** 9]:
             raise ValueError("All the parameters must not exceed 10^9")
         # mapping chunk's hash to its superfeatures' list
