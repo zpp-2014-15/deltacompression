@@ -17,7 +17,7 @@ class DataUpdater(object):
     def update(self, chunk):
         if self._storage.containsChunk(chunk):
             if self.getLogger():
-                self.getLogger().incDuplications()
+                self.getLogger().incDuplicates()
             return None
         else:
             if self.getLogger():

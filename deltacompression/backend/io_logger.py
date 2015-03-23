@@ -6,7 +6,7 @@ class IOLogger(object):
     def __init__(self):
         self._reads = 0
         self._writes = 0
-        self._duplications = 0
+        self._duplicates = 0
         self._total_blocks = 0
 
     def getReads(self):
@@ -15,8 +15,8 @@ class IOLogger(object):
     def getWrites(self):
         return self._writes
 
-    def getDuplications(self):
-        return self._duplications
+    def getDuplicates(self):
+        return self._duplicates
 
     def getTotalBlocks(self):
         return self._total_blocks
@@ -27,8 +27,8 @@ class IOLogger(object):
     def incWrites(self, increase_by=1):
         self._writes += increase_by
 
-    def incDuplications(self, increase_by=1):
-        self._duplications += increase_by
+    def incDuplicates(self, increase_by=1):
+        self._duplicates += increase_by
 
     def incTotalBlocks(self, increase_by=1):
         self._total_blocks += increase_by
