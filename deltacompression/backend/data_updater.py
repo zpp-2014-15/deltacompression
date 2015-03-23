@@ -16,10 +16,12 @@ class DataUpdater(object):
 
     def update(self, chunk):
         if self._storage.containsChunk(chunk):
-            self.getLogger().incDeduplications()
+            if self.getLogger():
+                self.getLogger().incDeduplications()
             return None
         else:
-            self.getLogger().incTotalBlocks()
+            if self.getLogger():
+                self.getLogger().incTotalBlocks()
             return self.addNewChunk(chunk)
 
     def addNewChunk(self, new_chunk):

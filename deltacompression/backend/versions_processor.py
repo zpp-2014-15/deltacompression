@@ -31,12 +31,18 @@ class VersionsProcessor(object):
         all_dirs = sorted((x, y) for (x, y) in all_files if op.isdir(x))
         logger = self._directory_processor.getLogger()
 
-
         for full_path, version_dir in all_dirs:
-            before_blocks = logger.getTotalBlocks()
-            before_dedups = logger.getDeduplications()
+            if logger:
+                before_blocks = logger.getTotalBlocks()
+                before_dedups = logger.getDeduplications()
+
             processed = self._directory_processor.processDirectory(full_path)
-            percent = "{0:.2f}%".format(float(logger.getDeduplications() -
-                                             before_dedups) * 100 /
-                                    (logger.getTotalBlocks() - before_blocks))
-            yield (version_dir + " " + percent + " deduplications", processed)
+
+            if logger:
+                new_blocks = logger.getTotalBlocks() - before_blocks
+                dedups = logger.getDeduplications() - before_dedups
+                percent = "{0:.2f}%".format(float(dedups) * 100 /
+                                            (dedups + new_blocks))
+                yield (version_dir + " " + percent + " deduplications", processed)
+            else:
+                yield (version_dir, processed)
