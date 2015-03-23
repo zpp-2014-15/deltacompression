@@ -1,7 +1,7 @@
 """Module responsible for logging storage events."""
 
 class IOLogger(object):
-    """Class responsible for counting read, writes and deduplications."""
+    """Class responsible for counting read, writes and duplicates."""
 
     def __init__(self):
         self._reads = 0

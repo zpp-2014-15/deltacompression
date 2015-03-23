@@ -68,10 +68,6 @@ class Storage(object):
         self._storage[hash_value] = chunk
         return hash_value
 
-    def incDedup(self):
-        if self._logger:
-            self._logger.incDedup()
-
     def containsChunk(self, chunk):
         """
         Returns:
