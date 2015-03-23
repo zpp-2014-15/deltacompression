@@ -82,7 +82,7 @@ class ExperimentThread(threading.Thread):
 
 
 class AsyncExperimentQueue(ExperimentQueue, wx.EvtHandler):
-    """Performs experiments synchronically."""
+    """Performs experiments asynchronically."""
 
     def __init__(self):
         super(AsyncExperimentQueue, self).__init__()
@@ -101,6 +101,7 @@ class AsyncExperimentQueue(ExperimentQueue, wx.EvtHandler):
 
     def _runNextExperiment(self):
         thread = ExperimentThread(self, self._experiments[0])
+        thread.daemon = True
         thread.start()
 
     def _onExecuted(self, evt):
