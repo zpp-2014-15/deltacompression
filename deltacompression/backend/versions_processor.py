@@ -34,16 +34,16 @@ class VersionsProcessor(object):
         for full_path, version_dir in all_dirs:
             if logger:
                 before_blocks = logger.getTotalBlocks()
-                before_dedups = logger.getDeduplications()
+                before_dups = logger.getDuplications()
 
             processed = self._directory_processor.processDirectory(full_path)
 
             if logger:
                 new_blocks = logger.getTotalBlocks() - before_blocks
-                dedups = logger.getDeduplications() - before_dedups
-                percent = "{0:.2f}%".format(float(dedups) * 100 /
-                                            (dedups + new_blocks))
+                duplications = logger.getDuplications() - before_dups
+                percent = "{0:.2f}%".format(float(duplications) * 100 /
+                                            (duplications + new_blocks))
                 yield (version_dir + " " + percent +
-                       " deduplications", processed)
+                       " duplications", processed)
             else:
                 yield (version_dir, processed)
