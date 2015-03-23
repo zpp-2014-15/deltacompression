@@ -152,9 +152,7 @@ class SimilarityIndexDeltaUpdater(DeltaUpdater):
 
         return best[1]
 
-    def update(self, chunk):
-        if self._storage.containsChunk(chunk):
-            return None
+    def addNewChunk(self, chunk):
         features = self.calculateFeatures(chunk)
         sfeatures = [self.createSuperfeature(features[x:x + self._par.ssize])
                      for x in xrange(0, len(features), self._par.ssize)]
