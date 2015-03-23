@@ -43,6 +43,7 @@ class VersionsProcessor(object):
                 dedups = logger.getDeduplications() - before_dedups
                 percent = "{0:.2f}%".format(float(dedups) * 100 /
                                             (dedups + new_blocks))
-                yield (version_dir + " " + percent + " deduplications", processed)
+                yield (version_dir + " " + percent +
+                       " deduplications", processed)
             else:
                 yield (version_dir, processed)
