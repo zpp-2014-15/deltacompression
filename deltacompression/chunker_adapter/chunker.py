@@ -3,6 +3,7 @@
 import os.path as op
 import subprocess
 import cStringIO
+import collections
 
 from deltacompression.backend import storage
 
@@ -31,6 +32,47 @@ class ChunkerParameters(object):
 
 class ChunkerException(Exception):
     """Exception thrown by Chunker."""
+
+
+class StreamReader(object):
+    """Class for holding a stream of files."""
+
+    def __init__(self):
+        self._queue = collections.deque()
+
+    def getChunk(self, size):
+        parts = []
+        while size:
+            fil = self._queue[0]
+            part = fil.read(size)
+            if len(part) < size:
+                try:
+                    self._queue.popleft()
+                finally:
+                    fil.close()
+            size -= len(part)
+            parts.append(part)
+        return storage.Chunk("".join(parts))
+
+    def addFile(self, filename):
+        fil = None
+        try:
+            fil = open(filename, "r")
+            self._queue.append(fil)
+        except:
+            if fil:
+                fil.close()
+            raise
+
+    def close(self):
+        for fil in self._queue:
+            fil.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, _type, value, traceback):
+        self.close()
 
 
 class Chunker(object):
@@ -78,15 +120,15 @@ class Chunker(object):
             raise ChunkerException(err)
         buf = cStringIO.StringIO(out)
 
-        chunks = []
+        # format of communication: -1 when a new file begins and later the
+        # sizes of chunks in the consecutive lines that use only the files that
+        # we already have
         file_num = 0
-        for line in buf:
-            num = int(line.strip())
-            if num == -1:
-                with open(files[file_num], "r") as fil:
-                    for chunk in chunks:
-                        yield storage.Chunk(fil.read(chunk))
-                file_num += 1
-                chunks = []
-            else:
-                chunks.append(num)
+        with StreamReader() as sreader:
+            for line in buf:
+                num = int(line.strip())
+                if num == -1:
+                    sreader.addFile(files[file_num])
+                    file_num += 1
+                else:
+                    yield sreader.getChunk(num)

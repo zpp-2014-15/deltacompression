@@ -19,6 +19,8 @@ int processFile(const std::string &fileName, hydra::chunking::ChunkerAdapter &ad
     in.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     in.seekg(0, std::ios::end);
 
+    std::cout << -1 << std::endl;
+
     size_t content_size = in.tellg();
     if (content_size != 0) {
         std::unique_ptr<char[]> content(new char[content_size]);
@@ -37,13 +39,8 @@ int processFile(const std::string &fileName, hydra::chunking::ChunkerAdapter &ad
         while (adapter.haveChunk()) {
             std::cout << getChunkSize(adapter.getChunkRef()) << std::endl;
         }
-
-        while (!adapter.isEmpty()) {
-            std::cout << getChunkSize(adapter.getTerminalChunkRef()) << std::endl;
-        }
     }
 
-    std::cout << -1 << std::endl;
     return 0;
 }
 
@@ -72,5 +69,8 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    while (!adapter.isEmpty()) {
+        std::cout << getChunkSize(adapter.getTerminalChunkRef()) << std::endl;
+    }
     return 0;
 }
