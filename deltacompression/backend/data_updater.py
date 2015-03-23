@@ -19,7 +19,17 @@ class DataUpdater(object):
         self._storage = storage_object
 
     def update(self, chunk):
-        """Adds chunk to the storage.
+        if self._storage.containsChunk(chunk):
+            if self.getLogger():
+                self.getLogger().incDuplicates()
+            return None
+        else:
+            if self.getLogger():
+                self.getLogger().incTotalBlocks()
+            return self.addNewChunk(chunk)
+
+    def addNewChunk(self, new_chunk):
+        """Adds new chunk to the storage.
 
         Args:
             chunk: instance of Chunk that will be added to the storage.
@@ -27,6 +37,9 @@ class DataUpdater(object):
             ChunkUpdate object for the given chunk.
         """
         raise NotImplementedError
+
+    def getLogger(self):
+        return self._storage.getLogger()
 
     def addReceivedData(self, decompressed_data):
         """Updates the storage with the decompressed data received from another
@@ -36,12 +49,9 @@ class DataUpdater(object):
 
 class DummyUpdater(DataUpdater):
 
-    def update(self, chunk):
-        if not self._storage.containsChunk(chunk):
-            self._storage.addChunk(chunk)
-            return chunk_update.DummyChunkUpdate(chunk)
-        else:
-            return None
+    def addNewChunk(self, chunk):
+        self._storage.addChunk(chunk)
+        return chunk_update.DummyChunkUpdate(chunk)
 
     def addReceivedData(self, data):
         while data:
@@ -68,9 +78,7 @@ class DeltaUpdater(DataUpdater):
 
 class OptimalDeltaUpdater(DeltaUpdater):
 
-    def update(self, chunk):
-        if self._storage.containsChunk(chunk):
-            return None
+    def addNewChunk(self, chunk):
         best_update = chunk_update.DeltaChunkUpdate(None, chunk.get())
         for base in self._storage.getChunks():
             diff = self._diff.calculateDiff(base, chunk)
