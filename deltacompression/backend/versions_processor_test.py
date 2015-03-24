@@ -45,4 +45,10 @@ class VersionsProcessorTest(unittest.TestCase):
         self._testRunSimulation(["v1", "v2"])
 
     def testManyVersions(self):
-        self._testRunSimulation(["v" + str(i) for i in xrange(10)])
+        self._testRunSimulation(["v" + str(i) for i in xrange(100)])
+
+    def testVersionsWithDots(self):
+        self._testRunSimulation(
+            ["linux1.1", "linux1.2", "linux2.1", "linux2.2",
+             "linux2.13", "linux11.9", "linux11.10"])
+
