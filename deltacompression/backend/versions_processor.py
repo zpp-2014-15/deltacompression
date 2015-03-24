@@ -33,7 +33,21 @@ class VersionsProcessor(object):
                                              for s in re.split(r'(\d+)', dir)]
         all_dirs = sorted([(x, y) for (x, y) in all_files if op.isdir(x)],
                           key=natural_sort_key)
+        logger = self._directory_processor.getLogger()
 
         for full_path, version_dir in all_dirs:
-            yield (version_dir, self._directory_processor.processDirectory(
-                full_path))
+            if logger:
+                before_blocks = logger.getTotalBlocks()
+                before_dups = logger.getDuplicates()
+
+            processed = self._directory_processor.processDirectory(full_path)
+
+            if logger:
+                new_blocks = logger.getTotalBlocks() - before_blocks
+                duplicates = logger.getDuplicates() - before_dups
+                percent = "{0:.2f}%".format(float(duplicates) * 100 /
+                                            (duplicates + new_blocks))
+                yield (version_dir + " " + percent +
+                       " duplicates", processed)
+            else:
+                yield (version_dir, processed)

@@ -13,4 +13,5 @@ six==1.8.0
 wsgiref==0.1.2
 wxPython==2.8.12.1
 testfixtures==4.1.1
+pyprimes==0.1
 pylzma==0.4.6

@@ -1,4 +1,6 @@
 """Contains queue of experiments"""
+import threading
+import wx
 
 from wx.lib.pubsub import Publisher # pylint: disable=E0611
 
@@ -52,3 +54,63 @@ class DummyExperimentQueue(ExperimentQueue):
         self._experiment = None
         self._sendExperimentPerformedEvt(exp_result)
         self._sendQueueChangedEvt()
+
+
+class ThreadEvent(wx.PyCommandEvent):
+
+    evt_EXECUTED = wx.NewEventType()
+    EVT_EXECUTED = wx.PyEventBinder(evt_EXECUTED)
+
+    def __init__(self, value=None):
+        super(ThreadEvent, self).__init__(self.evt_EXECUTED, -1)
+        self._value = value
+
+    def getValue(self):
+        return self._value
+
+
+class ExperimentThread(threading.Thread):
+    def __init__(self, parent, experiment):
+        threading.Thread.__init__(self)
+        self._parent = parent
+        self._experiment = experiment
+
+    def run(self):
+        exp_result = self._experiment.run()
+        evt = ThreadEvent(exp_result)
+        wx.PostEvent(self._parent, evt)
+
+
+class AsyncExperimentQueue(ExperimentQueue, wx.EvtHandler):
+    """Performs experiments asynchronically."""
+
+    def __init__(self):
+        super(AsyncExperimentQueue, self).__init__()
+        self._experiments = []
+        self.Bind(ThreadEvent.EVT_EXECUTED, self._onExecuted)
+
+    def getExperimentsList(self):
+        return self._experiments
+
+    def addExperiment(self, experiment):
+        self._experiments.append(experiment)
+        self._sendQueueChangedEvt()
+
+        if len(self._experiments) == 1:
+            self._runNextExperiment()
+
+    def _runNextExperiment(self):
+        thread = ExperimentThread(self, self._experiments[0])
+        thread.daemon = True
+        thread.start()
+
+    def _onExecuted(self, evt):
+        exp_result = evt.getValue()
+        self._experiments.pop(0)
+        self._sendExperimentPerformedEvt(exp_result)
+        self._sendQueueChangedEvt()
+
+        if len(self._experiments) > 0:
+            self._runNextExperiment()
+
+

@@ -58,4 +58,11 @@ Running application
 ````bash
 python deltacompresion/main.py
 ````
-
+Getting C module to work
+===================
+Install distutils package. Go to the directory 'backend/features_calculator'
+and run the setup.py script:
+````bash
+python setup.py build
+````
+After that move the *.so file to the 'backend' directory.

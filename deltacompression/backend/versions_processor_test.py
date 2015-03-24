@@ -20,6 +20,8 @@ class VersionsProcessorTest(unittest.TestCase):
         self._versions_processor = versions_processor.VersionsProcessor(
             self._dir_mock)
 
+        self._dir_mock.getLogger.return_value = None
+
     def _testRunSimulation(self, dirs):
         with testfixtures.TempDirectory() as tmp_dir:
             for dir_name in dirs:
