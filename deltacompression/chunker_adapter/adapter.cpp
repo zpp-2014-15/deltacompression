@@ -11,10 +11,13 @@
 #include <iostream>
 
 
+/* We need this class because we have to make sure that the memory that is
+ * passed to the external ChunkerAdapter is freed at the appropriate moment. */
 class ChunkerAdapter {
 private:
     std::list<std::pair<std::shared_ptr<char>, size_t>> regions;
     hydra::chunking::ChunkerAdapter adapter;
+
     void removeChunk(size_t ch_size) {
         while (ch_size) {
             auto && region = regions.front();
@@ -41,7 +44,9 @@ public:
     }
 
     bool haveChunk() { return adapter.haveChunk(); }
+
     bool isEmpty() { return adapter.isEmpty(); }
+
     size_t getChunk() {
         assert(haveChunk());
         size_t bytes = adapter.getChunkRef().getTotalBytes();

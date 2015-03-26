@@ -35,7 +35,8 @@ class ChunkerException(Exception):
 
 
 class StreamReader(object):
-    """Class for holding a stream of files."""
+    """Class for convenient reading from a sequence of files.
+    It lets us treat a sequence of files as a stream of data."""
 
     def __init__(self):
         self._queue = collections.deque()
