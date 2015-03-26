@@ -4,6 +4,7 @@ Module contains class needed for adding and compressing data from directory.
 
 import os
 import os.path as op
+import re
 
 
 class VersionsProcessor(object):
@@ -13,6 +14,10 @@ class VersionsProcessor(object):
 
     def setDirectoryProcessor(self, directory_processor):
         self._directory_processor = directory_processor
+
+    def _natural_sort_key(self, (_, directory)):
+        return [int(s) if s.isdigit() else s
+                for s in re.split(r'(\d+)', directory)]
 
     def runSimulation(self, directory):
         """Processes directory with versions as subdirectories.
@@ -28,7 +33,8 @@ class VersionsProcessor(object):
         """
         all_files = [(op.join(directory, file_name), file_name)
                      for file_name in os.listdir(directory)]
-        all_dirs = sorted((x, y) for (x, y) in all_files if op.isdir(x))
+        all_dirs = sorted([(x, y) for (x, y) in all_files if op.isdir(x)],
+                          key=self._natural_sort_key)
         logger = self._directory_processor.getLogger()
 
         for full_path, version_dir in all_dirs:
