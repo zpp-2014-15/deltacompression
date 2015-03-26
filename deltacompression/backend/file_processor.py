@@ -2,6 +2,8 @@
 Module contains class needed for adding and compressing data from single files.
 """
 
+import cStringIO
+
 from deltacompression.chunker_adapter import chunker
 
 
@@ -38,9 +40,9 @@ class FileProcessor(object):
             OSError
             IOError
         """
-        data = []
+        buf = cStringIO.StringIO()
         for chunk in self._chunker.chunkData(files):
             update = self._data_updater.update(chunk)
             if update:
-                data.append(update.serialize())
-        return "".join(data)
+                buf.write(update.serialize())
+        return buf.getvalue()

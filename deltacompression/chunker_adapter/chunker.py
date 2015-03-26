@@ -39,34 +39,31 @@ class StreamReader(object):
 
     def __init__(self):
         self._queue = collections.deque()
+        self._file = None
+
+    def _prepareFile(self):
+        if not self._file:
+            filename = self._queue.popleft()
+            self._file = open(filename, 'r')
 
     def getChunk(self, size):
-        parts = []
+        buf = cStringIO.StringIO()
         while size:
-            fil = self._queue[0]
-            part = fil.read(size)
+            self._prepareFile()
+            part = self._file.read(size)
             if len(part) < size:
-                try:
-                    self._queue.popleft()
-                finally:
-                    fil.close()
+                self._file.close()
+                self._file = None
             size -= len(part)
-            parts.append(part)
-        return storage.Chunk("".join(parts))
+            buf.write(part)
+        return storage.Chunk(buf.getvalue())
 
     def addFile(self, filename):
-        fil = None
-        try:
-            fil = open(filename, "r")
-            self._queue.append(fil)
-        except:
-            if fil:
-                fil.close()
-            raise
+        self._queue.append(filename)
 
     def close(self):
-        for fil in self._queue:
-            fil.close()
+        if self._file and not self._file.closed:
+            self._file.close()
 
     def __enter__(self):
         return self
