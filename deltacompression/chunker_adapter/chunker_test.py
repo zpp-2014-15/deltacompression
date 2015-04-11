@@ -2,9 +2,8 @@
 """Tests for chunker.py"""
 
 import os
-import os.path as op
 import unittest
-import shutil
+import testfixtures
 
 from deltacompression.chunker_adapter import chunker
 
@@ -12,9 +11,7 @@ from deltacompression.chunker_adapter import chunker
 class ChunkerTest(unittest.TestCase):
     """ Test for the Chunker class. """
 
-    cur_dir = op.abspath(op.dirname(__file__))
-    file_name = op.join(cur_dir, "__test_file__")
-    dir_name = op.join(cur_dir, "___secret_test_directory___")
+    file_name = "__test_file__"
     bad_file_name = "___surely_there_is_no_such_file___"
 
     def setUp(self):
@@ -24,14 +21,12 @@ class ChunkerTest(unittest.TestCase):
     def _testChunking(self, cont, file_name=None):
         if file_name is None:
             file_name = self.file_name
-        with open(file_name, "w") as tfile:
-            tfile.write(cont)
-        try:
+        with testfixtures.TempDirectory() as tmp:
+            tmp.write(file_name, cont)
+            abs_path = os.path.join(tmp.path, file_name)
             ncont = "".join(
-                [chunk.get() for chunk in self._chunker.chunkData([file_name])])
-        finally:
-            os.remove(file_name)
-        self.assertEqual(cont, ncont)
+                [chunk.get() for chunk in self._chunker.chunkData([abs_path])])
+            self.assertEqual(cont, ncont)
 
     def testFileWithData(self):
         cont = ",".join([str(i) for i in xrange(15000)])
@@ -57,19 +52,16 @@ class ChunkerTest(unittest.TestCase):
             self._testChunking("a", file_name)
 
     def test_many_files(self):
-        files = [op.join(self.dir_name, n) for n in ["a", "b", "c"]]
+        files = ["a", "b", "c"]
         conts = ["aaaa", "bbbb", "cccc"]
-        try:
-            os.mkdir(self.dir_name)
+        with testfixtures.TempDirectory() as tmp:
             for file_name, cont in zip(files, conts):
-                with open(file_name, "w") as fil:
-                    fil.write(cont)
+                tmp.write(file_name, cont)
+            abs_paths = [os.path.join(tmp.path, f) for f in files]
             ncont = "".join(
-                [chunk.get() for chunk in self._chunker.chunkData(files)])
+                [chunk.get() for chunk in self._chunker.chunkData(abs_paths)])
             cont = "".join(conts)
             self.assertEqual(cont, ncont)
-        finally:
-            shutil.rmtree(self.dir_name)
 
 
 if __name__ == "__main__":
