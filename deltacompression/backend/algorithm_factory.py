@@ -51,13 +51,13 @@ class AlgorithmFactory(object):
 
             # TODO the whole algorithm should be parametrized by the 2 values
             # below
-            ssize = 2
-            snum = 4
+            snum = 2
+            ssize = 4
             random.seed(99453459353)
             beg = 10000000
             end = 1000000000
             qmod, prim = tuple([generate_prime(beg, end) for _ in xrange(2)])
-            primes = generate_primes(snum * ssize, beg, end)
+            primes = generate_primes(2 * snum * ssize, beg, end)
             pis = [tuple(primes[x:x+2]) for x in xrange(0, len(primes), 2)]
 
             par = data_updater.SimilarityIndexParams(fmod=2 ** 20, ssize=ssize,
