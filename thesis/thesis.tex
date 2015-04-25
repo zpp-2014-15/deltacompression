@@ -7,7 +7,7 @@
 % Poprawki spowodowane zmianami przepisow i ujednolicenie 
 % - Seweryn Kar³owicz, 05.05.2006
 % dodaj opcjê [licencjacka] dla pracy licencjackiej
-\documentclass{styles}
+\documentclass[licencjacka]{styles}
 
 \usepackage{polski}
 \usepackage{url}
@@ -26,8 +26,7 @@
 
 \title{Optymalizacja ruchu sieciowego w symulowanym systemie rozproszonych kopii zapasowych}
 
-% TODO
-\tytulang{TODO}
+\tytulang{Optimization of network traffic in distributed backup systems}
 
 \kierunek{Informatyka}
 
@@ -48,14 +47,13 @@
 }
 
 %Klasyfikacja tematyczna wedlug AMS (matematyka) lub ACM (informatyka)
-\klasyfikacja{TODO: Trzeba bêdzie dorobiæ, jak strona ACM zacznie siê wczytywaæ :D (ko³o po³udnia dzia³a³a, wieczorem ju¿ nie chce)\\
-  D. Software\\
-  D.127. Blabalgorithms\\
-  D.127.6. Numerical blabalysis}
-
+\klasyfikacja{
+	10002951 Information systems\\
+	10002951.10003152.10003517.10003519 Distributed storage\\
+  10002951.10002952.10002971.10003451.10002975 Data compression
+  }
 % S³owa kluczowe:
-% TODO
-\keywords{delta kompresja, indeks podobieñstwa, optymalizacja ruchu sieciowego}
+\keywords{delta kodowanie, indeks podobieñstwa, optymalizacja ruchu sieciowego, rozproszony system kopii zapasowych}
 
 % Tu jest dobre miejsce na Twoje w³asne makra i~œrodowiska:
 \newtheorem{defi}{Definicja}[section]
@@ -67,7 +65,8 @@
 
 %tu idzie streszczenie na strone poczatkowa
 \begin{abstract}
-TODO
+W pracy przedstawiono opis symulatora rozproszonych kopii zapasowych, algorytmów delta kodowania oraz wyników, które zosta³y uzyskane.
+Symulator naœladuje pracê systemu HYDRAstor oraz pozwala na zbadanie wad i zalet zwi¹zanych z wdro¿eniem nowych rozwi¹zañ.
 \end{abstract}
 
 \tableofcontents
