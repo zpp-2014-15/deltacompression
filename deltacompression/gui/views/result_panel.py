@@ -19,6 +19,10 @@ class ResultPanel(wx.Panel):
 
     evt_ANALYSE = wx.NewEventType()
     EVT_ANALYSE = wx.PyEventBinder(evt_ANALYSE)
+    evt_SAVE = wx.NewEventType()
+    EVT_SAVE = wx.PyEventBinder(evt_SAVE)
+    evt_LOAD = wx.NewEventType()
+    EVT_LOAD = wx.PyEventBinder(evt_LOAD)
 
     _ANALYSE = "Analyse"
     _SELECT_ALL = "Select all"
@@ -27,6 +31,17 @@ class ResultPanel(wx.Panel):
                         "the experiments and there should be at least one "
                         "experiment.")
 
+    _SAVE = "Save to a file"
+    _LOAD = "Load from a file"
+    _CHOOSE_FILE_TO_LOAD = "Choose a file"
+    _CHOOSE_FILE_TO_SAVE = "Save a file"
+    _EXTENSION = "kzl"
+    _FILE_FORMAT = "{UP} files (*.{LO})|*.{LO}".format(UP=_EXTENSION.upper(),
+                                                       LO=_EXTENSION)
+    _CANT_SAVE = "Cannot save data in file {}"
+    _CANT_LOAD = "Cannot load data from file {}"
+    _DEF_FILE_NAME = "*.{}".format(_EXTENSION)
+
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
@@ -34,6 +49,9 @@ class ResultPanel(wx.Panel):
         self._select_all_button = None
         self._deselect_all_button = None
         self._analyse_button = None
+        self._save_button = None
+        self._load_button = None
+        self._path = None
 
         self._initUI()
 
@@ -59,10 +77,21 @@ class ResultPanel(wx.Panel):
         hbox.Add(self._deselect_all_button, 1, wx.EXPAND)
         sizer.Add(hbox, 0, wx.EXPAND)
 
+        action_hbox = wx.BoxSizer(wx.HORIZONTAL)
         self._analyse_button = wx.Button(self, label=self._ANALYSE,
                                          size=(-1, 50))
+        self._save_button = wx.Button(self, label=self._SAVE, size=(-1, 50))
+        self._load_button = wx.Button(self, label=self._LOAD, size=(-1, 50))
+
         self._analyse_button.Bind(wx.EVT_BUTTON, self._onClickAnalyse)
-        sizer.Add(self._analyse_button, 0, wx.EXPAND)
+        self._load_button.Bind(wx.EVT_BUTTON, self._onClickLoad)
+        self._save_button.Bind(wx.EVT_BUTTON, self._onClickSave)
+
+        action_hbox.Add(self._analyse_button, 1, wx.EXPAND)
+        action_hbox.Add(self._save_button, 1, wx.EXPAND)
+        action_hbox.Add(self._load_button, 1, wx.EXPAND)
+
+        sizer.Add(action_hbox, 0, wx.EXPAND)
 
         self.SetSizer(sizer)
 
@@ -108,6 +137,40 @@ class ResultPanel(wx.Panel):
         self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
             self.evt_ANALYSE, self.GetId()))
 
+    def _onClickLoad(self, _):
+        choose_file_dialog = wx.FileDialog(self, self._CHOOSE_FILE_TO_LOAD,
+                                           "", "", self._FILE_FORMAT,
+                                           wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+        if choose_file_dialog.ShowModal() == wx.ID_CANCEL:
+            return
+        self._path = choose_file_dialog.GetPath()
+
+        self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
+            self.evt_LOAD, self.GetId()))
+
+    def _onClickSave(self, _):
+        save_file_dialog = wx.FileDialog(self, self._CHOOSE_FILE_TO_SAVE,
+                                         "", self._DEF_FILE_NAME,
+                                         self._FILE_FORMAT,
+                                         wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
+        if save_file_dialog.ShowModal() == wx.ID_CANCEL:
+            return
+        self._path = save_file_dialog.GetPath()
+
+        self.GetEventHandler().ProcessEvent(wx.PyCommandEvent(
+            self.evt_SAVE, self.GetId()))
+
+    def _showError(self, msg):
+        wx.MessageBox(msg, "Error", wx.OK | wx.ICON_ERROR)
+
     def onIncorrectItems(self):
-        wx.MessageBox(self._INCORRECT_ITEMS, "Info",
-                      wx.OK | wx.ICON_INFORMATION)
+        self._showError(self._INCORRECT_ITEMS)
+
+    def onLoadError(self):
+        self._showError(self._CANT_LOAD.format(self._path))
+
+    def onSaveError(self):
+        self._showError(self._CANT_SAVE.format(self._path))
+
+    def getPath(self):
+        return self._path

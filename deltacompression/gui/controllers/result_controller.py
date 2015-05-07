@@ -1,5 +1,7 @@
 """Controls result list model and view."""
 
+import pickle
+
 from deltacompression.gui.views import chart_view
 
 
@@ -17,9 +19,13 @@ class ResultController(object):
         self._result_list = result_list
         self._panel = panel
         self._initSignals()
+        self._ser_errors = (pickle.PickleError, AttributeError, EOFError,
+                            ImportError, IndexError, IOError)
 
     def _initSignals(self):
         self._panel.Bind(self._panel.EVT_ANALYSE, self._onAnalyseExperiments)
+        self._panel.Bind(self._panel.EVT_LOAD, self._onLoadFile)
+        self._panel.Bind(self._panel.EVT_SAVE, self._onSaveFile)
 
     def _checkValidity(self, results):
         if not results:
@@ -31,11 +37,13 @@ class ResultController(object):
                 return False
         return True
 
-    def _onAnalyseExperiments(self, _):
+    def _getResults(self):
         checked = self._panel.getCheckedIndices()
-
         results = [self._result_list[i] for i in checked]
+        return results
 
+    def _onAnalyseExperiments(self, _):
+        results = self._getResults()
         if not self._checkValidity(results):
             self._panel.onIncorrectItems()
             return
@@ -43,6 +51,28 @@ class ResultController(object):
         chart = chart_view.BarChartView(results)
         chart.show()
 
-    def onExperimentPerformed(self, exp_result):
+    def _onLoadFile(self, _):
+        path = self._panel.getPath()
+        try:
+            with open(path, "r") as fil:
+                new_results = pickle.load(fil)
+                for res in new_results:
+                    self._addResult(res)
+        except self._ser_errors:
+            self._panel.onLoadError()
+
+    def _onSaveFile(self, _):
+        path = self._panel.getPath()
+        results = self._getResults()
+        try:
+            with open(path, "w") as fil:
+                pickle.dump(results, fil)
+        except self._ser_errors:
+            self._panel.onSaveError()
+
+    def _addResult(self, exp_result):
         self._panel.addResultToList(exp_result)
         self._result_list.append(exp_result)
+
+    def onExperimentPerformed(self, exp_result):
+        self._addResult(exp_result)
