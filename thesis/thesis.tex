@@ -12,6 +12,7 @@
 \usepackage{polski}
 \usepackage{url}
 \usepackage{graphicx}
+\usepackage{pgffor}
 \urlstyle{same}
 
 %Jesli uzywasz kodowania polskich znakow ISO-8859-2 nastepna linia powinna byc odkomentowana
@@ -65,8 +66,8 @@
 
 %tu idzie streszczenie na strone poczatkowa
 \begin{abstract}
-W pracy przedstawiono opis symulatora rozproszonych kopii zapasowych, algorytmów delta kodowania oraz wyników, które zosta³y uzyskane.
-Symulator naœladuje pracê systemu HYDRAstor oraz pozwala na zbadanie wad i zalet zwi¹zanych z wdro¿eniem nowych rozwi¹zañ.
+W pracy przedstawiono opis symulatora rozproszonych kopii zapasowych, algorytmów delta kodowania oraz wyniki przeprowadzonych eksperymentów.
+Symulator naœladuje pracê systemu HYDRAstor oraz pozwala na zbadanie wp³ywu wdro¿enia nowych rozwi¹zañ na wydajnoœæ systemu.
 \end{abstract}
 
 \tableofcontents
@@ -77,68 +78,119 @@ Symulator naœladuje pracê systemu HYDRAstor oraz pozwala na zbadanie wad i zalet
 
 \chapter*{Wstêp}
 \addcontentsline{toc}{chapter}{Wstêp}
+W wielu wspó³czesnych systemach kopii zapasowych w¹skim gard³em procesu replikacji jest przesy³anie danych ³¹czem internetowym.
+W minimalizacji ich rozmiaru niew¹tpliwie pomaga dzielenie strumienia danych na bloki zmiennej d³ugoœci i u¿ywanie haszowania do eliminacji duplikatów.
+Jednak to podejœcie ma swoje ograniczenia. W przypadku du¿ego rozmiaru bloku jest bardzo prawdopodobne, ¿e znajd¹ siê 2 prawie identyczne bloki, a istniej¹cy system tego nie wykryje i bêdzie przechowywa³ oba, co jest zachowaniem dalekim od optymalnego.
+\\*
+Sposobem na poprawienie tego jest zastosowanie delta kodowania z u¿yciem indeksu podobieñstwa.
+Polega to na obliczaniu w okreœlony sposób cech ka¿dego unikalnego bloku, a przy dodawaniu nowego bloku sprawdzaniu, czy istnieje blok podobny do niego.
+Miêdzy podobnymi blokami oblicza siê ró¿nicê o rozmiarze zazwyczaj zdecydowanie mniejszym od rozmiaru ca³ego bloku.
+\\*
+Zastosowanie tego pomys³u w istniej¹cym systemie kopii zapasowych wymaga ogromnych nak³adów pracy i nie daje ¿adnych gwarancji.
+Z tego powodu na zlecenie firmy 9LivesData stworzyliœmy symulator jej systemu HYDRAstor, aby du¿o mniejszym wysi³kiem uzyskaæ informacjê, jakiego rzêdu zysków nale¿y siê spodziewaæ.
+Stworzony symulator pozwala na badanie wp³ywu kilku czynników na iloœæ przesy³anych danych.
+Badane jest znaczenie kompresji, rozmiaru bloku, a przede wszystkim samego delta kodowania.
+Jednoczeœnie symulator stosuje mechanizmy oryginalnego systemu: dzielenie na bloki zmiennej d³ugoœci i wykrywanie duplikatów.
 
-Celem projektu jest dostarczenie wygodnego w u¿yciu symulatora, który umo¿liwia testowanie algorytmów delta kodowania, wraz z przyk³adowymi implementacjami.
-Pozwala to odpowiedzieæ na pytanie czy warto zastosowaæ delta kodowanie w rozproszonym systemie kopii zapasowych, 
-który korzysta ju¿ z bloków o zmiennej d³ugoœci oraz kompresji.
-Takie optymalizacje s¹ istotne, gdy przesy³amy dane podczas replikacji kopii zapasowych.
-Niejednokrotnie w¹skim gard³em jest szybkoœæ ³¹cza, zw³aszcza gdy dane s¹ przesy³ane miêdzy odleg³ymi centrami danych.
+\chapter{System HYDRAstor}
+Naszym zadaniem jest symulacja systemu HYDRAstor, wiêc nale¿y w skrócie opowiedzieæ jego dzia³anie.
+Oczywiœcie symulator naœladuje pracê tego systemu jedynie z pewnym przybli¿eniem - w rzeczywistoœci jest on du¿o bardziej z³o¿ony.
+Pogl¹dowy rysunek przedstawia pracê tego systemu.
+\section{Bloki zmiennej d³ugoœci}
+Bloki zmiennej d³ugoœci pozwalaj¹ w znacznym stopniu zmniejszyæ rozmiar danych, które zostan¹ przes³ane podczas replikacji, czyli procesu tworzenia nowej kopii.
+Za³ó¿my chwilowo, ¿e stosujemy bloki sta³ej wielkoœci i mamy na serwerze strumieñ danych o bardzo du¿ym rozmiarze.
+Nastêpnie w œrodku tego strumienia zostaje dodany jeden znak.
+Sprawia to, ¿e po³owa strumienia zostanie podzielona na zupe³nie nowe bloki, mimo ¿e dane siê praktycznie nie zmieni³y.
+Stosowanie bloków zmiennej d³ugoœci w po³¹czeniu z komponentem zwanym chunkerem, który wybiera granice bloków na podstawie samych danych, stosuj¹c pewne heurystyki, pozwala unikn¹æ tego problemu.
+W powy¿szym przyk³adzie zadzia³a³by tak, ¿e kilka bloków po nowym znaku by³oby innych, ale reszta nie zmieni³aby siê.
+\section{Deduplikacja}
+Dla ka¿dego z nowo dodanych bloków jest tworzony identyfikator za pomoc¹ jednej z popularnych funkcji skrótu.
+Pozwala to na eliminacjê duplikatów ze zbioru przechowywanych bloków.
+Ma to du¿e znaczenie praktyczne, jeœli kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
+\section{Kompresja}
+Przed przes³aniem bloki s¹ poddawane dzia³aniu algorytmowi kompresji, co pozwala znacz¹co zmieniæ rozmiar danych.
+Stosowany algorytm kompresji musi nie tylko mieæ dobry wspó³czynnik kompresji, ale te¿ nie zu¿ywaæ zbyt du¿o zasobów.
+\foreach \n in {1, ..., 8} {
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/visualization/\n.png}
+    \caption{HYDRAstor \n}
+    \label{fig:hydra\n}
+\end{figure}
+}
 
-Bloki zmiennej d³ugoœci pozwalaj¹ w znacznym stopniu zmniejszyæ iloœæ danych, która zastanie przes³ane podczas replikacji.
-Za³ó¿my pocz¹tkowo, ¿e plik jest dzielony na bloki o sta³ym rozmiarze.
-WyobraŸmy sobie du¿y plik, który zosta³ ju¿ umieszczony na serwerze kopii zapasowych.
-U¿ytkownik dodaje w œrodku tego pliku jeden znak i przesy³a now¹ wersjê pliku na serwer.
-Serwer dzieli ten plik na bloki i przesy³a tylko nowe do innych serwerów replikuj¹cych.
-Wstawienie jednej litery spowodowa³o, ¿e oko³o po³owa bloków zosta³a przes³ana po dodaniu tylko jednej litery.
-Bloki o zmiennej d³ugoœci mog¹ to znacznie poprawiæ. Je¿eli odpowiednio podzieli siê plik na bloki to okazuje siê, ¿e
-wystarczy przes³aæ tylko jeden blok, który zosta³ zmieniony przez tê dodan¹ literê.
-W tym miejscu mo¿na dodatkowo zastosowaæ delta kodowanie.
-Je¿eli blok zosta³ zmodyfikowany w niewielkim stopniu to zamiast przesy³aæ go ca³ego, lepiej przes³aæ numer bloku oraz ró¿nicê wzglêdem niego.
-Na koniec przed przes³aniem jakichkolwiek danych nale¿y je skompresowaæ.
+\chapter{Delta kodowanie}
+Delta kodowanie sprowadza siê do dwóch zasadniczych problemów: znajdowania podobnych bloków i liczenia ró¿nic miêdzy nimi.
+\section{Liczenie ró¿nic}
+Jest to popularny w informatyce problem, aby na podstawie dwóch fragmentów danych stworzyæ ró¿nicê (ang. delta), dziêki której maj¹c tylko pierwszy fragment i ow¹ ró¿nicê, mo¿na  by³o odtworzyæ drugi fragment. Oczywiœcie rola owych fragmentów nie jest symetryczna - liczymy ró¿nicê jednego wzglêdem drugiego. Powsta³ szereg algorytmów, które siê tym zajmuj¹.
+\\*
+Jeden z nich implementuje popularny program Diff z systemów Unix. Jednak nie jest dobrym kandydatem do naszego problemu, gdy¿ porównuje pliki na poziomie linii, co ma szanse siê sprawdziæ jedynie dla w¹skiego zbioru plików tekstowych.
+Interesuj¹ nas przede wszystkim algorytmy przeznaczone do liczenia ró¿nic miêdzy danymi binarnymi. Ograniczymy siê jednak do algorytmu xdelta3, którego u¿ywamy w symulatorze.
+W du¿ym uproszczeniu jego dzia³anie polega na odtwarzaniu po kolei pliku, wykonuj¹c kilka operacji:
+\begin{itemize}
+\item wstawienie danego ci¹gu bajtów
+\item skopiowanie ci¹gu bajtów z odtworzonego ju¿ fragmentu
+\item skopiowanie ci¹gu bajtów z bazowego fragmentu
+\end{itemize}
 
-Zaimplementowany system pozwala testowaæ wszelkie parametry takiego systemu kopii zapasowych.
-Miêdzy innymi ró¿ne kompresje, sposoby dzielenia plików na bloki, lecz przede wszystkim algorytmy delta kodowania.
-
-
+\section{Znajdowanie podobnych bloków}
+W symulatorze zaimplementowaliœmy dwa ró¿ne podejœcia do tego problemu.
+\begin{itemize}
+\item
+W algorytmie optymalnym porównujemy nowy blok ze wszystkimi blokami, które posiadamy. Jest on jednak niestosowalny w praktyce ze wzglêdu na asymptotycznie kwadratowy czas dzia³ania ze wzglêdu na iloœæ bloków. Jednak jest on dobrym punktem odniesienia do innych algorytmów - daje on informacjê, jakie jest dolne ograniczenie na rozmiar danych w klasie algorytmów delta kodowania porównuj¹cych z jednym blokiem.
+\item
+W algorytmie z indeksem podobieñstwa stosujemy zdecydowanie bardziej wyrafinowan¹ strategiê. Dla ka¿dego bloku bêdziemy liczyli okreœlon¹, sta³¹ iloœæ $K$ wartoœci liczbowych zwanych cechami (ang. feature). W tym celu poruszamy siê po bloku oknem (ang. window) o sta³ym rozmiarze $W$ i dla ka¿dego okna $w$ liczymy znacznik Rabina (ang. Rabin’s fingerprint) $fp(w)$. Dla cechy o numerze $i$ definiujemy dwie wartoœci $m_i$ oraz $a_i$. Wartoœci¹ cechy o numerze $i$ bêdzie minimum po wszystkich oknach $w$ z $(fp(w) * m_i + a_i) \ mod \ 2^{32}$. Wartoœciami $a_i$ oraz $m_i$ powinny byæ du¿e, losowe liczby pierwsze, jednak w celu zapewnienia powtarzalnoœci eksperymentów s¹ one w naszym symulatorze ustalone. Nastêpnie tworzymy supercechy (ang. superfeature) z ustalonej liczby $S$ zwyk³ych cech. W tym celu dzielimy cechy danego bloku na grupy po $K$ kolejnych cech i dla ka¿dej z grup liczymy znacznik Rabina - jego wartoœæ bêdzie wartoœci¹ danej supercechy. Wszystkie znaczniki liczymy przy u¿yciu du¿ych liczb pierwszych $P$ i $Q$. Aby znaleŸæ podobny blok do danego, wybieramy taki, który ma najwiêcej wspólnych super cech (jeœli jest takich wiêcej, wybieramy dowolny). Jeœli zaœ nie ma bloku z jak¹kolwiek wspóln¹ super cech¹, wysy³amy ca³y blok. Eksperymentalnie wyznaczyliœmy, ¿e najlepiej dzia³aj¹ wartoœci $K=4$ i $S=2$ - pod uwagê braliœmy iloœæ czasu potrzebn¹ na obliczenia, iloœæ znajdowanych bloków oraz ich jakoœæ. Oczywiœcie, im wiêksze $K$, tym lepsza jakoœæ kandydatów. Z kolei, im wiêksze $S$, tym wiêcej bloków znajdujemy. Czas obliczeñ jest zaœ wprost proporcjonalny do $S * K$.
+\end{itemize}
 
 \chapter{Funkcjonalnoœci systemu}
 
 \begin{itemize}
-  \item Mo¿liwoœæ wyboru sposobu przechowywania kopii zapasowych.
+        \item Mo¿liwoœæ wyboru sposobu przechowywania kopii zapasowych.
 	
 	Symulator zosta³ zaprojektowany w sposób, który pozwala na wybranie czy ma u¿ywaæ tylko pamiêci RAM, czy te¿ dysku b¹dŸ rozproszonej bazy danych typu klucz-wartoœæ.
 	Pozwala to na wykonywanie zarówno ma³ych testów, które dzia³aj¹ szybko w pamiêci RAM jak i du¿ych testów, które wymagaj¹ znacznie wiêkszej iloœci pamiêci.
 	
 	
-  \item Symulowanie replikacji bez u¿ycia delta kodowania, z u¿yciem optymalnego delta kodowania oraz z heurystycznym delta kodowaniem.
+        \item Symulowanie replikacji bez u¿ycia delta kodowania, z u¿yciem optymalnego delta kodowania oraz z heurystycznym delta kodowaniem.
+  
+        System pozwala na przetestowanie zaimplementowanych algorytmów oraz udostêpnia intuicyjny interfejs programistyczny dziêki czemu mo¿na w prosty sposób rozszerzaæ o kolejne algorytmy.	
 	
-	System pozwala na przetestowanie zaimplementowanych algorytmów oraz udostêpnia intuicyjny interfejs programistyczny dziêki czemu mo¿na w prosty 
-	sposób rozszerzaæ o kolejne algorytmy.
+        \item Kompresja danych przed przes³aniem.
 	
+	Po zastosowani odpowiedniego algorytmu dane przed wys³aniem mog¹ byæ dodatkowo kompresowane przy pomocy lzo, zip lub lzma.
 	
-  \item Kompresja danych przed przes³aniem.
-	
-	Po zastosowani odpowiedniego algorytmu dane przed wys³aniem mog¹ byæ dodatkowo kompresowane przy pomocy lzo lub zip.
-	
-	
-	\item Wygodny graficzny interfejs u¿ytkownika
+        \item Wygodny graficzny interfejs u¿ytkownika
 	
 	Za pomoc¹ graficznego interfejsu u¿ytkownik mo¿e wybraæ interesuj¹ce go konfiguracje, które chce przetestowaæ oraz wygenerowaæ wykres przedstawiaj¹cy wyniki.
-	
 	
 	\item Prezentacja wyników w formie wykresów
 	
 	Wyniki wykonanych symulacji mo¿na wyœwietliæ w postaci interaktywnych wykresów.
 	S¹ one œwietnym narzêdziem, które umo¿liwia zbadanie faktycznych rezultatów symulacji.
 	
+	\item Serializacja wyników danych.
 	
+	W celu zwiêkszenia elastycznoœci i ergonomii systemu mo¿na wczytywaæ i zapisywaæ do pliku wyniki wybranych eksperymentów.
 \end{itemize}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/app1.png}
+    \caption{Ekran tworzenia eksperymentu}
+    \label{fig:experiment_screen}
+\end{figure}	
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/app2.png}
+    \caption{Ekran tworzenia wykresu}
+    \label{fig:chart_screen}
+\end{figure}
 
-Zostawione, aby ³atwo odtworzyæ schemat ze stylami.
 
 \chapter{Architektura}
 \section{Model MVC}
-Architektura tworzonego przez nas symulatora oparta jest o wzorzec Model-View-Controller, zapewniaj¹cy niezale¿noœæ kodu odpowiedzialnego za interakcjê z u¿ytkownikiem i kodu zajmuj¹cego siê logik¹ biznesow¹ aplikacji. Oprócz standardowych dla wzorca MVC czêœci: model, widok i kontroler w architekturze naszego projektu mo¿emy wyró¿niæ Storage - osobn¹ czêœæ odpowiedzialn¹ za sk³adowanie danych w trakcie trwania symulacji oraz Chunker - czêœæ przetwarzaj¹c¹ pliki z dysku twardego. Zale¿noœci miêdzy poszczególnymi komponentami pokazane s¹ na poni¿szym schemacie.
+Architektura tworzonego przez nas symulatora oparta jest o wzorzec Model-View-Controller, zapewniaj¹cy niezale¿noœæ kodu odpowiedzialnego za interakcjê z u¿ytkownikiem i kodu zajmuj¹cego siê logik¹ biznesow¹ aplikacji.
+Oprócz standardowych dla wzorca MVC czêœci: model, widok i kontroler w architekturze naszego projektu mo¿emy wyró¿niæ Storage - osobn¹ czêœæ odpowiedzialn¹ za sk³adowanie danych w trakcie trwania symulacji oraz Chunker - czêœæ przetwarzaj¹c¹ pliki z dysku twardego.
+Zale¿noœci miêdzy poszczególnymi komponentami pokazane s¹ na poni¿szym schemacie.
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{img/Architecture.png}
@@ -147,53 +199,91 @@ Architektura tworzonego przez nas symulatora oparta jest o wzorzec Model-View-Co
 \end{figure}
 
 \section{Chunker}
-Chunker jest osobnym modu³em zajmuj¹cym siê dzieleniem plików na bloki zmiennej d³ugoœci w taki sposób, aby wprowadzenie modyfikacji w pliku nie wymaga³o przes³ania du¿ej iloœci danych. Zosta³ nam dostarczony przez firmê 9LivesData, umo¿liwia on potencjaln¹ integracjê z rzeczywistym systemem rozproszonych kopii zapasowych.
+Chunker jest osobnym modu³em zajmuj¹cym siê dzieleniem plików na bloki zmiennej d³ugoœci w taki sposób, aby wprowadzenie modyfikacji w pliku nie wymaga³o przes³ania du¿ej iloœci danych.
+Zosta³ nam dostarczony przez firmê 9LivesData.
 
 \section{Storage}
-Storage odpowiada za gromadzenie bloków danych powsta³ych w trakcie fazy dzielenia plików przez Chunker. Ta czêœæ jest wa¿na, poniewa¿ istot¹ algorytmów delta kodowania jest zapisywanie nowych bloków bazuj¹c na podobnych, istniej¹cych ju¿ blokach.
+Storage odpowiada za gromadzenie bloków danych powsta³ych w trakcie fazy dzielenia plików przez Chunker.
+Ta czêœæ jest wa¿na, poniewa¿ istot¹ algorytmów delta kodowania jest zapisywanie nowych bloków bazuj¹c na podobnych, istniej¹cych ju¿ blokach.
 
+\chapter{Wyniki symulacji}
+\section{Format wyników}
+Wyniki s¹ przedstawione w formie wykresów s³upkowych.
+Jeden kolor odpowiada jednej metodzie przesy³ania danych.
+Przyk³adowo kolor czerwony mo¿e odpowiadaæ metodzie przesy³ania kolejnych wersji, w której usuwamy duplikaty, ale nie kompresujemy danych przed przes³aniem.
+Ka¿dy s³upek danego koloru okreœla ile danych trzeba przes³aæ dla kolejnych wersji danych wejœciowych.
+\section{Wyniki dla Ÿróde³ j¹dra Linuxa - ma³e odstêpy}
+Pierwsza symulacja zosta³a przeprowadzona dla Ÿróde³ j¹dra Linuxa.
+Zosta³y przygotowane trzy wersje Ÿróde³ j¹dra Linuxa oddalone od siebie o kilka tysiêcy zmian. Rozmiar danych potrzebnych do przes³ania zosta³a policzona dla czterech metod. 
+Oznaczenia:
+\begin{itemize}
+\item Jasnym czerwonym - proste usuwanie duplikatów, brak kompresji
+\item Zielony - proste usuwanie duplikatów, kompresja zip
+\item ¯ó³ty - indeks podobieñstwa, brak kompresji
+\item Niebieski - indeks podobieñstwa, kompresja zip
+\end{itemize}
+Porównajmy najistotniejsze metody, czyli zielon¹ i niebiesk¹.
+Dla pierwszej wersji w obu przypadkach trzeba przes³aæ prawie tyle samo danych - oko³o 51 MB.
+W przypadku drugiej wersji metoda z indeksem podobieñstwa jest znacznie lepsza, pozwala zmniejszyæ dane do przes³ania o prawie 75\%, a dla trzeciej wersji oko³o 70\%.
+Oko³o 40\% w drugiej i trzeciej wersji nie musia³o byæ przes³anych dziêki deduplikacji.
+Tak dobry wynik jest rezultatem tego, ¿e wersje danych nie s¹ zbytnio oddalone od siebie, dziêki czemu indeks podobieñstwa znajduje wiele podobnych bloków.
+\section{Wyniki dla Ÿróde³ j¹dra Linuxa - du¿e odstêpy}
+W przypadku du¿ych odstêpów miêdzy wersjami Ÿróde³ j¹dra Linuxa indeks podobieñstwa nie dzia³a ju¿ tak dobrze.
+Kolejne wersje s¹ odleg³e od siebie o kilkadziesi¹t tysiêcy zmian przez co czêœæ plików nie zmienia siê w ogóle i wtedy bardzo dobrze dzia³a deduplikacja, a czêœæ zmienia siê tak bardzo, ¿e indeks podobieñstwa nie znajduje podobnych bloków.
+Z tych dwóch powodów indeks podobieñstwa dla danych, które nie maj¹ ze sob¹ du¿o wspólnego daje bardzo marne wyniki.
+\section{Wyniki dla Ÿróde³ ma³ego projektu torch}
+Wa¿ne jest równie¿ jak indeks podobieñstwa dzia³a w porównaniu z optymalnym algorytmem delta kodowania
+Pokazuje to kolejny eksperyment.
+\begin{itemize}
+\item Jasny czerwony - proste usuwanie duplikatów, kompresja zip
+\item Zielony - optymalny algorytm delta kodowania, kompresja zip
+\item ¯ó³ty - indeks podobieñstwa, kompresja zip
+\end{itemize}
 \chapter{Technologie}
 
 \section{Jêzyki programowania}
-System zosta³ napisany g³ównie w jêzyku Python w wersji 2.7. W jêzyku C++ zosta³ napisany adapter odpowiedzialny za obs³ugê chunkera dostarczonego przez firmê 9LivesData w postaci biblioteki programistycznej, którego zadaniem jest dzielenie danych na bloki zmiennej d³ugoœci.
+System zosta³ napisany g³ównie w jêzyku Python w wersji 2.7. W jêzyku C++ zosta³ napisany adapter Chunkera. Z kolei wymagaj¹ca obliczeniowo czêœæ delta kodowania z indeksem podobieñstwa zosta³a napisana w C.
 
 \section{Biblioteki}
-Obs³uga symulatora odbywa siê za pomoc¹ graficznego interfejsu u¿ytkownika stworzonego z u¿yciem pakietu wxPython. Po przeprowadzonej symulacji generowane s¹ ró¿norodne statystyki opisuj¹ce wyniki eksperymentu i wyœwietlane w zwizualizowanej formie, zosta³o to zrealizowane dziêki pygal - bibliotece do tworzenia wykresów w formacie SVG.
+Obs³uga symulatora odbywa siê za pomoc¹ graficznego interfejsu u¿ytkownika stworzonego z u¿yciem pakietu wxPython.
+Po przeprowadzonej symulacji generowane s¹ ró¿norodne statystyki opisuj¹ce wyniki eksperymentu i wyœwietlane w zwizualizowanej formie, zosta³o to zrealizowane dziêki pygal - bibliotece do tworzenia wykresów w formacie SVG.
 
-\section{Przetwarzanie danych}
-Podczas trwania symulacji potrzebne jest przechowywanie danych. W przypadku ich ograniczonego rozmiaru mo¿emy je przechowywaæ po prostu w pamiêci operacyjnej, co gwarantuje du¿¹ wydajnoœæ. Natomiast gdy mamy do czynienia z danymi wiêkszych rozmiarów, musimy korzystaæ z rozwi¹zania wykorzystuj¹cego dysk twardy. W naszym przypadku wybraliœmy MongoDB, jest to nierelacyjna baza danych, która umo¿liwia efektywne przechowywanie danych typu klucz-wartoœæ, w naszym przypadku kluczem jest hash, a wartoœci¹ jest ca³y blok o danym hashu.
+\section{Baza danych}
+Wybraliœmy MongoDB, jest to nierelacyjna baza danych, która umo¿liwia efektywne przechowywanie danych typu klucz-wartoœæ, w naszym przypadku kluczem jest hash, a wartoœci¹ jest ca³y blok o danym hashu.
 
 \chapter{Organizacja pracy}
 
-% \begin{itemize}
 \section{System kontroli wersji}
 Tworzona przez nas aplikacja jest rozwijana z pomoc¹ systemu kontroli
-wersji git. Korzystamy ze zdalnego repozytorium na serwisie github.com.
+wersji git.
+Korzystamy ze zdalnego repozytorium na serwisie github.com.
 \section{Metodyka pracy}
-Pracujemy w metodyce agile z dodatkiem kanbana. Zespó³ spotyka siê co tydzieñ,
-aby ustaliæ priorytety na najbli¿sze 2 tygodnie, podzieliæ siê prac¹ i omówiæ
-wyniki dotychczasowych dzia³añ. Otrzymujemy odgórne wytyczne
-co do kszta³tu aplikacji od firmy zewnêtrznej ("du¿e zadania"),
-które realizujemy mniejszymi fragmentami ("ma³e zadania"). Ka¿de z
-mniejszych zadañ jest realizowane przez jednego z cz³onków zespo³u.
+Pracujemy w metodyce agile z dodatkiem kanbana.
+Zespó³ spotyka siê co tydzieñ, aby ustaliæ priorytety na najbli¿sze 2 tygodnie, podzieliæ siê prac¹ i omówiæ wyniki dotychczasowych dzia³añ.
+Otrzymujemy odgórne wytyczne co do kszta³tu aplikacji od firmy zewnêtrznej ("du¿e zadania"),
+które realizujemy mniejszymi fragmentami ("ma³e zadania").
+Ka¿de z mniejszych zadañ jest realizowane przez jednego z cz³onków zespo³u.
+Do zarz¹dzania zadaniami u¿ywamy systemu Trello.
 
 \section{Realizacja pojedynczego zadania}
 Zadanie jest wybierane przez cz³onka zespo³u, tworzona jest oddzielna
-ga³¹Ÿ, zadanie jest realizowane, potem zaœ testowane. PóŸniej kod podlega
-inspekcji przeprowadzonej przez innego cz³onka zespo³u.
-Przy koniecznoœci wprowadzenia poprawek kod wraca do autora i s¹ one
-przez niego nanoszone. Po inspekcji zakoñczonej sukcesem autor wciela kod
-do g³ównej ga³êzi.
+ga³¹Ÿ, zadanie jest realizowane, potem zaœ testowane.
+PóŸniej kod podlega inspekcji przeprowadzonej przez innego cz³onka zespo³u.
+Przy koniecznoœci wprowadzenia poprawek kod wraca do autora i s¹ one przez niego nanoszone.
+Po inspekcji zakoñczonej sukcesem autor wciela kod do g³ównej ga³êzi projektu.
 
 \section{Tworzenie oprogramowania oparte o testy}
 Stosujemy tzw. TDD (ang. Test Driven Development) - przed napisaniem fragmentu
-kodu programista materializuje wymagania funkcjonalne jako testy jednostkowe,
-pocz¹tkowo ponosz¹ce pora¿kê,
-a nastêpnie doprowadza kod do takiego stanu, aby owe testy koñczy³y siê z
+kodu programista materializuje wymagania funkcjonalne jako testy jednostkowe
+pocz¹tkowo ponosz¹ce pora¿kê, a nastêpnie doprowadza kod do takiego stanu, aby owe testy koñczy³y siê z
 sukcesem.
-\
-% \end{itemize}
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/trello_screen.png}
+    \caption{System Trello do zarz¹dzania zadaniami}
+    \label{fig:trello_screen}
+\end{figure}
 \chapter{Podzia³ pracy}
 
 \begin{center}
@@ -229,6 +319,13 @@ sukcesem.
     \\ \hline
     \end{tabular}
 \end{center}
+
+\chapter{Podsumowanie}
+Eksperymenty przeprowadzone w naszym symulatorze pokaza³y, ¿e jest sens analizowania i rozwijania algorytmów delta kodowania.
+Wybrany przez nas algorytm korzystaj¹cy z indeksu podobieñstwa daje rezultaty porównywalne z algorytmem optymalnym dla pewnych danych, np. kodów Ÿród³owych.
+Zysk wzglêdem algorytmu u¿ywaj¹cego jedynie deduplikacji jest zauwa¿alny zw³aszcza, gdy zosta³y przeprowadzone niewielkie zmiany w wielu plikach.
+Jednak dla innych danych mo¿e siê okazaæ, ¿e uzyskana redukcja rozmiaru danych jest na tyle ma³a, ¿e nie op³aca siê obci¹¿aæ systemu intensywnym obliczeniowo algorytmem delta kodowania.
+Niebagatelne znaczenie ma czêstoœæ wykonywania kopii zapasowych - im czêœciej siê je wykonuje, tym wiêksza szansa na znalezienie podobnych danych i tym samym wiêkszy zysk z delta kodowania.
 
 \begin{thebibliography}{99}
 \addcontentsline{toc}{chapter}{Bibliografia}
