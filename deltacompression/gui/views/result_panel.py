@@ -174,3 +174,6 @@ class ResultPanel(wx.Panel):
 
     def getPath(self):
         return self._path
+
+    def getExtension(self):
+        return self._EXTENSION

@@ -1,6 +1,7 @@
 """Controls result list model and view."""
 
 import pickle
+import tempfile
 
 from deltacompression.gui.views import chart_view
 
@@ -51,22 +52,29 @@ class ResultController(object):
         chart = chart_view.BarChartView(results)
         chart.show()
 
+    def _serialize(self, fil, results):
+        pickle.dump(results, fil)
+
+    def _deserialize(self, fil):
+        return pickle.load(fil)
+
     def _onLoadFile(self, _):
         path = self._panel.getPath()
         try:
             with open(path, "r") as fil:
-                new_results = pickle.load(fil)
+                new_results = self._deserialize(fil)
                 for res in new_results:
                     self._addResult(res)
         except self._ser_errors:
             self._panel.onLoadError()
+
 
     def _onSaveFile(self, _):
         path = self._panel.getPath()
         results = self._getResults()
         try:
             with open(path, "w") as fil:
-                pickle.dump(results, fil)
+                self._serialize(fil, results)
         except self._ser_errors:
             self._panel.onSaveError()
 
@@ -75,4 +83,10 @@ class ResultController(object):
         self._result_list.append(exp_result)
 
     def onExperimentPerformed(self, exp_result):
+        file_name = tempfile.mktemp(
+            suffix=".{}".format(self._panel.getExtension()))
+        res_file = open(file_name, "w")
+        self._serialize(res_file, [exp_result])
+        res_file.close()
+
         self._addResult(exp_result)
