@@ -89,7 +89,13 @@ Zastosowanie tego pomys³u w istniej¹cym systemie kopii zapasowych wymaga ogromny
 Stworzony symulator pozwala na badanie wp³ywu kilku czynników na iloœæ przesy³anych danych. Badane mo¿e byæ znaczenie kompresji, rozmiaru bloku, a przede wszystkim samego delta kodowania. Jednoczeœnie symulator stosuje mechanizmy oryginalnego systemu: dzielenie na bloki zmiennej d³ugoœci i wykrywanie duplikatów.
 
 \chapter{System HYDRAstor}
-Oczywiœcie, symulator naœladuje pracê systemu jedynie z pewnym przybli¿eniem - w rzeczywistoœci jest on du¿o bardziej z³o¿ony. Pogl¹dowy rysunek przedstawia jego schemat dzia³ania.
+HYDRAstor to nowoczesny, rozproszony, skalowalny system kopii zapasowych u¿ywaj¹cy dysku.
+Jest jednym z najwiêkszych i najszybszych takich systemów na œwiecie u¿ywanym przez klientów w Japonii i Stanach Zjednoczonych.
+Zosta³ stworzony, aby dostarczyæ klientom funkcjonalnoœci takie, jak: deduplikacja, samozarz¹dzanie, mo¿liwoœæ konfiguracji wed³ug potrzeb. Ci¹g³e aktualizacje nie przerywaj¹ dzia³ania produktu. Ponadto system charakteryzuje siê du¿¹ odpornoœci¹ na b³êdy (patrz \cite{HYDRAstor}).
+\\*
+HYDRAstor jest niezwykle z³o¿ony i skomplikowany, dlatego stworzony przez nas symulator uwzglêdnia jedynie jego kluczowe dla naszego problemu w³asnoœci.
+Na sekwencji rysunków zosta³a oddana idea dzia³ania systemu.
+Nale¿y opowiedzieæ o najwa¿niejszych z naszego punktu widzenia elementach systemu: blokach zmiennej d³ugoœci, deduplikacji i kompresji.
 \section{Bloki zmiennej d³ugoœci}
 Bloki zmiennej d³ugoœci pozwalaj¹ w znacznym stopniu zmniejszyæ rozmiar danych, które zostan¹ przes³ane podczas replikacji, czyli procesu tworzenia nowej kopii. Za³ó¿my chwilowo, ¿e stosujemy bloki sta³ej wielkoœci i mamy na serwerze strumieñ danych o bardzo du¿ym rozmiarze. Nastêpnie w œrodku tego strumienia zostaje dodany jeden znak. Sprawia to, ¿e po³owa strumienia zostanie podzielona na zupe³nie nowe bloki, mimo ¿e dane siê praktycznie nie zmieni³y.
 \\*
@@ -148,7 +154,14 @@ Przed przes³aniem bloki s¹ poddawane dzia³aniu algorytmowi kompresji, co pozwala
 \end{figure}
 
 \chapter{Delta kodowanie}
-Delta kodowanie sprowadza siê do dwóch zasadniczych problemów: znajdowania podobnych bloków i liczenia ró¿nic miêdzy nimi.
+System HYDRAstor, mimo wielu niew¹tpliwych zalet, mo¿e byæ znacznie bardziej wydajny.
+Iloœæ danych niezbêdnych do przes³ania z kolejn¹ wersj¹ mo¿e ulec znacznemu zmniejszeniu dziêki algorytmom delta kodowania.
+\\*
+Delta kodowanie to sposób przechowywania i transmisji danych w formie ró¿nic (ang. \textit{delta}) pomiêdzy blokami danych.
+W sytuacjach, gdy ró¿nice pomiêdzy blokami s¹ ma³e, delta kodowania potrafi znacznie zmniejszyæ nadmiarowoœæ.
+Przechowywanie zbioru ró¿nic jest zdecydowanie bardziej efektywne pamiêciowo ni¿ przechowywanie ca³ych bloków.
+Oczywiœcie, na ich wielkoœæ ma bardzo du¿y wp³yw to, które dane ze sob¹ porównujemy, a tak¿e jakiego u¿ywamy algorytmu do liczenia ró¿nic.
+Dlatego delta kodowanie mo¿na sprowadziæ do dwóch zasadniczych problemów: znajdowania podobnych bloków i liczenia ró¿nic miêdzy nimi.
 \section{Liczenie ró¿nic}
 Jest to popularny w informatyce problem, aby na podstawie dwóch fragmentów danych stworzyæ ró¿nicê (ang. \textit{delta}), dziêki której maj¹c tylko pierwszy fragment i ow¹ ró¿nicê, mo¿na  by³o odtworzyæ drugi fragment. Oczywiœcie rola fragmentów nie jest symetryczna - liczymy ró¿nicê jednego wzglêdem drugiego. Powsta³ szereg algorytmów, które siê tym zajmuj¹.
 \\*
@@ -169,8 +182,26 @@ W algorytmie optymalnym porównujemy nowy blok ze wszystkimi blokami, które posia
 \subsection{Algorytm z indeksem podobieñstwa}
 W algorytmie z indeksem podobieñstwa stosujemy zdecydowanie bardziej wyrafinowan¹ strategiê. Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ iloœæ $K$ wartoœci liczbowych zwanych cechami (ang. \textit{feature}). W tym celu poruszamy siê po bloku oknem (ang. \textit{window}) o sta³ym rozmiarze $W$ i dla ka¿dego okna $w$ liczymy znacznik Rabina (ang. \textit{Rabin’s fingerprint}) $fp(w) = \sum\limits_{i=0}^{W-1} w[i] \times P^{i} \mod Q$, gdzie $P$ i $Q$ to ustalone liczby pierwsze. Dla cechy o numerze $i$ definiujemy dwie wartoœci $m_i$ oraz $a_i$. Wartoœci¹ cechy o numerze $i$ bêdzie minimum po wszystkich oknach $w$ z $(fp(w) * m_i + a_i) \mod 2^{32}$. Wartoœciami $a_i$ oraz $m_i$ powinny byæ du¿e, losowe liczby pierwsze, jednak w celu zapewnienia powtarzalnoœci eksperymentów s¹ one w naszym symulatorze ustalone. Nastêpnie tworzymy supercechy (ang. \textit{superfeature}) z ustalonej liczby $S$ zwyk³ych cech. W tym celu dzielimy cechy danego bloku na grupy po $K$ kolejnych cech i dla ka¿dej z grup liczymy znacznik Rabina - jego wartoœæ bêdzie wartoœci¹ danej supercechy. Wszystkie znaczniki liczymy przy u¿yciu du¿ych liczb pierwszych $P$ i $Q$. Aby znaleŸæ podobny blok do danego, wybieramy taki, który ma najwiêcej wspólnych super cech (jeœli jest takich wiêcej, wybieramy dowolny). Jeœli zaœ nie ma bloku z jak¹kolwiek wspóln¹ super cech¹, wysy³amy ca³y blok. Eksperymentalnie wyznaczyliœmy, ¿e najlepiej dzia³aj¹ wartoœci $K=4$ i $S=2$ - pod uwagê braliœmy iloœæ czasu potrzebn¹ na obliczenia, iloœæ znajdowanych bloków oraz ich jakoœæ. Oczywiœcie, im wiêksze $K$, tym lepsza jakoœæ kandydatów. Z kolei, im wiêksze $S$, tym wiêcej bloków znajdujemy. Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
 
-\chapter{Funkcjonalnoœci systemu}
+\chapter{Architektura}
+Aby sprawdziæ algorytmy delta kodowania, stworzyliœmy symulator systemu HYDRAstor.
+Jego architektura oparta jest o wzorzec Model-View-Controller, zapewniaj¹cy niezale¿noœæ kodu odpowiedzialnego za interakcjê z u¿ytkownikiem od kodu zajmuj¹cego siê logik¹ biznesow¹ aplikacji. Oprócz standardowych dla wzorca MVC czêœci: model, widok i kontroler w architekturze naszego projektu mo¿emy wyró¿niæ Storage - osobn¹ czêœæ odpowiedzialn¹ za sk³adowanie danych w trakcie trwania symulacji oraz Chunker - czêœæ przetwarzaj¹c¹ pliki z dysku twardego. Zale¿noœci miêdzy poszczególnymi komponentami pokazane s¹ na poni¿szym schemacie.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Architecture.png}
+    \caption{Schemat architektury}
+    \label{fig:architecture}
+\end{figure}
 
+\section{Chunker}
+Chunker jest osobnym modu³em zajmuj¹cym siê dzieleniem plików na bloki zmiennej d³ugoœci w taki sposób, aby wprowadzenie modyfikacji w pliku nie wymaga³o przes³ania du¿ej iloœci danych. Zosta³ nam dostarczony przez firmê 9LivesData.
+
+\section{Storage}
+Storage odpowiada za gromadzenie bloków danych powsta³ych w trakcie fazy dzielenia plików przez Chunker. Ta czêœæ jest wa¿na, poniewa¿ istot¹ algorytmów delta kodowania jest zapisywanie nowych bloków bazuj¹c na podobnych, istniej¹cych ju¿ blokach.
+
+\chapter{Funkcjonalnoœci}
+Symulator zosta³ stworzony, aby szybko i wygodnie przeprowadzaæ eksperymenty na rzeczywistych danych.
+Zosta³o w³o¿one wiele trudu, by by³ intuicyjny i by spe³nia³ wszystkie wymagania.
+W rezultacie posiada on szereg wymienionych ni¿ej funkcjonalnoœci.
 \begin{itemize}
         \item
         Mo¿liwoœæ wyboru sposobu przechowywania danych.
@@ -180,11 +211,11 @@ W algorytmie z indeksem podobieñstwa stosujemy zdecydowanie bardziej wyrafinowan
         \item
         Symulowanie replikacji bez u¿ycia delta kodowania, z u¿yciem optymalnego delta kodowania oraz z heurystycznym delta kodowaniem.
         
-	System pozwala na przetestowanie zaimplementowanych algorytmów oraz udostêpnia intuicyjny interfejs programistyczny dziêki czemu mo¿na w prosty sposób rozszerzaæ o kolejne algorytmy.
+	Symulator pozwala na przetestowanie zaimplementowanych algorytmów oraz udostêpnia intuicyjny interfejs programistyczny dziêki czemu mo¿na w prosty sposób rozszerzaæ o kolejne algorytmy.
         \item
         Kompresja danych przed przes³aniem.
         
-	Po zastosowani odpowiedniego algorytmu dane przed wys³aniem mog¹ byæ dodatkowo kompresowane przy pomocy LZO, ZIP lub LZMA.
+	Po zastosowaniu odpowiedniego algorytmu dane przed wys³aniem mog¹ byæ dodatkowo kompresowane przy pomocy LZO, ZIP lub LZMA.
         \item
         Wygodny graficzny interfejs u¿ytkownika
 	
@@ -198,7 +229,7 @@ W algorytmie z indeksem podobieñstwa stosujemy zdecydowanie bardziej wyrafinowan
 	\item
 	Serializacja wyników danych.
 	
-	W celu zwiêkszenia elastycznoœci i ergonomii systemu mo¿na wczytywaæ i zapisywaæ do pliku wyniki wybranych eksperymentów.
+	W celu zwiêkszenia elastycznoœci i ergonomii symulatora mo¿na wczytywaæ i zapisywaæ do pliku wyniki wybranych eksperymentów.
 \end{itemize}
 \begin{figure}[h]
     \centering
@@ -214,26 +245,13 @@ W algorytmie z indeksem podobieñstwa stosujemy zdecydowanie bardziej wyrafinowan
 \end{figure}
 
 
-\chapter{Architektura}
-\section{Model MVC}
-Architektura tworzonego przez nas symulatora oparta jest o wzorzec Model-View-Controller, zapewniaj¹cy niezale¿noœæ kodu odpowiedzialnego za interakcjê z u¿ytkownikiem i kodu zajmuj¹cego siê logik¹ biznesow¹ aplikacji. Oprócz standardowych dla wzorca MVC czêœci: model, widok i kontroler w architekturze naszego projektu mo¿emy wyró¿niæ Storage - osobn¹ czêœæ odpowiedzialn¹ za sk³adowanie danych w trakcie trwania symulacji oraz Chunker - czêœæ przetwarzaj¹c¹ pliki z dysku twardego. Zale¿noœci miêdzy poszczególnymi komponentami pokazane s¹ na poni¿szym schemacie.
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.5\textwidth]{img/Architecture.png}
-    \caption{Schemat architektury}
-    \label{fig:architecture}
-\end{figure}
-
-\section{Chunker}
-Chunker jest osobnym modu³em zajmuj¹cym siê dzieleniem plików na bloki zmiennej d³ugoœci w taki sposób, aby wprowadzenie modyfikacji w pliku nie wymaga³o przes³ania du¿ej iloœci danych. Zosta³ nam dostarczony przez firmê 9LivesData.
-
-\section{Storage}
-Storage odpowiada za gromadzenie bloków danych powsta³ych w trakcie fazy dzielenia plików przez Chunker. Ta czêœæ jest wa¿na, poniewa¿ istot¹ algorytmów delta kodowania jest zapisywanie nowych bloków bazuj¹c na podobnych, istniej¹cych ju¿ blokach.
 
 \chapter{Technologie}
-
+Bardzo du¿e znaczenie dla jakoœci systemu informatycznego maj¹ zastosowane technologie.
+Ich wybór ma wp³yw na wydajnoœæ, ³atwoœæ pisania kodu, dostêpnoœæ bibliotek (w przypadku jêzyka programowania).
+Podobnie by³o w przypadku symulatora, co zostanie pokazane w nastêpnych paragrafach.
 \section{Jêzyki programowania}
-System zosta³ napisany g³ównie w jêzyku Python w wersji 2.7. W jêzyku C++ zosta³ napisany adapter Chunkera. Z kolei wymagaj¹ca obliczeniowo czêœæ delta kodowania z indeksem podobieñstwa zosta³a napisana w C.
+Symulator zosta³ napisany g³ównie w jêzyku Python w wersji 2.7. W jêzyku C++ zosta³ napisany adapter Chunkera. Z kolei wymagaj¹ca obliczeniowo czêœæ delta kodowania z indeksem podobieñstwa zosta³a napisana w C.
 
 \section{Biblioteki}
 Obs³uga symulatora odbywa siê za pomoc¹ graficznego interfejsu u¿ytkownika stworzonego z u¿yciem pakietu wxPython. Po przeprowadzonej symulacji generowane s¹ ró¿norodne statystyki opisuj¹ce wyniki eksperymentu, na podstawie których mo¿na tworzyæ wykresy w formacie SVG dziêki bibliotece pygal.
@@ -242,6 +260,7 @@ Obs³uga symulatora odbywa siê za pomoc¹ graficznego interfejsu u¿ytkownika stwor
 Wybraliœmy LevelDB, jest to nierelacyjna baza danych, która umo¿liwia efektywne przechowywanie danych typu klucz-wartoœæ. W naszym przypadku ma miejsce odwzorowanie wartoœci funkcji skrótu w odpowiadaj¹cy jej blok.
 
 \chapter{Wyniki symulacji}
+W tym rozdziale zostan¹ przedstawione i omówione rezultaty eksperymentów na danych ró¿nych typów.
 \section{Format wyników}
 Wyniki s¹ przedstawione w formie wykresów s³upkowych. Jeden kolor odpowiada jednej metodzie przesy³ania danych. Wybór metody obejmuje jednoczeœnie algorytm delta kodowania (np. algorytm optymalny) oraz rodzaj kompresji (np. LZMA). Wysokoœæ ka¿dego s³upka okreœla, ile danych trzeba przes³aæ dla danej wersji danych wejœciowych.
 
@@ -315,9 +334,6 @@ Znaczenie kolorów:
     \label{fig:torch}
  \end{figure}
 Niestety, dane s¹ bardzo ma³e ze wzglêdu na kiepsk¹ z³o¿onoœæ algorytmu optymalnego delta kodowania. Jednak dziêki temu mo¿emy porównaæ algorytm optymalny z indeksem podobieñstwa. Pozwala to zobaczyæ, jakie jest dolne ograniczenie na iloœæ przes³anych danych dla indeksu podobieñstwa. Dla drugiej wersji algorytm optymalny przygotowa³ o 54\% mniej danych do przes³ania, a dla trzeciej wersji o 41\% mniej. Oznacza to, ¿e daleko algorytmowi z indeksem podobieñstwa do optymalnoœci.
-
-
-
 
 \chapter{Organizacja pracy}
 
@@ -414,6 +430,7 @@ Brooklyn, NY 11201 (2002).
 \bibitem{wxPython} Dokumentacja wxPython, \url{http://wxpython.org/Phoenix/docs/html/main.html} [21.01.2015r.]
 
 \bibitem{xDelta} Biblioteka do liczenia diffów \textit{xdelta}, \url{http://xdelta.org/} [21.01.2015r.]
+\bibitem{HYDRAstor} System HYDRAstor firmy 9LivesData, \url{http://www.9livesdata.com/hydrastor.html}
 
 \end{thebibliography}
 
