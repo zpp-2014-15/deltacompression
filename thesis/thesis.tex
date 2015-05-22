@@ -192,11 +192,14 @@ Jego architektura oparta jest o wzorzec Model-View-Controller, zapewniaj¹cy niez
     \label{fig:architecture}
 \end{figure}
 
+\section{Model-View-Controller}
+Wzorzec Model-View-Controller zosta³ zaimplementowany w standardowy sposób. Wiêkszoœæ modeli by³a pasywna, czyli nie zmienia³a swojego stanu samoczynnie. Zaraz po tym jak kontroler modyfikowa³ jakiœ model, powiadamia³ on odpowiedni widok o zmianie. Mechanizm ten zosta³ zaimplementowany przy u¿yciu sygna³ów biblioteki wxPython - wx.Event. Kolejka reprezentuj¹ca kolejne zadania do wykonania by³a modelem aktywnym, czyli takim który mo¿e zmieniæ swój stan niezale¿nie od akcji wykonywanych przez u¿ytkownika. Do jego obs³ugi zastosowaliœmy bibliotekê Publisher pakietu wxPython. Pozwala ona na wysy³anie komunikatów do kontrolera gdy kolejka ulega zmianie.
+
 \section{Chunker}
 Chunker jest osobnym modu³em zajmuj¹cym siê dzieleniem plików na bloki zmiennej d³ugoœci w taki sposób, aby wprowadzenie modyfikacji w pliku nie wymaga³o przes³ania du¿ej iloœci danych. Zosta³ nam dostarczony przez firmê 9LivesData.
 
 \section{Storage}
-Storage odpowiada za gromadzenie bloków danych powsta³ych w trakcie fazy dzielenia plików przez Chunker. Ta czêœæ jest wa¿na, poniewa¿ istot¹ algorytmów delta kodowania jest zapisywanie nowych bloków bazuj¹c na podobnych, istniej¹cych ju¿ blokach.
+Storage odpowiada za gromadzenie bloków danych powsta³ych w trakcie fazy dzielenia plików przez Chunker. Ta czêœæ symulatora jest odpowiedzialna równie¿ za wykrywanie duplikatów bloków oraz ich zliczanie. Wykrywanie duplikatów zosta³o zaimplementowane przy u¿yciu funkcji skrótu SHA-256.
 
 \chapter{Funkcjonalnoœci}
 Symulator zosta³ stworzony, aby szybko i wygodnie przeprowadzaæ eksperymenty na rzeczywistych danych.
@@ -220,9 +223,14 @@ W rezultacie posiada on szereg wymienionych ni¿ej funkcjonalnoœci.
         Wygodny graficzny interfejs u¿ytkownika
 	
 	Za pomoc¹ graficznego interfejsu u¿ytkownik mo¿e wybraæ interesuj¹ce go konfiguracje, które chce przetestowaæ oraz wygenerowaæ wykres przedstawiaj¹cy wyniki.
-
+	
 	\item
-	Prezentacja wyników w formie wykresów
+	Kolejkowanie eksperymentów.
+	
+	Interfejs graficzny pozwala na dodawanie dowolnej liczby eksperymentów, które wykonuj¹ siê po kolei.
+	
+	\item
+	Prezentacja wyników w formie wykresów.
 	
 	Wyniki wykonanych symulacji mo¿na wyœwietliæ w postaci interaktywnych wykresów.
 	S¹ one œwietnym narzêdziem, które umo¿liwia zbadanie faktycznych rezultatów symulacji.
@@ -257,10 +265,12 @@ Symulator zosta³ napisany g³ównie w jêzyku Python w wersji 2.7. W jêzyku C++ zos
 Obs³uga symulatora odbywa siê za pomoc¹ graficznego interfejsu u¿ytkownika stworzonego z u¿yciem pakietu wxPython. Po przeprowadzonej symulacji generowane s¹ ró¿norodne statystyki opisuj¹ce wyniki eksperymentu, na podstawie których mo¿na tworzyæ wykresy w formacie SVG dziêki bibliotece pygal.
 
 \section{Baza danych}
-Wybraliœmy LevelDB, jest to nierelacyjna baza danych, która umo¿liwia efektywne przechowywanie danych typu klucz-wartoœæ. W naszym przypadku ma miejsce odwzorowanie wartoœci funkcji skrótu w odpowiadaj¹cy jej blok.
+Wybraliœmy LevelDB, jest to nierelacyjna baza danych, która umo¿liwia efektywne przechowywanie danych typu klucz-wartoœæ. W naszym przypadku ma miejsce odwzorowanie wartoœci funkcji skrótu w odpowiadaj¹cy jej blok. Zastosowanie bazy danych pozwoli³o nam na wykonywanie eksperymentów, których rozmiar danych wejœciowych przekracza³ wielokrotnie rozmiar pamiêci RAM. Dziêki temu mogliœmy sprawdziæ jak zachowuj¹ siê algorytmy dla znacznie wiêkszych danych.
 
 \chapter{Wyniki symulacji}
 W tym rozdziale zostan¹ przedstawione i omówione rezultaty eksperymentów na danych ró¿nych typów.
+Przygotowanie danych do testowania by³o istotn¹ czêœci¹ pracy. Dobrze dobrane dane testowe pozwalaj¹ na lepsze zrozumienie dzia³ania algorytmów.
+Dziêki nim mo¿na oszacowaæ zysk, który zostanie osi¹gniêty w systemie HYDRAstor.
 \section{Format wyników}
 Wyniki s¹ przedstawione w formie wykresów s³upkowych. Jeden kolor odpowiada jednej metodzie przesy³ania danych. Wybór metody obejmuje jednoczeœnie algorytm delta kodowania (np. algorytm optymalny) oraz rodzaj kompresji (np. LZMA). Wysokoœæ ka¿dego s³upka okreœla, ile danych trzeba przes³aæ dla danej wersji danych wejœciowych.
 
@@ -338,13 +348,13 @@ Niestety, dane s¹ bardzo ma³e ze wzglêdu na kiepsk¹ z³o¿onoœæ algorytmu optymaln
 \chapter{Organizacja pracy}
 
 \section{System kontroli wersji}
-Tworzona przez nas aplikacja jest rozwijana z pomoc¹ systemu kontroli
+Tworzony przez nas symulator jest rozwijany za pomoc¹ systemu kontroli
 wersji git. Korzystamy ze zdalnego repozytorium w serwisie github.com.
 \section{Metodyka pracy}
 Pracujemy w metodyce agile z dodatkiem kanbana. Zespó³ spotyka siê co tydzieñ,
 aby ustaliæ priorytety na najbli¿szy czas, podzieliæ siê prac¹ i omówiæ
 wyniki dotychczasowych dzia³añ. Otrzymujemy odgórne wytyczne
-co do kszta³tu aplikacji od 9LivesData ("du¿e zadania"),
+co do kszta³tu symulatora od 9LivesData ("du¿e zadania"),
 które realizujemy mniejszymi fragmentami ("ma³e zadania"). Ka¿de z
 mniejszych zadañ jest realizowane przez jednego cz³onka zespo³u.
 \section{Realizacja pojedynczego zadania}
@@ -363,7 +373,7 @@ sukcesem.
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{img/trello_screen.png}
-    \caption{System Trello do zarz¹dzania zadaniami}
+    \caption{Platforma Trello do zarz¹dzania zadaniami}
     \label{fig:trello_screen}
 \end{figure}
 
@@ -427,10 +437,10 @@ Synchronization}, CIS Department
 Polytechnic University
 Brooklyn, NY 11201 (2002).
 
-\bibitem{wxPython} Dokumentacja wxPython, \url{http://wxpython.org/Phoenix/docs/html/main.html} [21.01.2015r.]
+\bibitem{wxPython} wxPython Team, \textit{Dokumentacja wxPython}, \url{http://wxpython.org/Phoenix/docs/html/main.html} [21.01.2015r.]
 
-\bibitem{xDelta} Biblioteka do liczenia diffów \textit{xdelta}, \url{http://xdelta.org/} [21.01.2015r.]
-\bibitem{HYDRAstor} System HYDRAstor firmy 9LivesData, \url{http://www.9livesdata.com/hydrastor.html}
+\bibitem{xDelta} J. MacDonald \textit{xdelta}, \url{http://xdelta.org/} [21.01.2015r.]
+\bibitem{HYDRAstor} 9LivesData \textit{HYDRAstor}, \url{http://www.9livesdata.com/hydrastor.html}
 
 \end{thebibliography}
 
