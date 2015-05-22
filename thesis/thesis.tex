@@ -14,6 +14,7 @@
 \usepackage{graphicx}
 \usepackage{pgffor}
 \usepackage{amsmath}
+\usepackage{algpseudocode}
 \urlstyle{same}
 
 %Jesli uzywasz kodowania polskich znakow ISO-8859-2 nastepna linia powinna byc odkomentowana
@@ -179,8 +180,61 @@ W du¿ym uproszczeniu jego dzia³anie polega na odtwarzaniu po kolei pliku, wykonu
 W symulatorze zaimplementowaliœmy dwa ró¿ne podejœcia do tego problemu.
 \subsection{Algorytm optymalny}
 W algorytmie optymalnym porównujemy nowy blok ze wszystkimi blokami, które posiadamy. Jest on niemo¿liwy do zastosowania w praktyce przez asymptotycznie kwadratowy czas dzia³ania ze wzglêdu na iloœæ bloków. Jednak jest on dobrym punktem odniesienia do innych algorytmów - daje on informacjê, jakie jest dolne ograniczenie na rozmiar danych w klasie algorytmów delta kodowania porównuj¹cych z jednym blokiem.
+\begin{algorithmic}
+\Function{optimalDeltaEncoding}{$blocks, block$}
+\State $best\_block \gets blocks[0]$
+\State $best\_diff \gets \Call{Diff}{block, blocks[0]}$
+\For{$old\_block \ \textbf{in} \ blocks$}
+    \State $diff \gets \Call{Diff}{block, old\_block}$
+    \If{$\Call{length}{diff} < \Call{length}{best\_diff}$}
+        \State $best\_diff \gets diff$
+        \State $best\_block \gets old\_block$
+    \EndIf
+\EndFor
+\State \Return $best\_block$
+\EndFunction
+\end{algorithmic}
 \subsection{Algorytm z indeksem podobieñstwa}
 W algorytmie z indeksem podobieñstwa stosujemy zdecydowanie bardziej wyrafinowan¹ strategiê. Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ iloœæ $K$ wartoœci liczbowych zwanych cechami (ang. \textit{feature}). W tym celu poruszamy siê po bloku oknem (ang. \textit{window}) o sta³ym rozmiarze $W$ i dla ka¿dego okna $w$ liczymy znacznik Rabina (ang. \textit{Rabin’s fingerprint}) $fp(w) = \sum\limits_{i=0}^{W-1} w[i] \times P^{i} \mod Q$, gdzie $P$ i $Q$ to ustalone liczby pierwsze. Dla cechy o numerze $i$ definiujemy dwie wartoœci $m_i$ oraz $a_i$. Wartoœci¹ cechy o numerze $i$ bêdzie minimum po wszystkich oknach $w$ z $(fp(w) * m_i + a_i) \mod 2^{32}$. Wartoœciami $a_i$ oraz $m_i$ powinny byæ du¿e, losowe liczby pierwsze, jednak w celu zapewnienia powtarzalnoœci eksperymentów s¹ one w naszym symulatorze ustalone. Nastêpnie tworzymy supercechy (ang. \textit{superfeature}) z ustalonej liczby $S$ zwyk³ych cech. W tym celu dzielimy cechy danego bloku na grupy po $K$ kolejnych cech i dla ka¿dej z grup liczymy znacznik Rabina - jego wartoœæ bêdzie wartoœci¹ danej supercechy. Wszystkie znaczniki liczymy przy u¿yciu du¿ych liczb pierwszych $P$ i $Q$. Aby znaleŸæ podobny blok do danego, wybieramy taki, który ma najwiêcej wspólnych super cech (jeœli jest takich wiêcej, wybieramy dowolny). Jeœli zaœ nie ma bloku z jak¹kolwiek wspóln¹ super cech¹, wysy³amy ca³y blok. Eksperymentalnie wyznaczyliœmy, ¿e najlepiej dzia³aj¹ wartoœci $K=4$ i $S=2$ - pod uwagê braliœmy iloœæ czasu potrzebn¹ na obliczenia, iloœæ znajdowanych bloków oraz ich jakoœæ. Oczywiœcie, im wiêksze $K$, tym lepsza jakoœæ kandydatów. Z kolei, im wiêksze $S$, tym wiêcej bloków znajdujemy. Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
+
+\begin{algorithmic}
+\Function{calculateFeatures}{$block$}
+\State $features, best \gets \Call{initializeFeatures}{S \times K}$
+\ForAll{window $w$ in $block$}
+    \ForAll{$feature_{i}, best_{i}, m_{i}, a_{i}$}
+        \State $value \gets m_{i} \times \Call{fp}{w} + a_{i} \mod 2^{32}$
+        \If {$value < best_{i}$}
+            \State $best_{i} \gets value$
+            \State $feature_{i} \gets \Call{fp}{w}$
+        \EndIf
+    \EndFor
+\EndFor
+\State \Return $features$
+\EndFunction
+\\
+\Function{similarityIndexEncoding}{$block, hashes\_map, sfeatures\_map$}
+\State $features \gets \Call{calculateFeatures}{block}$
+\State $sfeatures \gets \Call{createSuperfeatures}{features}$
+\State $hashes \gets empty$
+\For{$sfeature \ \textbf{in} \ sfeatures$}
+    \State $hashes.add(hashes\_map[sfeature])$
+\EndFor
+\State $best \gets None$
+\State $common \gets 0$
+\For{$hash \ \textbf{in} \ hashes$}
+    \State $common' \gets \Call{length}{sfeatures.intersect(sfeatures\_map[hash])}$
+    \If {$common' > common$}
+        \State $common \gets common'$
+        \State $best \gets hash$
+    \EndIf
+\EndFor
+\State $sfeatures\_map.add(block.getHash(), sfeatures)$
+\For{$sfeature \ \textbf{in} \ sfeatures$}
+    \State $hashes\_map.add(sfeature, block.getHash())$
+\EndFor
+\State \Return $best$
+\EndFunction
+\end{algorithmic}
 
 \chapter{Architektura}
 Aby sprawdziæ algorytmy delta kodowania, stworzyliœmy symulator systemu HYDRAstor.
