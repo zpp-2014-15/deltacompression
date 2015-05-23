@@ -145,7 +145,7 @@ Przed przes³aniem bloki s¹ poddawane dzia³aniu algorytmowi kompresji, co pozwala
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\textwidth]{img/visualization/7.png}
-    \caption{System A przesy³a do systemu B metadane o rozmieszczeniu bloków oraz zawartoœci jedynie tych bloków, które s¹ nowe. Znacz¹co zmniejsza to objêtoœæ przesy³anych danych.}
+    \caption{System A przesy³a do systemu B informacje o rozmieszczeniu bloków oraz zawartoœci jedynie tych bloków, które s¹ nowe. Znacz¹co zmniejsza to objêtoœæ przesy³anych danych.}
 \end{figure}
 
 \begin{figure}[h]
@@ -319,8 +319,8 @@ W jêzyku C++ napisaliœmy adapter Chunkera.
 By³o to wymuszone technologi¹, w jakiej zosta³ napisany ten komponent.
 \\*
 Sam symulator zdecydowaliœmy siê napisaæ w jêzyku Python w wersji 2.7.
-Wybraliœmy go, gdy¿ jest on jêzykiem wysokiego poziomu i bardzo szybko siê w nim pisze.
-Jednoczeœnie jest w nim dostêpnych mnóstwo najró¿niejszych bibliotek, z których czêsto korzystaliœmy w naszym projekcie.
+Wybraliœmy go ze wzglêdu na na mo¿liwoœæ szybkiego wytwarzania oprogramowania przy stosunkowo niewielkiej iloœci kodu Ÿród³owego.
+Jednoczeœnie jest w nim dostêpnych wiele ró¿norodnych bibliotek, z których chcieliœmy skorzystaæ w naszym projekcie.
 Niestety, Python przy wszystkich swoich zaletach nie oferuje zbyt dobrej wydajnoœci.
 Dlatego wymagaj¹ce obliczeniowo czêœci algorytmów zosta³y napisane w C.
 Zrobiliœmy to, u¿ywaj¹c zbioru nag³ówków implementacji CPython.
@@ -332,27 +332,26 @@ Poza tym, mieliœmy wiêcej doœwiadczenia z u¿ywaniem poprzednich wersji.
 \\*
 Mo¿e siê równie¿ nasuwaæ pytanie, dlaczego nie zastowaliœmy implementacji Pythona o nazwie PyPy.
 Jest ona wszak du¿o bardziej wydajna ni¿ popularny CPython.
-Niestety, u¿ywanie wielu pakietów, które zosta³y napisane w C (np. wxpython) jest w niej siê trudne lub wrêcz niemo¿liwe.
+Niestety, u¿ywanie wielu pakietów, które zosta³y napisane w C (np. wxPython) jest w niej siê trudne lub wrêcz niemo¿liwe.
 Poza tym, nie jest ona do koñca kompatybilna z innymi implementacjami.
 \section{Biblioteki}
 \subsection{wxPython}
 Obs³uga symulatora odbywa siê za pomoc¹ graficznego interfejsu u¿ytkownika stworzonego z u¿yciem pakietu wxPython.
 Zosta³ zaimplementowany jako nak³adka na napisan¹ w C++ bibliotekê wxWidgets.
 Warto wspomnieæ, ¿e jest on wieloplatformowy.
-\subsection{pygal}
+\subsection{Pygal}
 Biblioteka ta umo¿liwia tworzenie wykresów w formacie SVG na podstawie ró¿norodnych statystyk opisuj¹cych wyniki eksperymentu.
-\subsection{virtualenv}
+\subsection{Virtualenv}
 Jest to narzêdzie do tworzenia izolowanego œrodowiska dla aplikacji w Pythonie.
 Umo¿liwia ono posiadanie lokalnych instalacji wielu bibliotek, które mog¹ byæ ró¿ne od tych zainstalowanych globalnie.
 Dziêki temu nasz symulator jest niezale¿ny od systemowych aktualizacji, a tak¿e od innych aplikacji w obrêbie systemu
-\subsection{xdelta}
+\subsection{Xdelta}
 U¿yliœmy tej biblioteki w wersji 3 do liczenia ró¿nic miêdzy plikami binarnymi.
 Zosta³a napisana w C, co ma du¿y wp³yw na wydajnoœæ.
-\subsection{pylint}
-Narzêdzie do statycznej analizy kodu.
+\subsection{Pylint}
+Narzêdzie do statycznej analizy kodu Ÿród³owego, które zdecydowanie u³atwia dbanie o jego jakoœæ.
 Sprawdza zgodnoœæ z zaleceniami PEP 8.
-Znacznie u³atwia ono dbanie o jakoœæ Ÿróde³.
-\subsection{pylzma}
+\subsection{PyLZMA}
 Biblioteka do kompresji LZMA.
 
 \section{Baza danych}
@@ -434,7 +433,11 @@ Znaczenie kolorów:
     \caption{Wyniki dla projektu torch}
     \label{fig:torch}
  \end{figure}
-Niestety, dane s¹ bardzo ma³e ze wzglêdu na kiepsk¹ z³o¿onoœæ algorytmu optymalnego delta kodowania. Jednak dziêki temu mo¿emy porównaæ algorytm optymalny z indeksem podobieñstwa. Pozwala to zobaczyæ, jakie jest dolne ograniczenie na iloœæ przes³anych danych dla indeksu podobieñstwa. Dla drugiej wersji algorytm optymalny przygotowa³ o 54\% mniej danych do przes³ania, a dla trzeciej wersji o 41\% mniej. Oznacza to, ¿e daleko algorytmowi z indeksem podobieñstwa do optymalnoœci.
+Niestety, dane s¹ bardzo ma³e ze wzglêdu na kwadratow¹ z³o¿onoœæ algorytmu optymalnego delta kodowania.
+Jednak dziêki temu mo¿emy porównaæ algorytm optymalny z indeksem podobieñstwa.
+Pozwala to zobaczyæ, jakie jest dolne ograniczenie na iloœæ przes³anych danych dla indeksu podobieñstwa.
+Dla drugiej wersji algorytm optymalny przygotowa³ o 54\% mniej danych do przes³ania, a dla trzeciej wersji o 41\% mniej.
+Oznacza to, ¿e daleko algorytmowi z indeksem podobieñstwa do optymalnoœci.
 
 \chapter{Organizacja pracy}
 
@@ -512,7 +515,7 @@ sukcesem.
 \end{center}
 
 \chapter{Podsumowanie}
-Eksperymenty przeprowadzone w naszym symulatorze pokaza³y, ¿e jest sens analizowania i rozwijania algorytmów delta kodowania. Wybrany przez nas algorytm korzystaj¹cy z indeksu podobieñstwa daje rezultaty porównywalne z algorytmem optymalnym dla pewnych danych, np. kodów Ÿród³owych. Zysk wzglêdem algorytmu u¿ywaj¹cego jedynie deduplikacji jest zauwa¿alny zw³aszcza, gdy zosta³y przeprowadzone niewielkie zmiany w wielu plikach. Jednak dla innych danych mo¿e siê okazaæ, ¿e uzyskana redukcja rozmiaru danych jest na tyle ma³a, ¿e nie op³aca siê obci¹¿aæ systemu intensywnym obliczeniowo algorytmem delta kodowania. Niebagatelne znaczenie ma czêstoœæ wykonywania kopii zapasowych - im czêœciej siê je wykonuje, tym wiêksza szansa na znalezienie podobnych danych i tym samym wiêkszy zysk z delta kodowania.
+Eksperymenty przeprowadzone w naszym symulatorze pokaza³y, ¿e jest sens analizowania i rozwijania algorytmów delta kodowania.Wybrany przez nas algorytm korzystaj¹cy z indeksu podobieñstwa daje rezultaty porównywalne z algorytmem optymalnym dla pewnych danych, np. kodów Ÿród³owych. Zysk wzglêdem algorytmu u¿ywaj¹cego jedynie deduplikacji jest zauwa¿alny zw³aszcza, gdy zosta³y przeprowadzone niewielkie zmiany w wielu plikach. Jednak dla innych danych mo¿e siê okazaæ, ¿e uzyskana redukcja rozmiaru danych jest na tyle ma³a, ¿e nie op³aca siê obci¹¿aæ systemu intensywnym obliczeniowo algorytmem delta kodowania. Niebagatelne znaczenie ma czêstoœæ wykonywania kopii zapasowych - im czêœciej siê je wykonuje, tym wiêksza szansa na znalezienie podobnych danych i tym samym wiêkszy zysk z delta kodowania.
 
 
 \begin{thebibliography}{99}
