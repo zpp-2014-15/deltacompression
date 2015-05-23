@@ -191,7 +191,7 @@ W algorytmie optymalnym porównujemy nowy blok ze wszystkimi blokami, które posia
         \State $best\_block \gets old\_block$
     \EndIf
 \EndFor
-\State \Return $best\_block$
+\State \Return $best\_block.getHash()$
 \EndFunction
 \end{algorithmic}
 \subsection{Algorytm z indeksem podobieñstwa}
@@ -199,13 +199,15 @@ W algorytmie z indeksem podobieñstwa stosujemy zdecydowanie bardziej wyrafinowan
 
 \begin{algorithmic}
 \Function{calculateFeatures}{$block$}
-\State $features, best \gets \Call{initializeFeatures}{S \times K}$
+\State $N \gets S \times K$
+\State $features[N] \gets {None, ... }$
+\State $best[N] \gets {2^{32}, ... }$
 \ForAll{window $w$ in $block$}
-    \ForAll{$feature_{i}, best_{i}, m_{i}, a_{i}$}
-        \State $value \gets m_{i} \times \Call{fp}{w} + a_{i} \mod 2^{32}$
-        \If {$value < best_{i}$}
-            \State $best_{i} \gets value$
-            \State $feature_{i} \gets \Call{fp}{w}$
+    \For{$i \ \textbf{in} \ \{0, ..., N\}$}
+        \State $value \gets m[i] \times \Call{fp}{w} + a[i] \mod 2^{32}$
+        \If {$value < best[i]$}
+            \State $best[i] \gets value$
+            \State $feature[i] \gets \Call{fp}{w}$
         \EndIf
     \EndFor
 \EndFor
@@ -215,11 +217,11 @@ W algorytmie z indeksem podobieñstwa stosujemy zdecydowanie bardziej wyrafinowan
 \Function{similarityIndexEncoding}{$block, hashes\_map, sfeatures\_map$}
 \State $features \gets \Call{calculateFeatures}{block}$
 \State $sfeatures \gets \Call{createSuperfeatures}{features}$
-\State $hashes \gets empty$
+\State $hashes \gets empty$ \Comment{wartoœci funkcji skrótu kandydatów na blok bazowy}
 \For{$sfeature \ \textbf{in} \ sfeatures$}
     \State $hashes.add(hashes\_map[sfeature])$
 \EndFor
-\State $best \gets None$
+\State $best \gets None$ \Comment{szukanie bloku z najwiêksz¹ iloœci¹ wspólnych supercech}
 \State $common \gets 0$
 \For{$hash \ \textbf{in} \ hashes$}
     \State $common' \gets \Call{length}{sfeatures.intersect(sfeatures\_map[hash])}$
@@ -228,7 +230,7 @@ W algorytmie z indeksem podobieñstwa stosujemy zdecydowanie bardziej wyrafinowan
         \State $best \gets hash$
     \EndIf
 \EndFor
-\State $sfeatures\_map.add(block.getHash(), sfeatures)$
+\State $sfeatures\_map.add(block.getHash(), sfeatures)$ \Comment{aktualizowanie struktur danych}
 \For{$sfeature \ \textbf{in} \ sfeatures$}
     \State $hashes\_map.add(sfeature, block.getHash())$
 \EndFor
