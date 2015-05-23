@@ -315,10 +315,45 @@ Bardzo du¿e znaczenie dla jakoœci systemu informatycznego maj¹ zastosowane techn
 Ich wybór ma wp³yw na wydajnoœæ, ³atwoœæ pisania kodu, dostêpnoœæ bibliotek (w przypadku jêzyka programowania).
 Podobnie by³o w przypadku symulatora, co zostanie pokazane w nastêpnych paragrafach.
 \section{Jêzyki programowania}
-Symulator zosta³ napisany g³ównie w jêzyku Python w wersji 2.7. W jêzyku C++ zosta³ napisany adapter Chunkera. Z kolei wymagaj¹ca obliczeniowo czêœæ delta kodowania z indeksem podobieñstwa zosta³a napisana w C.
-
+W jêzyku C++ napisaliœmy adapter Chunkera.
+By³o to wymuszone technologi¹, w jakiej zosta³ napisany ten komponent.
+\\*
+Sam symulator zdecydowaliœmy siê napisaæ w jêzyku Python w wersji 2.7.
+Wybraliœmy go, gdy¿ jest on jêzykiem wysokiego poziomu i bardzo szybko siê w nim pisze.
+Jednoczeœnie jest w nim dostêpnych mnóstwo najró¿niejszych bibliotek, z których czêsto korzystaliœmy w naszym projekcie.
+Niestety, Python przy wszystkich swoich zaletach nie oferuje zbyt dobrej wydajnoœci.
+Dlatego wymagaj¹ce obliczeniowo czêœci algorytmów zosta³y napisane w C.
+Zrobiliœmy to, u¿ywaj¹c zbioru nag³ówków implementacji CPython.
+Pozwoli³o to przyspieszyæ symulacjê kilkanaœcie razy.
+\\*
+Byæ mo¿e warto wyjaœniæ, dlaczego nie zdecydowaliœmy siê na wersjê Pythona z prefiksem 3.
+Otó¿ nie jest ona kompatybilna wstecznie i dlatego u¿ycie wielu bibliotek, które s¹ dostêpne dla wersji 2.7, staje siê problematyczne.
+Poza tym, mieliœmy wiêcej doœwiadczenia z u¿ywaniem poprzednich wersji.
+\\*
+Mo¿e siê równie¿ nasuwaæ pytanie, dlaczego nie zastowaliœmy implementacji Pythona o nazwie PyPy.
+Jest ona wszak du¿o bardziej wydajna ni¿ popularny CPython.
+Niestety, u¿ywanie wielu pakietów, które zosta³y napisane w C (np. wxpython) jest w niej siê trudne lub wrêcz niemo¿liwe.
+Poza tym, nie jest ona do koñca kompatybilna z innymi implementacjami.
 \section{Biblioteki}
-Obs³uga symulatora odbywa siê za pomoc¹ graficznego interfejsu u¿ytkownika stworzonego z u¿yciem pakietu wxPython. Po przeprowadzonej symulacji generowane s¹ ró¿norodne statystyki opisuj¹ce wyniki eksperymentu, na podstawie których mo¿na tworzyæ wykresy w formacie SVG dziêki bibliotece pygal.
+\subsection{wxPython}
+Obs³uga symulatora odbywa siê za pomoc¹ graficznego interfejsu u¿ytkownika stworzonego z u¿yciem pakietu wxPython.
+Zosta³ zaimplementowany jako nak³adka na napisan¹ w C++ bibliotekê wxWidgets.
+Warto wspomnieæ, ¿e jest on wieloplatformowy.
+\subsection{pygal}
+Biblioteka ta umo¿liwia tworzenie wykresów w formacie SVG na podstawie ró¿norodnych statystyk opisuj¹cych wyniki eksperymentu.
+\subsection{virtualenv}
+Jest to narzêdzie do tworzenia izolowanego œrodowiska dla aplikacji w Pythonie.
+Umo¿liwia ono posiadanie lokalnych instalacji wielu bibliotek, które mog¹ byæ ró¿ne od tych zainstalowanych globalnie.
+Dziêki temu nasz symulator jest niezale¿ny od systemowych aktualizacji, a tak¿e od innych aplikacji w obrêbie systemu
+\subsection{xdelta}
+U¿yliœmy tej biblioteki w wersji 3 do liczenia ró¿nic miêdzy plikami binarnymi.
+Zosta³a napisana w C, co ma du¿y wp³yw na wydajnoœæ.
+\subsection{pylint}
+Narzêdzie do statycznej analizy kodu.
+Sprawdza zgodnoœæ z zaleceniami PEP 8.
+Znacznie u³atwia ono dbanie o jakoœæ Ÿróde³.
+\subsection{pylzma}
+Biblioteka do kompresji LZMA.
 
 \section{Baza danych}
 Wybraliœmy LevelDB, jest to nierelacyjna baza danych, która umo¿liwia efektywne przechowywanie danych typu klucz-wartoœæ. W naszym przypadku ma miejsce odwzorowanie wartoœci funkcji skrótu w odpowiadaj¹cy jej blok. Zastosowanie bazy danych pozwoli³o nam na wykonywanie eksperymentów, których rozmiar danych wejœciowych przekracza³ wielokrotnie rozmiar pamiêci RAM. Dziêki temu mogliœmy sprawdziæ jak zachowuj¹ siê algorytmy dla znacznie wiêkszych danych.
