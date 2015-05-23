@@ -14,6 +14,7 @@
 \usepackage{graphicx}
 \usepackage{pgffor}
 \usepackage{amsmath}
+\usepackage{algpseudocode}
 \urlstyle{same}
 
 %Jesli uzywasz kodowania polskich znakow ISO-8859-2 nastepna linia powinna byc odkomentowana
@@ -91,7 +92,7 @@ Stworzony symulator pozwala na badanie wp³ywu kilku czynników na iloœæ przesy³an
 \chapter{System HYDRAstor}
 HYDRAstor to nowoczesny, rozproszony, skalowalny system kopii zapasowych u¿ywaj¹cy dysku.
 Jest jednym z najwiêkszych i najszybszych takich systemów na œwiecie u¿ywanym przez klientów w Japonii i Stanach Zjednoczonych.
-Zosta³ stworzony, aby dostarczyæ klientom funkcjonalnoœci takie, jak: deduplikacja, samozarz¹dzanie, mo¿liwoœæ konfiguracji wed³ug potrzeb. Ci¹g³e aktualizacje nie przerywaj¹ dzia³ania produktu. Ponadto system charakteryzuje siê du¿¹ odpornoœci¹ na b³êdy (patrz \cite{HYDRAstor}).
+Zosta³ stworzony, aby dostarczyæ klientom funkcjonalnoœci takie, jak: deduplikacja, mo¿liwoœæ konfiguracji wed³ug potrzeb. Ci¹g³e aktualizacje nie przerywaj¹ dzia³ania produktu. Ponadto system charakteryzuje siê du¿¹ odpornoœci¹ na b³êdy (patrz \cite{HYDRAstor}).
 \\*
 HYDRAstor jest niezwykle z³o¿ony i skomplikowany, dlatego stworzony przez nas symulator uwzglêdnia jedynie jego kluczowe dla naszego problemu w³asnoœci.
 Na sekwencji rysunków zosta³a oddana idea dzia³ania systemu.
@@ -99,7 +100,7 @@ Nale¿y opowiedzieæ o najwa¿niejszych z naszego punktu widzenia elementach system
 \section{Bloki zmiennej d³ugoœci}
 Bloki zmiennej d³ugoœci pozwalaj¹ w znacznym stopniu zmniejszyæ rozmiar danych, które zostan¹ przes³ane podczas replikacji, czyli procesu tworzenia nowej kopii. Za³ó¿my chwilowo, ¿e stosujemy bloki sta³ej wielkoœci i mamy na serwerze strumieñ danych o bardzo du¿ym rozmiarze. Nastêpnie w œrodku tego strumienia zostaje dodany jeden znak. Sprawia to, ¿e po³owa strumienia zostanie podzielona na zupe³nie nowe bloki, mimo ¿e dane siê praktycznie nie zmieni³y.
 \\*
-Stosowanie bloków zmiennej d³ugoœci w po³¹czeniu z komponentem zwanym chunkerem, który wybiera granice bloków na podstawie samych danych, stosuj¹c pewne heurystyki, pozwala unikn¹æ tego problemu. W powy¿szym przyk³adzie zadzia³a³by tak, ¿e kilka bloków po nowym znaku by³oby innych, ale reszta nie zmieni³aby siê.
+Stosowanie bloków zmiennej d³ugoœci w po³¹czeniu z komponentem zwanym Chunkerem, który wybiera granice bloków na podstawie samych danych, stosuj¹c pewne heurystyki, pozwala unikn¹æ tego problemu. W powy¿szym przyk³adzie zadzia³a³by tak, ¿e kilka bloków po nowym znaku by³oby innych, ale reszta nie zmieni³aby siê.
 \section{Deduplikacja}
 Dla ka¿dego z nowo dodanych bloków jest tworzony identyfikator za pomoc¹ jednej z popularnych funkcji skrótu. Pozwala to na eliminacjê duplikatów ze zbioru przechowywanych bloków. Ma to du¿e znaczenie praktyczne, jeœli kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
 \section{Kompresja}
@@ -179,8 +180,63 @@ W du¿ym uproszczeniu jego dzia³anie polega na odtwarzaniu po kolei pliku, wykonu
 W symulatorze zaimplementowaliœmy dwa ró¿ne podejœcia do tego problemu.
 \subsection{Algorytm optymalny}
 W algorytmie optymalnym porównujemy nowy blok ze wszystkimi blokami, które posiadamy. Jest on niemo¿liwy do zastosowania w praktyce przez asymptotycznie kwadratowy czas dzia³ania ze wzglêdu na iloœæ bloków. Jednak jest on dobrym punktem odniesienia do innych algorytmów - daje on informacjê, jakie jest dolne ograniczenie na rozmiar danych w klasie algorytmów delta kodowania porównuj¹cych z jednym blokiem.
+\begin{algorithmic}
+\Function{optimalDeltaEncoding}{$blocks, block$}
+\State $best\_block \gets blocks[0]$
+\State $best\_diff \gets \Call{Diff}{block, blocks[0]}$
+\For{$old\_block \ \textbf{in} \ blocks$}
+    \State $diff \gets \Call{Diff}{block, old\_block}$
+    \If{$\Call{length}{diff} < \Call{length}{best\_diff}$}
+        \State $best\_diff \gets diff$
+        \State $best\_block \gets old\_block$
+    \EndIf
+\EndFor
+\State \Return $best\_block.getHash()$
+\EndFunction
+\end{algorithmic}
 \subsection{Algorytm z indeksem podobieñstwa}
 W algorytmie z indeksem podobieñstwa stosujemy zdecydowanie bardziej wyrafinowan¹ strategiê. Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ iloœæ $K$ wartoœci liczbowych zwanych cechami (ang. \textit{feature}). W tym celu poruszamy siê po bloku oknem (ang. \textit{window}) o sta³ym rozmiarze $W$ i dla ka¿dego okna $w$ liczymy znacznik Rabina (ang. \textit{Rabin’s fingerprint}) $fp(w) = \sum\limits_{i=0}^{W-1} w[i] \times P^{i} \mod Q$, gdzie $P$ i $Q$ to ustalone liczby pierwsze. Dla cechy o numerze $i$ definiujemy dwie wartoœci $m_i$ oraz $a_i$. Wartoœci¹ cechy o numerze $i$ bêdzie minimum po wszystkich oknach $w$ z $(fp(w) * m_i + a_i) \mod 2^{32}$. Wartoœciami $a_i$ oraz $m_i$ powinny byæ du¿e, losowe liczby pierwsze, jednak w celu zapewnienia powtarzalnoœci eksperymentów s¹ one w naszym symulatorze ustalone. Nastêpnie tworzymy supercechy (ang. \textit{superfeature}) z ustalonej liczby $S$ zwyk³ych cech. W tym celu dzielimy cechy danego bloku na grupy po $K$ kolejnych cech i dla ka¿dej z grup liczymy znacznik Rabina - jego wartoœæ bêdzie wartoœci¹ danej supercechy. Wszystkie znaczniki liczymy przy u¿yciu du¿ych liczb pierwszych $P$ i $Q$. Aby znaleŸæ podobny blok do danego, wybieramy taki, który ma najwiêcej wspólnych super cech (jeœli jest takich wiêcej, wybieramy dowolny). Jeœli zaœ nie ma bloku z jak¹kolwiek wspóln¹ super cech¹, wysy³amy ca³y blok. Eksperymentalnie wyznaczyliœmy, ¿e najlepiej dzia³aj¹ wartoœci $K=4$ i $S=2$ - pod uwagê braliœmy iloœæ czasu potrzebn¹ na obliczenia, iloœæ znajdowanych bloków oraz ich jakoœæ. Oczywiœcie, im wiêksze $K$, tym lepsza jakoœæ kandydatów. Z kolei, im wiêksze $S$, tym wiêcej bloków znajdujemy. Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
+
+\begin{algorithmic}
+\Function{calculateFeatures}{$block$}
+\State $N \gets S \times K$
+\State $features[N] \gets {None, ... }$
+\State $best[N] \gets {2^{32}, ... }$
+\ForAll{window $w$ in $block$}
+    \For{$i \ \textbf{in} \ \{0, ..., N\}$}
+        \State $value \gets m[i] \times \Call{fp}{w} + a[i] \mod 2^{32}$
+        \If {$value < best[i]$}
+            \State $best[i] \gets value$
+            \State $feature[i] \gets \Call{fp}{w}$
+        \EndIf
+    \EndFor
+\EndFor
+\State \Return $features$
+\EndFunction
+\\
+\Function{similarityIndexEncoding}{$block, hashes\_map, sfeatures\_map$}
+\State $features \gets \Call{calculateFeatures}{block}$
+\State $sfeatures \gets \Call{createSuperfeatures}{features}$
+\State $hashes \gets empty$ \Comment{wartoœci funkcji skrótu kandydatów na blok bazowy}
+\For{$sfeature \ \textbf{in} \ sfeatures$}
+    \State $hashes.add(hashes\_map[sfeature])$
+\EndFor
+\State $best \gets None$ \Comment{szukanie bloku z najwiêksz¹ iloœci¹ wspólnych supercech}
+\State $common \gets 0$
+\For{$hash \ \textbf{in} \ hashes$}
+    \State $common' \gets \Call{length}{sfeatures.intersect(sfeatures\_map[hash])}$
+    \If {$common' > common$}
+        \State $common \gets common'$
+        \State $best \gets hash$
+    \EndIf
+\EndFor
+\State $sfeatures\_map.add(block.getHash(), sfeatures)$ \Comment{aktualizowanie struktur danych}
+\For{$sfeature \ \textbf{in} \ sfeatures$}
+    \State $hashes\_map.add(sfeature, block.getHash())$
+\EndFor
+\State \Return $best$
+\EndFunction
+\end{algorithmic}
 
 \chapter{Architektura}
 Aby sprawdziæ algorytmy delta kodowania, stworzyliœmy symulator systemu HYDRAstor.
@@ -259,10 +315,45 @@ Bardzo du¿e znaczenie dla jakoœci systemu informatycznego maj¹ zastosowane techn
 Ich wybór ma wp³yw na wydajnoœæ, ³atwoœæ pisania kodu, dostêpnoœæ bibliotek (w przypadku jêzyka programowania).
 Podobnie by³o w przypadku symulatora, co zostanie pokazane w nastêpnych paragrafach.
 \section{Jêzyki programowania}
-Symulator zosta³ napisany g³ównie w jêzyku Python w wersji 2.7. W jêzyku C++ zosta³ napisany adapter Chunkera. Z kolei wymagaj¹ca obliczeniowo czêœæ delta kodowania z indeksem podobieñstwa zosta³a napisana w C.
-
+W jêzyku C++ napisaliœmy adapter Chunkera.
+By³o to wymuszone technologi¹, w jakiej zosta³ napisany ten komponent.
+\\*
+Sam symulator zdecydowaliœmy siê napisaæ w jêzyku Python w wersji 2.7.
+Wybraliœmy go, gdy¿ jest on jêzykiem wysokiego poziomu i bardzo szybko siê w nim pisze.
+Jednoczeœnie jest w nim dostêpnych mnóstwo najró¿niejszych bibliotek, z których czêsto korzystaliœmy w naszym projekcie.
+Niestety, Python przy wszystkich swoich zaletach nie oferuje zbyt dobrej wydajnoœci.
+Dlatego wymagaj¹ce obliczeniowo czêœci algorytmów zosta³y napisane w C.
+Zrobiliœmy to, u¿ywaj¹c zbioru nag³ówków implementacji CPython.
+Pozwoli³o to przyspieszyæ symulacjê kilkanaœcie razy.
+\\*
+Byæ mo¿e warto wyjaœniæ, dlaczego nie zdecydowaliœmy siê na wersjê Pythona z prefiksem 3.
+Otó¿ nie jest ona kompatybilna wstecznie i dlatego u¿ycie wielu bibliotek, które s¹ dostêpne dla wersji 2.7, staje siê problematyczne.
+Poza tym, mieliœmy wiêcej doœwiadczenia z u¿ywaniem poprzednich wersji.
+\\*
+Mo¿e siê równie¿ nasuwaæ pytanie, dlaczego nie zastowaliœmy implementacji Pythona o nazwie PyPy.
+Jest ona wszak du¿o bardziej wydajna ni¿ popularny CPython.
+Niestety, u¿ywanie wielu pakietów, które zosta³y napisane w C (np. wxpython) jest w niej siê trudne lub wrêcz niemo¿liwe.
+Poza tym, nie jest ona do koñca kompatybilna z innymi implementacjami.
 \section{Biblioteki}
-Obs³uga symulatora odbywa siê za pomoc¹ graficznego interfejsu u¿ytkownika stworzonego z u¿yciem pakietu wxPython. Po przeprowadzonej symulacji generowane s¹ ró¿norodne statystyki opisuj¹ce wyniki eksperymentu, na podstawie których mo¿na tworzyæ wykresy w formacie SVG dziêki bibliotece pygal.
+\subsection{wxPython}
+Obs³uga symulatora odbywa siê za pomoc¹ graficznego interfejsu u¿ytkownika stworzonego z u¿yciem pakietu wxPython.
+Zosta³ zaimplementowany jako nak³adka na napisan¹ w C++ bibliotekê wxWidgets.
+Warto wspomnieæ, ¿e jest on wieloplatformowy.
+\subsection{pygal}
+Biblioteka ta umo¿liwia tworzenie wykresów w formacie SVG na podstawie ró¿norodnych statystyk opisuj¹cych wyniki eksperymentu.
+\subsection{virtualenv}
+Jest to narzêdzie do tworzenia izolowanego œrodowiska dla aplikacji w Pythonie.
+Umo¿liwia ono posiadanie lokalnych instalacji wielu bibliotek, które mog¹ byæ ró¿ne od tych zainstalowanych globalnie.
+Dziêki temu nasz symulator jest niezale¿ny od systemowych aktualizacji, a tak¿e od innych aplikacji w obrêbie systemu
+\subsection{xdelta}
+U¿yliœmy tej biblioteki w wersji 3 do liczenia ró¿nic miêdzy plikami binarnymi.
+Zosta³a napisana w C, co ma du¿y wp³yw na wydajnoœæ.
+\subsection{pylint}
+Narzêdzie do statycznej analizy kodu.
+Sprawdza zgodnoœæ z zaleceniami PEP 8.
+Znacznie u³atwia ono dbanie o jakoœæ Ÿróde³.
+\subsection{pylzma}
+Biblioteka do kompresji LZMA.
 
 \section{Baza danych}
 Wybraliœmy LevelDB, jest to nierelacyjna baza danych, która umo¿liwia efektywne przechowywanie danych typu klucz-wartoœæ. W naszym przypadku ma miejsce odwzorowanie wartoœci funkcji skrótu w odpowiadaj¹cy jej blok. Zastosowanie bazy danych pozwoli³o nam na wykonywanie eksperymentów, których rozmiar danych wejœciowych przekracza³ wielokrotnie rozmiar pamiêci RAM. Dziêki temu mogliœmy sprawdziæ jak zachowuj¹ siê algorytmy dla znacznie wiêkszych danych.
