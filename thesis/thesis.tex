@@ -101,9 +101,7 @@ Symulator naœladuje pracê systemu HYDRAstor oraz pozwala na zbadanie wp³ywu wdro
 \chapter*{Wstêp}
 \addcontentsline{toc}{chapter}{Wstêp}
 W wielu wspó³czesnych systemach kopii zapasowych w¹skim gard³em procesu tworzenia repliki jest przesy³anie danych ³¹czem internetowym.
-W minimalizacji ich rozmiaru niew¹tpliwie pomaga dzielenie strumienia danych na bloki zmiennej d³ugoœci i wykorzystywanie funkcji skrótu do eliminacji duplikatów.
-
-Jednak to podejœcie ma swoje ograniczenia.
+W minimalizacji ich rozmiaru niew¹tpliwie pomaga dzielenie strumienia danych na bloki zmiennej d³ugoœci i wykorzystywanie funkcji skrótu do eliminacji duplikatów. Jednak to podejœcie ma swoje ograniczenia.
 W przypadku du¿ego rozmiaru bloku jest bardzo prawdopodobne, ¿e znajd¹ siê 2 prawie identyczne bloki, a istniej¹cy system tego nie wykryje i bêdzie przechowywa³ oba, co jest zachowaniem dalekim od optymalnego.
 Sposobem na poprawienie tej sytuacji jest zastosowanie delta kodowania z u¿yciem indeksu podobieñstwa.
 Metoda ta polega na obliczaniu cech ka¿dego unikalnego bloku, a przy dodawaniu nowego bloku sprawdzaniu, czy istnieje blok podobny do niego.
@@ -150,7 +148,7 @@ Stosowana kompresja musi nie tylko mieæ dobry stopieñ, ale te¿ nie zu¿ywaæ zbyt 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\textwidth]{img/visualization/2.png}
-    \caption{System A dzieli dane na bloki, dla ka¿dego z bloków liczy wartoœæ funkcji skrótu. Zauwa¿my, ¿e dla identycznych bloków dostajemy takie same wartoœci.}
+    \caption{System A dzieli dane na bloki, dla ka¿dego z bloków liczy wartoœæ funkcji skrótu. Dla identycznych bloków dostajemy takie same wartoœci.}
 \end{figure}
 
 \begin{figure}[h]
@@ -174,7 +172,7 @@ Stosowana kompresja musi nie tylko mieæ dobry stopieñ, ale te¿ nie zu¿ywaæ zbyt 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\textwidth]{img/visualization/6.png}
-    \caption{System A dzieli dane na bloki i liczy wartoœci funkcji skrótu. Zauwa¿my, ¿e zmieni³y siê tylko dwa bloki, co jest zas³ug¹ Chunkera.}
+    \caption{System A dzieli dane na bloki i liczy wartoœci funkcji skrótu. Zmieni³y siê tylko dwa bloki, co jest zas³ug¹ Chunkera.}
 \end{figure}
 
 \begin{figure}[h]
@@ -194,7 +192,7 @@ System HYDRAstor, mimo wielu niew¹tpliwych zalet, mo¿e byæ znacznie bardziej wyd
 Iloœæ danych niezbêdnych do przes³ania z kolejn¹ wersj¹ mo¿e ulec znacznemu zmniejszeniu dziêki algorytmom delta kodowania.
 
 Delta kodowanie to sposób przechowywania i transmisji danych w formie ró¿nic (ang. \textit{delta}) pomiêdzy blokami danych.
-W sytuacjach, gdy ró¿nice pomiêdzy blokami s¹ ma³e, delta kodowania potrafi znacznie zmniejszyæ nadmiarowoœæ.
+W sytuacjach, gdy ró¿nice pomiêdzy blokami s¹ ma³e, delta kodowania potrafi znacznie zmniejszyæ nadmiarowoœæ danych.
 Przechowywanie zbioru ró¿nic jest zdecydowanie bardziej efektywne pamiêciowo ni¿ przechowywanie ca³ych bloków.
 Oczywiœcie, na ich wielkoœæ ma bardzo du¿y wp³yw to, które dane ze sob¹ porównujemy, a tak¿e jak liczymy ró¿nice.
 Dlatego delta kodowanie mo¿na sprowadziæ do dwóch zasadniczych problemów: znajdowania podobnych bloków i liczenia ró¿nic miêdzy nimi.
@@ -398,7 +396,7 @@ Poza tym, mieliœmy wiêcej doœwiadczenia z u¿ywaniem poprzednich wersji.
 
 Mo¿e siê równie¿ nasuwaæ pytanie, dlaczego nie zastowaliœmy implementacji Pythona o nazwie PyPy.
 Jest ona wszak du¿o bardziej wydajna ni¿ popularny CPython.
-Niestety, u¿ywanie wielu pakietów, które zosta³y napisane w C (np. wxPython) jest w niej siê trudne lub wrêcz niemo¿liwe.
+Niestety, u¿ywanie wielu pakietów, które zosta³y napisane w C (np. wxPython) jest w niej trudne lub wrêcz niemo¿liwe.
 Poza tym, nie jest ona do koñca kompatybilna z innymi implementacjami.
 \section{Biblioteki}
 \subsection{wxPython}
@@ -552,7 +550,7 @@ W naszych eksperymentach jednak nie by³o to istotne, dlatego weŸmiemy pod uwagê 
 Zanim zaczniemy analizowaæ tê pracê, warto zauwa¿yæ, ¿e mieliœmy trochê inn¹ konfiguracjê symulatora ni¿ autorzy tej pracy.
 Przeciêtny rozmiar bloku w wy¿ej wymienionej pracy to 8KB, z kolei u nas to 64KB.
 Jednoczeœnie koñcowe eksperymenty przeprowadzano tam z 3 super cechami na blok, u nas z 2.
-Zauwa¿my, ¿e ró¿nice te mog³y znacznie wp³yn¹æ na wyniki eksperymentów.
+Ró¿nice te mog³y znacznie wp³yn¹æ na wyniki eksperymentów.
 Wiêksza liczba super cech na blok zwiêksza szanse na dopasowanie jakiegoœ bloku.
 Taki sam wp³yw na ma³y rozmiar bloku - jest ich wtedy wiêcej i ³atwiej znaleŸæ podobny.
 Kolejn¹, wart¹ wspomnienia, ró¿nic¹ jest rozmiar danych.
@@ -569,7 +567,6 @@ Dla stacji roboczych osi¹gniêto zysk rzêdu 65\%, u nas zaœ by³ on symboliczny.
 
 Nale¿y przypuszczaæ, ¿e porównanie wypad³oby odrobinê inaczej, gdybyœmy przeprowadzili eksperymenty bardziej zbli¿one do tych z pracy Shilane'a i innych.
 Jednak kluczowe by³o dla nas i firmy 9LivesData, aby konfiguracja jak najbardziej odwzorowywa³a warunki pracy systemu HYDRAstor.
-Poza tym, nie mieliœmy dostêpu do wiêkszych danych, a tak¿e do sprzêtu o wiêkszej iloœci pamiêci RAM i lepszej mocy obliczeniowej.
 
 \chapter{Organizacja pracy}
 
