@@ -138,8 +138,8 @@ Dla ka¿dego z nowo dodanych bloków jest tworzony identyfikator za pomoc¹ jednej 
 Pozwala to na eliminacjê duplikatów ze zbioru przechowywanych bloków.
 Ma to du¿e znaczenie praktyczne, jeœli kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
 \section{Kompresja}
-Przed przes³aniem bloki s¹ poddawane dzia³aniu algorytmowi kompresji, co pozwala znacz¹co zmieniæ rozmiar danych.
-Stosowany algorytm kompresji musi nie tylko mieæ dobry wspó³czynnik kompresji, ale te¿ nie zu¿ywaæ zbyt du¿o zasobów systemu.
+Przed przes³aniem bloki s¹ poddawane dzia³aniu kompresji, co pozwala znacz¹co zmieniæ rozmiar danych.
+Stosowana kompresja musi nie tylko mieæ dobry stopieñ, ale te¿ nie zu¿ywaæ zbyt du¿o zasobów systemu.
 
 \begin{figure}[h]
     \centering
@@ -196,7 +196,7 @@ Iloœæ danych niezbêdnych do przes³ania z kolejn¹ wersj¹ mo¿e ulec znacznemu zmni
 Delta kodowanie to sposób przechowywania i transmisji danych w formie ró¿nic (ang. \textit{delta}) pomiêdzy blokami danych.
 W sytuacjach, gdy ró¿nice pomiêdzy blokami s¹ ma³e, delta kodowania potrafi znacznie zmniejszyæ nadmiarowoœæ.
 Przechowywanie zbioru ró¿nic jest zdecydowanie bardziej efektywne pamiêciowo ni¿ przechowywanie ca³ych bloków.
-Oczywiœcie, na ich wielkoœæ ma bardzo du¿y wp³yw to, które dane ze sob¹ porównujemy, a tak¿e jakiego u¿ywamy algorytmu do liczenia ró¿nic.
+Oczywiœcie, na ich wielkoœæ ma bardzo du¿y wp³yw to, które dane ze sob¹ porównujemy, a tak¿e jak liczymy ró¿nice.
 Dlatego delta kodowanie mo¿na sprowadziæ do dwóch zasadniczych problemów: znajdowania podobnych bloków i liczenia ró¿nic miêdzy nimi.
 \section{Liczenie ró¿nic}
 Jest to popularny w informatyce problem, aby na podstawie dwóch fragmentów danych stworzyæ ró¿nicê (ang. \textit{delta}), dziêki której maj¹c tylko pierwszy fragment i ow¹ ró¿nicê, mo¿na  by³o odtworzyæ drugi fragment.
@@ -207,7 +207,7 @@ Jeden z nich implementuje popularny program Diff z systemów Unix.
 Jednak nie jest dobrym rozwi¹zaniem dla naszego problemu, gdy¿ porównuje pliki na poziomie linii, co ma szanse siê sprawdziæ jedynie dla specyficznego rodzaju plików tekstowych.
 
 Interesuj¹ nas przede wszystkim algorytmy przeznaczone do liczenia ró¿nic miêdzy danymi binarnymi.
-Ograniczymy siê jednak do algorytmu xdelta3, którego u¿ywamy w symulatorze.
+Ograniczymy siê jednak do xdelta3, którego u¿ywamy w symulatorze.
 W du¿ym uproszczeniu jego dzia³anie polega na odtwarzaniu po kolei pliku, wykonuj¹c kilka operacji:
 \begin{itemize}
 \item wstawienie danego ci¹gu bajtów
@@ -470,19 +470,19 @@ Przeanalizujmy najpierw metody oznaczone kolorami: czerwonym, zielonym i ¿ó³tym.
 Wszystkie trzy nie u¿ywaj¹ indeksu podobieñstwa, a ró¿ni¹ siê jedynie typem kompresji u¿ytym przed wys³aniem danych.
 Widzimy, ¿e kompresja LZO zmniejsza rozmiar danych prawie o 85\%.
 Z kolei zastosowanie LZMA daje dla pierwszej wersji oszczêdnoœæ oko³o 41\% w stosunku do LZO.
-Widaæ zatem, ¿e w systemie HYDRAstor warto rozwa¿yæ u¿ycie znacznie bardziej kosztownego obliczeniowo algorytmu LZMA.
+Widaæ zatem, ¿e w systemie HYDRAstor warto rozwa¿yæ u¿ycie znacznie bardziej kosztownej obliczeniowo kompresji LZMA.
 Podobne wnioski mo¿na wyci¹gn¹æ patrz¹c na drug¹ i trzeci¹ wersjê Ÿróde³ j¹dra linuxa.
-W ka¿dym przypadku algorytm LZMA znacznie zmniejszy³ rozmiar danych koniecznych do wys³ania.
+W ka¿dym przypadku kompresja LZMA znacznie zmniejszy³a rozmiar danych koniecznych do wys³ania.
 
 Zajmijmy siê teraz delta kodowaniem z indeksem podobieñstwa.
-Dla pierwszej wersji wyniki samego usuwania duplikatów z ró¿nymi algorytmami kompresji (kolory czerwony, zielony, ¿ó³ty) prawie idealnie odpowiadaj¹ metodzie z u¿yciem indeksu podobieñstwa (kolory b³êkitny, fioletowy, szary).
+Dla pierwszej wersji wyniki samego usuwania duplikatów z ró¿nymi typami kompresji (kolory czerwony, zielony, ¿ó³ty) prawie idealnie odpowiadaj¹ metodzie z u¿yciem indeksu podobieñstwa (kolory b³êkitny, fioletowy, szary).
 Wynika to z tego, ¿e indeks podobieñstwa nie mia³ danych, do których móg³by porównywaæ nowe bloki.
 Jednak do przes³ania drugiej i trzeciej wersji Ÿróde³ linuxa rozmiar wynikowych danych jest znacznie mniejszy.
 Odpowiednio dla standardowej metody i kompresji LZO - 57MB, a dla indeksu podobieñstwa 26MB.
 Oznacza to zmniejszenie rozmiaru danych o ponad 50\%!
 Podobny wynik mo¿na zaobserwowaæ dla trzeciej wersji.
 
-Równie¿ dla metody indeksu podobieñstwa zysk z u¿ycia algorytmu kompresji LZMA jest znaczny.
+Równie¿ dla metody indeksu podobieñstwa zysk z u¿ycia kompresji LZMA jest znaczny.
 Dla kolejnych wersji mamy odpowiednio zmniejszenie rozmiaru o 41\%, 34\% oraz 34\%.
 \section{Wyniki dla Ÿróde³ j¹dra Linuxa - du¿e odstêpy}
 Drugi eksperyment tak¿e zosta³ przeprowadzony dla Ÿróde³ j¹dra Linuxa.
@@ -500,10 +500,10 @@ Dla drugiej i trzeciej wersji znaleziono mniej ni¿ 2\% podobnych bloków.
 
 Niestety, delta kodowanie radzi sobie znacznie gorzej ni¿ w ostatnim eksperymencie.
 Porównajmy metody oznaczone kolorem zielonym i fioletowym.
-Obie u¿ywaj¹ tego samego algorytmu kompresji, wiêc ró¿ni¹ siê tylko algorytmem delta kodowania.
+Obie u¿ywaj¹ tej samej kompresji, wiêc ró¿ni¹ siê tylko algorytmem delta kodowania.
 Dla pierwszej wersji zysk z u¿ycia indeksu podobieñstwa jest prawie zerowy (dok³adnie z takich samych powodów jak poprzednio).
 Dla drugiej i trzeciej wersji zysk wynosi odpowiednio 15\% i 9\%.
-Jeszcze gorzej prezentuje siê porównanie tych metod gdy u¿ywamy algorytmu LZMA (kolory ¿ó³ty i szary).
+Jeszcze gorzej prezentuje siê porównanie tych metod, gdy u¿ywamy kompresji LZMA (kolory ¿ó³ty i szary).
 Dane zosta³y zmniejszone odpowiednio o 11\% oraz 7\% dla drugiej i trzeciej wersji Ÿróde³ j¹dra linuxa.
 Warto dodaæ, ¿e po raz kolejny kompresja LZMA znacznie zmniejszy³a dane konieczne do wys³ania - œrednio o 40\%.
 \section{Wyniki dla kopii zapasowych katalogu domowego}
@@ -619,7 +619,7 @@ Nastêpnie zaœ doprowadza³ kod do takiego stanu, aby owe testy koñczy³y siê z suk
     Dawid £azarczyk &
     Zaimplementowanie ca³ej komunikacji z Chunkerem. \newline
     Dodanie interfejsów do ChunkUpdate. \newline
-    Dodanie algorytmu diff. \newline
+    Dodanie xdelta3. \newline
     Zaimplementowanie optymalnego algorytmu delta kodowania. \newline
     Generowanie wykresów dla wielu eksperymentów na raz. \newline
     Zaimplementowanie algorytmu z indeksem podobieñstwa. \newline
