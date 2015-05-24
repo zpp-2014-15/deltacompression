@@ -180,7 +180,9 @@ W du¿ym uproszczeniu jego dzia³anie polega na odtwarzaniu po kolei pliku, wykonu
 \section{Znajdowanie podobnych bloków}
 W symulatorze zaimplementowaliœmy dwa ró¿ne podejœcia do tego problemu.
 \subsection{Algorytm optymalny}
-W algorytmie optymalnym porównujemy nowy blok ze wszystkimi blokami, które posiadamy. Jest on niemo¿liwy do zastosowania w praktyce przez asymptotycznie kwadratowy czas dzia³ania ze wzglêdu na iloœæ bloków. Jednak jest on dobrym punktem odniesienia do innych algorytmów - daje on informacjê, jakie jest dolne ograniczenie na rozmiar danych w klasie algorytmów delta kodowania porównuj¹cych z jednym blokiem.
+W algorytmie optymalnym porównujemy nowy blok ze wszystkimi blokami, które posiadamy.
+Jest on niemo¿liwy do zastosowania w praktyce przez asymptotycznie kwadratowy czas dzia³ania ze wzglêdu na iloœæ bloków.
+Jednak jest on dobrym punktem odniesienia do innych algorytmów - daje on informacjê, jakie jest dolne ograniczenie na rozmiar danych w klasie algorytmów delta kodowania porównuj¹cych z jednym blokiem.
 \begin{algorithmic}
 \Function{optimalDeltaEncoding}{$blocks, block$}
 \State $best\_block \gets blocks[0]$
@@ -196,7 +198,21 @@ W algorytmie optymalnym porównujemy nowy blok ze wszystkimi blokami, które posia
 \EndFunction
 \end{algorithmic}
 \subsection{Algorytm z indeksem podobieñstwa}
-W algorytmie z indeksem podobieñstwa stosujemy zdecydowanie bardziej wyrafinowan¹ strategiê. Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ iloœæ $K$ wartoœci liczbowych zwanych cechami (ang. \textit{feature}). W tym celu poruszamy siê po bloku oknem (ang. \textit{window}) o sta³ym rozmiarze $W$ i dla ka¿dego okna $w$ liczymy znacznik Rabina (ang. \textit{Rabin’s fingerprint}) $fp(w) = \sum\limits_{i=0}^{W-1} w[i] \times P^{i} \mod Q$, gdzie $P$ i $Q$ to ustalone liczby pierwsze. Dla cechy o numerze $i$ definiujemy dwie wartoœci $m_i$ oraz $a_i$. Wartoœci¹ cechy o numerze $i$ bêdzie minimum po wszystkich oknach $w$ z $(fp(w) * m_i + a_i) \mod 2^{32}$. Wartoœciami $a_i$ oraz $m_i$ powinny byæ du¿e, losowe liczby pierwsze, jednak w celu zapewnienia powtarzalnoœci eksperymentów s¹ one w naszym symulatorze ustalone. Nastêpnie tworzymy supercechy (ang. \textit{superfeature}) z ustalonej liczby $S$ zwyk³ych cech. W tym celu dzielimy cechy danego bloku na grupy po $K$ kolejnych cech i dla ka¿dej z grup liczymy znacznik Rabina - jego wartoœæ bêdzie wartoœci¹ danej supercechy. Wszystkie znaczniki liczymy przy u¿yciu du¿ych liczb pierwszych $P$ i $Q$. Aby znaleŸæ podobny blok do danego, wybieramy taki, który ma najwiêcej wspólnych super cech (jeœli jest takich wiêcej, wybieramy dowolny). Jeœli zaœ nie ma bloku z jak¹kolwiek wspóln¹ super cech¹, wysy³amy ca³y blok. Eksperymentalnie wyznaczyliœmy, ¿e najlepiej dzia³aj¹ wartoœci $K=4$ i $S=2$ - pod uwagê braliœmy iloœæ czasu potrzebn¹ na obliczenia, iloœæ znajdowanych bloków oraz ich jakoœæ. Oczywiœcie, im wiêksze $K$, tym lepsza jakoœæ kandydatów. Z kolei, im wiêksze $S$, tym wiêcej bloków znajdujemy. Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
+W algorytmie z indeksem podobieñstwa stosujemy zdecydowanie bardziej wyrafinowan¹ strategiê.
+Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ iloœæ $K$ wartoœci liczbowych zwanych cechami (ang. \textit{feature}).
+W tym celu poruszamy siê po bloku oknem (ang. \textit{window}) o sta³ym rozmiarze $W$ i dla ka¿dego okna $w$ liczymy znacznik Rabina (ang. \textit{Rabin’s fingerprint}) $fp(w) = \sum\limits_{i=0}^{W-1} w[i] \times P^{i} \mod Q$, gdzie $P$ i $Q$ to ustalone liczby pierwsze.
+Dla cechy o numerze $i$ definiujemy dwie wartoœci $m_i$ oraz $a_i$.
+Wartoœci¹ cechy o numerze $i$ bêdzie minimum po wszystkich oknach $w$ z $(fp(w) * m_i + a_i) \mod 2^{32}$.
+Wartoœciami $a_i$ oraz $m_i$ powinny byæ du¿e, losowe liczby pierwsze, jednak w celu zapewnienia powtarzalnoœci eksperymentów s¹ one w naszym symulatorze ustalone.
+Nastêpnie tworzymy super cechy (ang. \textit{superfeature}) z ustalonej liczby $S$ zwyk³ych cech.
+W tym celu dzielimy cechy danego bloku na grupy po $K$ kolejnych cech i dla ka¿dej z grup liczymy znacznik Rabina - jego wartoœæ bêdzie wartoœci¹ danej supercechy.
+Wszystkie znaczniki liczymy przy u¿yciu du¿ych liczb pierwszych $P$ i $Q$.
+Aby znaleŸæ podobny blok do danego, wybieramy taki, który ma najwiêcej wspólnych super cech (jeœli jest takich wiêcej, wybieramy dowolny).
+Jeœli zaœ nie ma bloku z jak¹kolwiek wspóln¹ super cech¹, wysy³amy ca³y blok.
+Eksperymentalnie wyznaczyliœmy, ¿e najlepiej dzia³aj¹ wartoœci $K=4$ i $S=2$ - pod uwagê braliœmy iloœæ czasu potrzebn¹ na obliczenia, iloœæ znajdowanych bloków oraz ich jakoœæ.
+Oczywiœcie, im wiêksze $K$, tym lepsza jakoœæ kandydatów.
+Z kolei, im wiêksze $S$, tym wiêcej bloków znajdujemy.
+Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
 
 \begin{algorithmic}
 \Function{calculateFeatures}{$block$}
@@ -222,7 +238,7 @@ W algorytmie z indeksem podobieñstwa stosujemy zdecydowanie bardziej wyrafinowan
 \For{$sfeature \ \textbf{in} \ sfeatures$}
     \State $hashes.add(hashes\_map[sfeature])$
 \EndFor
-\State $best \gets None$ \Comment{szukanie bloku z najwiêksz¹ iloœci¹ wspólnych supercech}
+\State $best \gets None$ \Comment{szukanie bloku z najwiêksz¹ iloœci¹ wspólnych super cech}
 \State $common \gets 0$
 \For{$hash \ \textbf{in} \ hashes$}
     \State $common' \gets \Call{length}{sfeatures.intersect(sfeatures\_map[hash])}$
@@ -358,7 +374,8 @@ Wybraliœmy LevelDB, jest to nierelacyjna baza danych, która umo¿liwia efektywne 
 
 \chapter{Wyniki symulacji}
 W tym rozdziale zostan¹ przedstawione i omówione rezultaty eksperymentów na danych ró¿nych typów.
-Przygotowanie danych do testowania by³o istotn¹ czêœci¹ pracy. Dobrze dobrane dane testowe pozwalaj¹ na lepsze zrozumienie dzia³ania algorytmów.
+Przygotowanie danych do testowania by³o istotn¹ czêœci¹ pracy.
+Dobrze dobrane dane testowe pozwalaj¹ na lepsze zrozumienie dzia³ania algorytmów.
 Dziêki nim mo¿na oszacowaæ zysk, który zostanie osi¹gniêty w systemie HYDRAstor.
 \section{Format wyników}
 Wyniki s¹ przedstawione w formie wykresów s³upkowych. Jeden kolor odpowiada jednej metodzie przesy³ania danych. Wybór metody obejmuje jednoczeœnie algorytm delta kodowania (np. algorytm optymalny) oraz rodzaj kompresji (np. LZMA). Wysokoœæ ka¿dego s³upka okreœla, ile danych trzeba przes³aæ dla danej wersji danych wejœciowych.
@@ -367,7 +384,6 @@ Wyniki s¹ przedstawione w formie wykresów s³upkowych. Jeden kolor odpowiada jedn
 Pierwsza symulacja zosta³a przeprowadzona dla Ÿróde³ j¹dra Linuxa. Zosta³y przygotowane trzy wersje Ÿróde³ j¹dra Linuxa z ró¿nicami 5 tysiêcy zmian pomiêdzy ka¿dymi dwiema kolejnymi. Rozmiar danych potrzebnych do przes³ania zosta³ policzony dla szeœciu metod.
 
 Znaczenie kolorów:
-
 \begin{itemize}
 \item Czerwony - usuwanie duplikatów, brak kompresji
 \item Zielony - usuwanie duplikatów, kompresja LZO. Warto dodaæ, ¿e jest to obecny wynik systemu HYDRAstor
@@ -376,7 +392,6 @@ Znaczenie kolorów:
 \item Fioletowy- indeks podobieñstwa, kompresja LZO
 \item Szary - indeks podobieñstwa, kompresja LZMA
 \end{itemize}
-
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{img/linuxSmall.png}
@@ -388,10 +403,21 @@ Na wykresie s¹ widoczne trzy grupy, ka¿da grupa sk³adaj¹ca siê z szeœciu s³upków
 
 Zacznijmy od iloœci duplikatów, które zosta³y wykryte wœród bloków. Dla pierwszej wersji jest to 0.05\%, wiêc bardzo ma³o. Dla drugiej wersji duplikaty stanowi¹ 8.05\% bloków. Pomimo tego, ¿e wersje by³y od siebie oddalone o tylko 5 tysiêcy zmian, wiêkszoœæ bloków zosta³a zmieniona.  Dla trzeciej wersji liczba usuniêtych duplikatów to nieco ponad 10\%. Jest to niewiele lepszy wynik.
 
-Przeanalizujmy najpierw kolory czerwony, zielony i ¿ó³ty. Wszystkie dotycz¹ metody, w której jedynie usuwa siê duplikaty, ró¿ni¹ siê jedynie algorytmem kompresji u¿ytym przed wys³aniem danych. Widzimy, ¿e kompresja LZO zmniejsza rozmiar danych prawie o 85\%. Z kolei zastosowanie LZMA daje dla pierwszej wersji oszczêdnoœæ oko³o 41\% w stosunku do LZO. Widaæ zatem, ¿e warto rozwa¿yæ u¿ycie znacznie bardziej kosztownego obliczeniowo algorytmu LZMA. Podobne wnioski mo¿na wyci¹gn¹æ patrz¹c na drug¹ i trzeci¹ wersjê Ÿróde³ j¹dra linuxa. W ka¿dym przypadku algorytm LZMA znacznie zmniejszy³ rozmiar danych koniecznych do wys³ania.
+Przeanalizujmy najpierw kolory czerwony, zielony i ¿ó³ty.
+Wszystkie dotycz¹ metody, w której jedynie usuwa siê duplikaty, ró¿ni¹ siê jedynie algorytmem kompresji u¿ytym przed wys³aniem danych.
+Widzimy, ¿e kompresja LZO zmniejsza rozmiar danych prawie o 85\%.
+Z kolei zastosowanie LZMA daje dla pierwszej wersji oszczêdnoœæ oko³o 41\% w stosunku do LZO.
+Widaæ zatem, ¿e warto rozwa¿yæ u¿ycie znacznie bardziej kosztownego obliczeniowo algorytmu LZMA.
+Podobne wnioski mo¿na wyci¹gn¹æ patrz¹c na drug¹ i trzeci¹ wersjê Ÿróde³ j¹dra linuxa.
+W ka¿dym przypadku algorytm LZMA znacznie zmniejszy³ rozmiar danych koniecznych do wys³ania.
 
-Drug¹ u¿yt¹ metod¹ jest indeks podobieñstwa. Dla pierwszej wersji wyniki samego usuwania duplikatów z ró¿nymi algorytmami kompresji (kolory czerwony, zielony, ¿ó³ty) prawie idealnie odpowiadaj¹ metodzie z u¿yciem indeksu podobieñstwa (kolory b³êkitny, fioletowy, szary). Wynika to z tego, ¿e indeks podobieñstwa nie mia³ danych do których móg³by porównywaæ.
-Jednak do przes³ania drugiej i trzeciej wersji Ÿróde³ linuxa rozmiar wynikowych danych jest znacznie mniejszy. Odpowiednio dla standardowej metody i kompresji LZO - 57MB a dla indeksu podobieñstwa 26MB. Oznacza to zmniejszenie danych o ponad 50\%! Podobny wynik mo¿na zaobserwowaæ dla trzeciej wersji.
+Drug¹ u¿yt¹ metod¹ jest indeks podobieñstwa.
+Dla pierwszej wersji wyniki samego usuwania duplikatów z ró¿nymi algorytmami kompresji (kolory czerwony, zielony, ¿ó³ty) prawie idealnie odpowiadaj¹ metodzie z u¿yciem indeksu podobieñstwa (kolory b³êkitny, fioletowy, szary).
+Wynika to z tego, ¿e indeks podobieñstwa nie mia³ danych, do których móg³by porównywaæ.
+Jednak do przes³ania drugiej i trzeciej wersji Ÿróde³ linuxa rozmiar wynikowych danych jest znacznie mniejszy.
+Odpowiednio dla standardowej metody i kompresji LZO - 57MB a dla indeksu podobieñstwa 26MB.
+Oznacza to zmniejszenie rozmiaru danych o ponad 50\%!
+Podobny wynik mo¿na zaobserwowaæ dla trzeciej wersji.
 
 Równie¿ dla metody indeksu podobieñstwa zysk z u¿ycia algorytmu kompresji LZMA jest znaczny. Dla kolejnych wersji mamy odpowiednio zmniejszenie rozmiaru o 41\%, 34\% oraz 34\%.
 \section{Wyniki dla Ÿróde³ j¹dra Linuxa - du¿e odstêpy}
@@ -437,6 +463,31 @@ Jednak dziêki temu mo¿emy porównaæ algorytm optymalny z indeksem podobieñstwa.
 Pozwala to zobaczyæ, jakie jest dolne ograniczenie na iloœæ przes³anych danych dla indeksu podobieñstwa.
 Dla drugiej wersji algorytm optymalny przygotowa³ o 54\% mniej danych do przes³ania, a dla trzeciej wersji o 41\% mniej.
 Oznacza to, ¿e daleko algorytmowi z indeksem podobieñstwa do optymalnoœci.
+
+\section{Porównanie z innymi publikacjami}
+W pracy Philipa Shilane'a i innych (\cite{work1}) wykonywano podobne eksperymenty, jednak k³adziono nacisk na odrobinê inne aspekty.
+Badano tam m. in. sposób odwzorowywania super cech na bloki - porównywano indeks pe³ny, czêœciowy oraz przechowywanie informacji w pamiêci podrêcznej LRU, co opiera³o siê na za³o¿eniu, ¿e podobne bloki bêd¹ siê znajdowaæ niedaleko.
+W naszych eksperymentach jednak nie by³o to istotne, dlatego weŸmiemy pod uwagê jedynie wyniki dla indeksu pe³nego.
+Zanim zaczniemy analizowaæ tê pracê, warto zauwa¿yæ, ¿e mieliœmy trochê inn¹ konfiguracjê symulatora ni¿ autorzy tej pracy.
+Przeciêtny rozmiar bloku w wy¿ej wymienionej pracy to 8KB, z kolei u nas to 64KB.
+Jednoczeœnie koñcowe eksperymenty przeprowadzano tam z 3 super cechami na blok, u nas z 2.
+Zauwa¿my, ¿e ró¿nice te mog³y znacznie wp³yn¹æ na wyniki eksperymentów.
+Wiêksza liczba super cech na blok zwiêksza szanse na dopasowanie jakiegoœ bloku.
+Taki sam wp³yw na ma³y rozmiar bloku - jest ich wtedy wiêcej i ³atwiej znaleŸæ podobny.
+Kolejn¹, wart¹ wspomnienia, ró¿nic¹ jest rozmiar danych.
+Nasze dane testowe ze wzglêdu na ograniczenia sprzêtowe i trudn¹ dostêpnoœæ by³y rzêdu gigabajtów, w owej pracy zaœ rzêdu terabajtów.
+To równie¿ niebagatelnie zwiêksza szansê na znalezienie podobnych bloków.
+W ró¿ny sposób wykonywano te¿ sam¹ kompresjê - by³a wykonywana jedynie lokalnie, w ma³ych grupach bloków, z kolei u nas mia³a charakter globalny.
+Powodowa³o to u nas wiêkszy zysk z kompresji, zaœ mniejszy z samego delta kodowania.
+Oczywiœcie, dysponowaliœmy tak¿e innym Chunkerem.
+
+PrzejdŸmy zatem do porównania wyników.
+Dla kodów Ÿród³owych uzyskano tam samym delta kodowaniem poprawê rzêdu 73\%.
+Przypomnijmy, ¿e my osi¹gnêliœmy wynik 50\% i oko³o 10\% w zale¿noœci od czêstoœci wykonywania kopii zapasowych.
+Dla stacji roboczych osi¹gniêto zysk rzêdu 65\%, u nas zaœ by³ on symboliczny.
+
+Nale¿y przypuszczaæ, ¿e porównanie wypad³oby odrobinê inaczej, gdybyœmy przeprowadzili eksperymenty bardziej zbli¿one do tych z pracy Shilane'a i innych.
+Jednak kluczowe by³o dla nas i firmy 9LivesData, aby konfiguracja jak najbardziej odwzorowywa³a warunki pracy systemu HYDRAstor.
 
 \chapter{Organizacja pracy}
 
