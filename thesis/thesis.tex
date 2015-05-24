@@ -15,6 +15,7 @@
 \usepackage{pgffor}
 \usepackage{amsmath}
 \usepackage{algpseudocode}
+\usepackage{indentfirst}
 \urlstyle{same}
 
 %Jesli uzywasz kodowania polskich znakow ISO-8859-2 nastepna linia powinna byc odkomentowana
@@ -81,25 +82,25 @@ Symulator naœladuje pracê systemu HYDRAstor oraz pozwala na zbadanie wp³ywu wdro
 \chapter*{Wstêp}
 \addcontentsline{toc}{chapter}{Wstêp}
 W wielu wspó³czesnych systemach kopii zapasowych w¹skim gard³em procesu replikacji jest przesy³anie danych ³¹czem internetowym. W minimalizacji ich rozmiaru niew¹tpliwie pomaga dzielenie strumienia danych na bloki zmiennej d³ugoœci i u¿ywanie haszowania do eliminacji duplikatów.
-\\*
+
 Jednak to podejœcie ma swoje ograniczenia. W przypadku du¿ego rozmiaru bloku jest bardzo prawdopodobne, ¿e znajd¹ siê 2 prawie identyczne bloki, a istniej¹cy system tego nie wykryje i bêdzie przechowywa³ oba, co jest zachowaniem dalekim od optymalnego.
 Sposobem na poprawienie tej sytuacji jest zastosowanie delta kodowania z u¿yciem indeksu podobieñstwa. Metoda ta polega na obliczaniu cech ka¿dego unikalnego bloku, a przy dodawaniu nowego bloku sprawdzaniu, czy istnieje blok podobny do niego. Miêdzy podobnymi blokami mo¿na obliczyæ ró¿nicê, której rozmiar zazwyczaj jest zdecydowanie mniejszy od rozmiaru ca³ego bloku.
-\\*
+
 Zastosowanie tego pomys³u w istniej¹cym systemie kopii zapasowych wymaga ogromnych nak³adów pracy i nie daje ¿adnych gwarancji. Z tego powodu na zlecenie firmy 9LivesData stworzyliœmy symulator systemu HYDRAstor, aby du¿o mniejszym wysi³kiem uzyskaæ informacjê, jakiego rzêdu zysku nale¿y siê spodziewaæ.
-\\*
+
 Stworzony symulator pozwala na badanie wp³ywu kilku czynników na iloœæ przesy³anych danych. Badane mo¿e byæ znaczenie kompresji, rozmiaru bloku, a przede wszystkim samego delta kodowania. Jednoczeœnie symulator stosuje mechanizmy oryginalnego systemu: dzielenie na bloki zmiennej d³ugoœci i wykrywanie duplikatów.
 
 \chapter{System HYDRAstor}
 HYDRAstor to nowoczesny, rozproszony, skalowalny system kopii zapasowych u¿ywaj¹cy dysku.
 Jest jednym z najwiêkszych i najszybszych takich systemów na œwiecie u¿ywanym przez klientów w Japonii i Stanach Zjednoczonych.
 Zosta³ stworzony, aby dostarczyæ klientom funkcjonalnoœci takie, jak: deduplikacja, mo¿liwoœæ konfiguracji wed³ug potrzeb. Ci¹g³e aktualizacje nie przerywaj¹ dzia³ania produktu. Ponadto system charakteryzuje siê du¿¹ odpornoœci¹ na b³êdy (patrz \cite{HYDRAstor}).
-\\*
+
 HYDRAstor jest niezwykle z³o¿ony i skomplikowany, dlatego stworzony przez nas symulator uwzglêdnia jedynie jego kluczowe dla naszego problemu w³asnoœci.
 Na sekwencji rysunków zosta³a oddana idea dzia³ania systemu.
 Nale¿y opowiedzieæ o najwa¿niejszych z naszego punktu widzenia elementach systemu: blokach zmiennej d³ugoœci, deduplikacji i kompresji.
 \section{Bloki zmiennej d³ugoœci}
 Bloki zmiennej d³ugoœci pozwalaj¹ w znacznym stopniu zmniejszyæ rozmiar danych, które zostan¹ przes³ane podczas replikacji, czyli procesu tworzenia nowej kopii. Za³ó¿my chwilowo, ¿e stosujemy bloki sta³ej wielkoœci i mamy na serwerze strumieñ danych o bardzo du¿ym rozmiarze. Nastêpnie w œrodku tego strumienia zostaje dodany jeden znak. Sprawia to, ¿e po³owa strumienia zostanie podzielona na zupe³nie nowe bloki, mimo ¿e dane siê praktycznie nie zmieni³y.
-\\*
+
 Stosowanie bloków zmiennej d³ugoœci w po³¹czeniu z komponentem zwanym Chunkerem, który wybiera granice bloków na podstawie samych danych, stosuj¹c pewne heurystyki, pozwala unikn¹æ tego problemu. W powy¿szym przyk³adzie zadzia³a³by tak, ¿e kilka bloków po nowym znaku by³oby innych, ale reszta nie zmieni³aby siê.
 \section{Deduplikacja}
 Dla ka¿dego z nowo dodanych bloków jest tworzony identyfikator za pomoc¹ jednej z popularnych funkcji skrótu. Pozwala to na eliminacjê duplikatów ze zbioru przechowywanych bloków. Ma to du¿e znaczenie praktyczne, jeœli kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
@@ -157,7 +158,7 @@ Przed przes³aniem bloki s¹ poddawane dzia³aniu algorytmowi kompresji, co pozwala
 \chapter{Delta kodowanie}
 System HYDRAstor, mimo wielu niew¹tpliwych zalet, mo¿e byæ znacznie bardziej wydajny.
 Iloœæ danych niezbêdnych do przes³ania z kolejn¹ wersj¹ mo¿e ulec znacznemu zmniejszeniu dziêki algorytmom delta kodowania.
-\\*
+
 Delta kodowanie to sposób przechowywania i transmisji danych w formie ró¿nic (ang. \textit{delta}) pomiêdzy blokami danych.
 W sytuacjach, gdy ró¿nice pomiêdzy blokami s¹ ma³e, delta kodowania potrafi znacznie zmniejszyæ nadmiarowoœæ.
 Przechowywanie zbioru ró¿nic jest zdecydowanie bardziej efektywne pamiêciowo ni¿ przechowywanie ca³ych bloków.
@@ -165,9 +166,9 @@ Oczywiœcie, na ich wielkoœæ ma bardzo du¿y wp³yw to, które dane ze sob¹ porównuj
 Dlatego delta kodowanie mo¿na sprowadziæ do dwóch zasadniczych problemów: znajdowania podobnych bloków i liczenia ró¿nic miêdzy nimi.
 \section{Liczenie ró¿nic}
 Jest to popularny w informatyce problem, aby na podstawie dwóch fragmentów danych stworzyæ ró¿nicê (ang. \textit{delta}), dziêki której maj¹c tylko pierwszy fragment i ow¹ ró¿nicê, mo¿na  by³o odtworzyæ drugi fragment. Oczywiœcie rola fragmentów nie jest symetryczna - liczymy ró¿nicê jednego wzglêdem drugiego. Powsta³ szereg algorytmów, które siê tym zajmuj¹.
-\\*
+
 Jeden z nich implementuje popularny program Diff z systemów Unix. Jednak nie jest dobrym rozwi¹zaniem dla naszego problemu, gdy¿ porównuje pliki na poziomie linii, co ma szanse siê sprawdziæ jedynie dla specyficznego rodzaju plików tekstowych.
-\\*
+
 Interesuj¹ nas przede wszystkim algorytmy przeznaczone do liczenia ró¿nic miêdzy danymi binarnymi. Ograniczymy siê jednak do algorytmu xdelta3, którego u¿ywamy w symulatorze.
 W du¿ym uproszczeniu jego dzia³anie polega na odtwarzaniu po kolei pliku, wykonuj¹c kilka operacji:
 \begin{itemize}
@@ -308,8 +309,6 @@ W rezultacie posiada on szereg wymienionych ni¿ej funkcjonalnoœci.
     \label{fig:chart_screen}
 \end{figure}
 
-
-
 \chapter{Technologie}
 Bardzo du¿e znaczenie dla jakoœci systemu informatycznego maj¹ zastosowane technologie.
 Ich wybór ma wp³yw na wydajnoœæ, ³atwoœæ pisania kodu, dostêpnoœæ bibliotek (w przypadku jêzyka programowania).
@@ -317,7 +316,7 @@ Podobnie by³o w przypadku symulatora, co zostanie pokazane w nastêpnych paragraf
 \section{Jêzyki programowania}
 W jêzyku C++ napisaliœmy adapter Chunkera.
 By³o to wymuszone technologi¹, w jakiej zosta³ napisany ten komponent.
-\\*
+
 Sam symulator zdecydowaliœmy siê napisaæ w jêzyku Python w wersji 2.7.
 Wybraliœmy go ze wzglêdu na na mo¿liwoœæ szybkiego wytwarzania oprogramowania przy stosunkowo niewielkiej iloœci kodu Ÿród³owego.
 Jednoczeœnie jest w nim dostêpnych wiele ró¿norodnych bibliotek, z których chcieliœmy skorzystaæ w naszym projekcie.
@@ -325,11 +324,11 @@ Niestety, Python przy wszystkich swoich zaletach nie oferuje zbyt dobrej wydajno
 Dlatego wymagaj¹ce obliczeniowo czêœci algorytmów zosta³y napisane w C.
 Zrobiliœmy to, u¿ywaj¹c zbioru nag³ówków implementacji CPython.
 Pozwoli³o to przyspieszyæ symulacjê kilkanaœcie razy.
-\\*
+
 Byæ mo¿e warto wyjaœniæ, dlaczego nie zdecydowaliœmy siê na wersjê Pythona z prefiksem 3.
 Otó¿ nie jest ona kompatybilna wstecznie i dlatego u¿ycie wielu bibliotek, które s¹ dostêpne dla wersji 2.7, staje siê problematyczne.
 Poza tym, mieliœmy wiêcej doœwiadczenia z u¿ywaniem poprzednich wersji.
-\\*
+
 Mo¿e siê równie¿ nasuwaæ pytanie, dlaczego nie zastowaliœmy implementacji Pythona o nazwie PyPy.
 Jest ona wszak du¿o bardziej wydajna ni¿ popularny CPython.
 Niestety, u¿ywanie wielu pakietów, które zosta³y napisane w C (np. wxPython) jest w niej siê trudne lub wrêcz niemo¿liwe.
@@ -366,7 +365,7 @@ Wyniki s¹ przedstawione w formie wykresów s³upkowych. Jeden kolor odpowiada jedn
 
 \section{Wyniki dla Ÿróde³ j¹dra Linuxa - ma³e odstêpy}
 Pierwsza symulacja zosta³a przeprowadzona dla Ÿróde³ j¹dra Linuxa. Zosta³y przygotowane trzy wersje Ÿróde³ j¹dra Linuxa z ró¿nicami 5 tysiêcy zmian pomiêdzy ka¿dymi dwiema kolejnymi. Rozmiar danych potrzebnych do przes³ania zosta³ policzony dla szeœciu metod.
-\\*
+
 Znaczenie kolorów:
 
 \begin{itemize}
@@ -386,14 +385,14 @@ Znaczenie kolorów:
 \end{figure}
 
 Na wykresie s¹ widoczne trzy grupy, ka¿da grupa sk³adaj¹ca siê z szeœciu s³upków. Pierwsza grupa pokazuje, ile danych trzeba przes³aæ dla pierwszej wersji przy u¿yciu konkretnej metody, druga grupa dla drugiej wersji itd. 
-\\*
+
 Zacznijmy od iloœci duplikatów, które zosta³y wykryte wœród bloków. Dla pierwszej wersji jest to 0.05\%, wiêc bardzo ma³o. Dla drugiej wersji duplikaty stanowi¹ 8.05\% bloków. Pomimo tego, ¿e wersje by³y od siebie oddalone o tylko 5 tysiêcy zmian, wiêkszoœæ bloków zosta³a zmieniona.  Dla trzeciej wersji liczba usuniêtych duplikatów to nieco ponad 10\%. Jest to niewiele lepszy wynik.
-\\*
+
 Przeanalizujmy najpierw kolory czerwony, zielony i ¿ó³ty. Wszystkie dotycz¹ metody, w której jedynie usuwa siê duplikaty, ró¿ni¹ siê jedynie algorytmem kompresji u¿ytym przed wys³aniem danych. Widzimy, ¿e kompresja LZO zmniejsza rozmiar danych prawie o 85\%. Z kolei zastosowanie LZMA daje dla pierwszej wersji oszczêdnoœæ oko³o 41\% w stosunku do LZO. Widaæ zatem, ¿e warto rozwa¿yæ u¿ycie znacznie bardziej kosztownego obliczeniowo algorytmu LZMA. Podobne wnioski mo¿na wyci¹gn¹æ patrz¹c na drug¹ i trzeci¹ wersjê Ÿróde³ j¹dra linuxa. W ka¿dym przypadku algorytm LZMA znacznie zmniejszy³ rozmiar danych koniecznych do wys³ania.
-\\*
+
 Drug¹ u¿yt¹ metod¹ jest indeks podobieñstwa. Dla pierwszej wersji wyniki samego usuwania duplikatów z ró¿nymi algorytmami kompresji (kolory czerwony, zielony, ¿ó³ty) prawie idealnie odpowiadaj¹ metodzie z u¿yciem indeksu podobieñstwa (kolory b³êkitny, fioletowy, szary). Wynika to z tego, ¿e indeks podobieñstwa nie mia³ danych do których móg³by porównywaæ.
 Jednak do przes³ania drugiej i trzeciej wersji Ÿróde³ linuxa rozmiar wynikowych danych jest znacznie mniejszy. Odpowiednio dla standardowej metody i kompresji LZO - 57MB a dla indeksu podobieñstwa 26MB. Oznacza to zmniejszenie danych o ponad 50\%! Podobny wynik mo¿na zaobserwowaæ dla trzeciej wersji.
-\\*
+
 Równie¿ dla metody indeksu podobieñstwa zysk z u¿ycia algorytmu kompresji LZMA jest znaczny. Dla kolejnych wersji mamy odpowiednio zmniejszenie rozmiaru o 41\%, 34\% oraz 34\%.
 \section{Wyniki dla Ÿróde³ j¹dra Linuxa - du¿e odstêpy}
 Druga symulacja zosta³a przeprowadzona równie¿ dla Ÿróde³ j¹dra Linuxa. Dane jednak znacznie siê ró¿ni¹ od siebie - ka¿da kolejna wersja jest odleg³a od poprzedniej o 20 tysiêcy zmian. Powoduje to, ¿e kolejne wersje maj¹ ze sob¹ zdecydowanie mniej wspólnego. Znaczenie kolorów jest takie same jak ostatnio.
@@ -403,9 +402,9 @@ Druga symulacja zosta³a przeprowadzona równie¿ dla Ÿróde³ j¹dra Linuxa. Dane jed
     \caption{Wyniki dla Ÿróde³ j¹dra Linuxa z du¿ymi odstêpami}
     \label{fig:linuxBig}
 \end{figure}
-\\*
+
 Na pocz¹tku warto zauwa¿yæ, ¿e liczba duplikatów jest znacznie mniejsza. Dla drugiej i trzeciej wersji znaleziono mniej ni¿ 2\% podobnych bloków. Niestety, w tym przypadku indeks podobieñstwa te¿ niewiele pomaga.
-\\*
+
 Wyniki s¹ znacznie gorsze ni¿ w poprzednim eksperymencie. Porównajmy metody oznaczone kolorem zielonym i fioletowym. Obie u¿ywaj¹ tego samego algorytmu kompresji, wiêc ró¿ni¹ siê tylko algorytmem delta kodowania. Dla pierwszej wersji zysk z u¿ycia indeksu podobieñstwa jest prawie zerowy (dok³adnie tak, jak poprzednio). Dla drugiej i trzeciej wersji zysk wynosi odpowiednio 15\% i 9\%. Jeszcze gorzej prezentuje siê porównanie tych metod gdy u¿ywamy algorytmu LZMA (kolory ¿ó³ty i szary), dane zosta³y zmniejszone odpowiednio o 11\% oraz 7\% dla drugiej i trzeciej wersji Ÿróde³ j¹dra linuxa. Warto dodaæ, ¿e po raz kolejny kompresja LZMA znacznie zmniejszy³a dane konieczne do wys³ania, œrednio o 40\%.
 \section{Wyniki dla kopii zapasowych katalogu domowego}
 Tym razem eksperyment dotyczy³ danych, które pochodzi³y z naszych katalogów domowych.
@@ -419,7 +418,7 @@ Oznaczenie kolorów jest identyczne jak poprzednio. W przypadku katalogów domowyc
 
 \section{Wyniki dla Ÿróde³ ma³ego projektu torch}
 Interesuj¹cym mo¿e wydaæ siê pytanie, jak indeks podobieñstwa dzia³a w porównaniu z optymalnym algorytmem delta kodowania. Pokazuje to kolejny eksperyment.
-\\*
+
 Znaczenie kolorów:
 \begin{itemize}
 \item Jasnoczerwony - usuwanie duplikatów, kompresja LZO
