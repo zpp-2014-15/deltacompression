@@ -100,18 +100,20 @@ Symulator naœladuje pracê systemu HYDRAstor oraz pozwala na zbadanie wp³ywu wdro
 
 \chapter*{Wstêp}
 \addcontentsline{toc}{chapter}{Wstêp}
-W wielu wspó³czesnych systemach kopii zapasowych w¹skim gard³em procesu tworzenia repliki jest przesy³anie danych ³¹czem internetowym.
-W minimalizacji ich rozmiaru niew¹tpliwie pomaga dzielenie strumienia danych na bloki zmiennej d³ugoœci i wykorzystywanie funkcji skrótu do eliminacji duplikatów. Jednak to podejœcie ma swoje ograniczenia.
-W przypadku du¿ego rozmiaru bloku jest bardzo prawdopodobne, ¿e znajd¹ siê 2 prawie identyczne bloki, a istniej¹cy system tego nie wykryje i bêdzie przechowywa³ oba, co jest zachowaniem dalekim od optymalnego.
-Sposobem na poprawienie tej sytuacji jest zastosowanie delta kodowania z u¿yciem indeksu podobieñstwa.
-Metoda ta polega na obliczaniu cech ka¿dego unikalnego bloku, a przy dodawaniu nowego bloku sprawdzaniu, czy istnieje blok podobny do niego.
-Miêdzy podobnymi blokami mo¿na obliczyæ ró¿nicê, której rozmiar zazwyczaj jest zdecydowanie mniejszy od rozmiaru ca³ego bloku.
+Dyski komputerów na ca³ym œwiecie przchowuj¹ tysi¹ce terabajtów danych. 
+Czêœæ z tych danych jest bardzo wa¿na i wymaga kopii zapasowych.
+W obecnych systemach kopii zapasowych standardowym rozwi¹zaniem jest trzykrotna replikacja danych.
+S¹ one wykonywane w obrêbie jednego centrum danych.
+Mo¿na jednak zapewniæ wiêksz¹ odpornoœæ na b³êdy.
+Wystarczy wykonaæ replikê w innym centrum danych.
+Jednak du¿ym problemem tego rozwi¹zania jest wydajnoœæ ³¹cza internetowego.
+Zwyk³e przes³anie danych mog³oby zaj¹æ zbyt du¿o czasu.
+Istniej¹ jednak algorytmy, które pozwalaj¹ na znaczne zmniejszenie rozmiaru danych potrzebnych do przes³ania.
+Jednym z takich algorytmów jest delta kodowanie.
+Firma 9LivesData jest twórc¹ jednego z najszybszych i najlepszych systemów kopii zapasowych.
+Niestety zaimplementowanie nowego rozwi¹zania w istniej¹cym systemie wymaga du¿ego nak³adu pracy.
 
-Zastosowanie tego pomys³u w istniej¹cym systemie kopii zapasowych wymaga ogromnych nak³adów pracy i nie daje ¿adnych gwarancji.
-Z tego powodu na zlecenie firmy 9LivesData stworzyliœmy symulator systemu HYDRAstor, aby du¿o mniejszym wysi³kiem uzyskaæ informacjê, jakiego rzêdu zysku nale¿y siê spodziewaæ.
-
-Stworzony symulator pozwala na badanie wp³ywu kilku czynników na iloœæ przesy³anych danych.
-Badane mo¿e byæ znaczenie kompresji, rozmiaru bloku, a przede wszystkim samego delta kodowania. Jednoczeœnie symulator stosuje mechanizmy oryginalnego systemu: dzielenie na bloki zmiennej d³ugoœci i wykrywanie duplikatów.
+% pamiêtamy [*] W wielu wspó³czesnych systemach kopii zapasowych w¹skim gard³em procesu tworzenia repliki jest przesy³anie danych ³¹czem internetowym.
 
 \chapter{System HYDRAstor}
 HYDRAstor to nowoczesny, rozproszony, skalowalny system kopii zapasowych u¿ywaj¹cy dysku.
