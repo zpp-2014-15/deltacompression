@@ -117,43 +117,73 @@ Stworzony symulator pozwala na badanie wp³ywu kilku czynników na iloœæ przesy³an
 Badane mo¿e byæ znaczenie kompresji, rozmiaru bloku, a przede wszystkim samego delta kodowania. Jednoczeœnie symulator stosuje mechanizmy oryginalnego systemu: dzielenie na bloki zmiennej d³ugoœci i wykrywanie duplikatów.
 
 \chapter{System HYDRAstor}
-HYDRAstor to nowoczesny, rozproszony, skalowalny system kopii zapasowych u¿ywaj¹cy dysku.
-Jest jednym z najwiêkszych i najszybszych takich systemów na œwiecie u¿ywanym przez klientów w Japonii i Stanach Zjednoczonych.
-Zosta³ stworzony, aby dostarczyæ klientom funkcjonalnoœci takie, jak: deduplikacja, mo¿liwoœæ konfiguracji wed³ug potrzeb.
-Ci¹g³e aktualizacje nie przerywaj¹ dzia³ania produktu.
-Ponadto system charakteryzuje siê du¿¹ odpornoœci¹ na b³êdy (patrz \cite{HYDRAstor}).
+HYDRAstor to nowoczesny, rozproszony, skalowalny system kopii zapasowych.
+Jest jednym z najwiêkszych i najszybszych takich systemów na œwiecie u¿ywanym przez klientów w Japonii i Stanach Zjednoczonych (zgodnie z \cite{HYDRAstor}).
+Zosta³ stworzony, aby dostarczyæ klientom funkcjonalnoœci takie, jak: deduplikacja, bloki zmiennej d³ugoœci i pe³ny indeks bloków u¿ywaj¹cy rozproszonej tablicy mieszaj¹cej.
+Ponadto system charakteryzuje siê du¿¹ odpornoœci¹ na b³êdy.
 
-HYDRAstor jest niezwykle z³o¿ony i skomplikowany, dlatego stworzony przez nas symulator uwzglêdnia jedynie jego kluczowe dla naszego problemu w³asnoœci.
-Na sekwencji rysunków zosta³a oddana idea dzia³ania systemu.
-Nale¿y opowiedzieæ o najwa¿niejszych z naszego punktu widzenia elementach systemu: blokach zmiennej d³ugoœci, deduplikacji i kompresji.
+System HYDRAstor jest niezwykle z³o¿ony i skomplikowany, dlatego zaprezentujemy go w du¿ym uproszczeniu.
+Rysunek \ref{fig:hydra_scheme} przedstawia schemat systemu.
+Do Chunkera dostarczane s¹ dane i metadane systemu plików w postaci strumienia bajtów.
+Chunker zamienia strumieñ na bloki zmiennej d³ugoœci.
+Bloki wraz z metadanymi s¹ dostarczane do systemu HYDRAstor poprzez po³¹czenie lokalne.
+System HYDRAstor znajduje wartoœci funkcji skrótu dla ka¿dego z bloków i przechowuje jedynie unikalne bloki.
+Proces ten nosi nazwê deduplikacji.
+Aby zaktualizowaæ wersjê systemu na zdalnym serwerze, niezbêdne dane s¹ kompresowane i przesy³ane przez sieæ globaln¹ (replikacja).
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/HYDRAstor.png}
+    \caption{Schemat systemu HYDRAstor}
+    \label{fig:hydra_scheme}
+\end{figure}
+
+Na serii rysunków \ref{fig:hydra1} - \ref{fig:hydra8} mo¿emy zaobserwowaæ, jakie akcje wykonuje system przy tworzeniu dwóch kolejnych kopii zapasowych.
+Przed pierwsz¹ kopi¹ w systemie nie by³o ¿adnych danych.
+Natomiast w drugiej kopii zostaj¹ dodane dwa bajty w œrodku strumienia danych.
+
+Skupimy siê teraz na replikacji.
+Bêdziemy rozwa¿aæ wp³yw bloków zmiennej d³ugoœci, deduplikacji i kompresji na rozmiar przesy³anych danych.
+Na koniec powiemy, w jaki sposób delta kodowanie mo¿e niezale¿nie od istniej¹cych mechanizmów zwiêkszyæ efektywnoœæ replikacji.
 \section{Bloki zmiennej d³ugoœci}
-Bloki zmiennej d³ugoœci pozwalaj¹ w znacznym stopniu zmniejszyæ rozmiar danych, które zostan¹ przes³ane podczas replikacji, czyli procesu tworzenia nowej kopii.
+Bloki zmiennej d³ugoœci pozwalaj¹ w znacznym stopniu zmniejszyæ rozmiar danych, które zostan¹ przes³ane podczas replikacji.
 Za³ó¿my chwilowo, ¿e stosujemy bloki sta³ej wielkoœci i mamy na serwerze strumieñ danych o bardzo du¿ym rozmiarze.
 Nastêpnie w œrodku tego strumienia zostaje dodany jeden znak.
-Sprawia to, ¿e po³owa strumienia zostanie podzielona na zupe³nie nowe bloki, mimo ¿e dane siê praktycznie nie zmieni³y.
+Sprawia to, ¿e po³owa strumienia zostanie podzielona na zupe³nie inne bloki, mimo ¿e dane siê praktycznie nie zmieni³y.
 
-Stosowanie bloków zmiennej d³ugoœci w po³¹czeniu z komponentem zwanym Chunkerem, który wybiera granice bloków na podstawie samych danych, stosuj¹c pewne heurystyki, pozwala unikn¹æ tego problemu. 
+Stosowanie bloków zmiennej d³ugoœci w po³¹czeniu z komponentem zwanym Chunkerem, który wybiera granice bloków na podstawie samych danych, pozwala unikn¹æ tego problemu. 
 W powy¿szym przyk³adzie zadzia³a³by tak, ¿e kilka bloków po nowym znaku by³oby innych, ale reszta nie zmieni³aby siê.
 \section{Deduplikacja}
 Dla ka¿dego z nowo dodanych bloków jest tworzony identyfikator za pomoc¹ jednej z popularnych funkcji skrótu.
-Pozwala to na eliminacjê duplikatów ze zbioru przechowywanych bloków.
+Pozwala to na eliminacjê duplikatów ze zbioru przesy³anych bloków.
 Ma to du¿e znaczenie praktyczne, jeœli kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
 \section{Kompresja}
-Przed przes³aniem bloki s¹ poddawane dzia³aniu kompresji, co pozwala znacz¹co zmieniæ rozmiar danych.
+Przed przes³aniem bloki s¹ poddawane dzia³aniu kompresji, co pozwala znacz¹co zmniejszyæ rozmiar danych.
 Stosowana kompresja musi nie tylko mieæ dobry stopieñ, ale te¿ nie zu¿ywaæ zbyt du¿o zasobów systemu.
+Du¿e znaczenie ma te¿ to, jak wiele danych kompresujemy na raz.
+Korzystniej jest kompresowaæ du¿e fragmenty danych.
+Nale¿y pamiêtaæ jednak, ¿e w wiêkszym stopniu obci¹¿a to system.
+\section{Potencjalne korzyœci z delta kodowania}
+Istniej¹ce w systemie HYDRAstor mechanizmy znacznie przyspieszaj¹ replikacjê.
+W pewnych sytuacjach mo¿na jednak przesy³aæ zdecydowanie mniej danych.
+Dla wielu nowych bloków mo¿emy znaleŸæ w systemie bloki bardzo podobne (np. ró¿ni¹ce siê kilkoma znakami).
+Dla ka¿dego z takich nowych bloków moglibyœmy przes³aæ jedynie identyfikator bloku bazowego (tzn. podobnego do niego i znajduj¹cego siê ju¿ w systemie) oraz ró¿nicê.
+W wiêkszoœci przypadków mia³oby to znacznie mniejszy rozmiar ni¿ ca³y nowy blok.
+Zajmuj¹ siê tym algorytmy delta kodowania.
+Opiszemy je szerzej w nastêpnym rozdziale.
+\newpage
 \begin{figure}[h]
     \centering
     \begin{minipage}[t]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/visualization/1.png}
-        \captionof{figure}{Z systemu A chcemy przes³aæ do systemu B dane.}
+        \captionof{figure}{System A chce przes³aæ do systemu B dane.}
         \label{fig:hydra1}
     \end{minipage}
     \hspace{\fill}
     \begin{minipage}[t]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/visualization/2.png}
-        \captionof{figure}{System A dzieli dane na bloki, dla ka¿dego z bloków liczy wartoœæ funkcji skrótu. Dla identycznych bloków dostajemy takie same wartoœci.}
+        \captionof{figure}{System A dzieli dane na bloki, dla ka¿dego z bloków liczy wartoœæ funkcji skrótu.}
         \label{fig:hydra2}
     \end{minipage}
 \end{figure}
@@ -163,7 +193,7 @@ Stosowana kompresja musi nie tylko mieæ dobry stopieñ, ale te¿ nie zu¿ywaæ zbyt 
     \begin{minipage}[t]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/3.png}
-        \captionof{figure}{System A przesy³a do systemu B informacje o po³o¿eniu kolejnych bloków (tj. ci¹g identyfikatorów) oraz zawartoœci bloków z pominiêciem duplikatów (deduplikacja).}
+        \captionof{figure}{System A przesy³a do systemu B informacje o po³o¿eniu kolejnych bloków (tj. ci¹g identyfikatorów) oraz zawartoœci bloków z pominiêciem duplikatów.}
         \label{fig:hydra3}
     \end{minipage}
     \hspace{\fill}
