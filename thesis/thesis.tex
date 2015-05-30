@@ -17,6 +17,9 @@
 \usepackage{algpseudocode}
 \usepackage{indentfirst}
 \usepackage{longtable}
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup[sub]{labelsep=space}
 \urlstyle{same}
 
 % it's for non-breaking hlines in longtable
@@ -138,59 +141,75 @@ Ma to du¿e znaczenie praktyczne, jeœli kopie s¹ wykonywane czêsto i dane w wiêks
 \section{Kompresja}
 Przed przes³aniem bloki s¹ poddawane dzia³aniu kompresji, co pozwala znacz¹co zmieniæ rozmiar danych.
 Stosowana kompresja musi nie tylko mieæ dobry stopieñ, ale te¿ nie zu¿ywaæ zbyt du¿o zasobów systemu.
-
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/1.png}
-    \caption{Z systemu A chcemy przes³aæ do systemu B dane.}
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/visualization/1.png}
+        \captionof{figure}{Z systemu A chcemy przes³aæ do systemu B dane.}
+        \label{fig:hydra1}
+    \end{minipage}
+    \hspace{\fill}
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/visualization/2.png}
+        \captionof{figure}{System A dzieli dane na bloki, dla ka¿dego z bloków liczy wartoœæ funkcji skrótu. Dla identycznych bloków dostajemy takie same wartoœci.}
+        \label{fig:hydra2}
+    \end{minipage}
 \end{figure}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/2.png}
-    \caption{System A dzieli dane na bloki, dla ka¿dego z bloków liczy wartoœæ funkcji skrótu. Dla identycznych bloków dostajemy takie same wartoœci.}
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/3.png}
+        \captionof{figure}{System A przesy³a do systemu B informacje o po³o¿eniu kolejnych bloków (tj. ci¹g identyfikatorów) oraz zawartoœci bloków z pominiêciem duplikatów (deduplikacja).}
+        \label{fig:hydra3}
+    \end{minipage}
+    \hspace{\fill}
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/4.png}
+        \captionof{figure}{System B posiada teraz takie same bloki co system A.}
+        \label{fig:hydra4}
+    \end{minipage}
 \end{figure}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/3.png}
-    \caption{System A przesy³a do systemu B informacje o po³o¿eniu kolejnych bloków (tj. ci¹g identyfikatorów) oraz zawartoœci bloków z pominiêciem duplikatów (deduplikacja).}
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/5.png}
+        \captionof{figure}{System A chce przes³aæ do systemu B kolejn¹ wersjê danych.}
+        \label{fig:hydra5}
+    \end{minipage}
+    \hspace{\fill}
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/6.png}
+        \captionof{figure}{System A dzieli dane na bloki i liczy wartoœci funkcji skrótu. Zmieni³y siê tylko dwa bloki, co jest zas³ug¹ Chunkera.}
+        \label{fig:hydra6}
+    \end{minipage}
 \end{figure}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/4.png}
-    \caption{System B posiada teraz te same bloki co system A.}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/5.png}
-    \caption{System A chce przes³aæ do systemu B kolejn¹ wersjê danych.}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/6.png}
-    \caption{System A dzieli dane na bloki i liczy wartoœci funkcji skrótu. Zmieni³y siê tylko dwa bloki, co jest zas³ug¹ Chunkera.}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/7.png}
-    \caption{System A przesy³a do systemu B informacje o rozmieszczeniu bloków oraz zawartoœci jedynie tych bloków, które s¹ nowe. Znacz¹co zmniejsza to objêtoœæ przesy³anych danych.}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/8.png}
-    \caption{System B odbiera nowe dane i posiada teraz takie same bloki, co system A.}
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/7.png}
+        \captionof{figure}{System A przesy³a do systemu B informacje o rozmieszczeniu bloków oraz zawartoœci jedynie tych bloków, które s¹ nowe. Znacz¹co zmniejsza to objêtoœæ przesy³anych danych.}
+        \label{fig:hydra7}
+    \end{minipage}
+    \hspace{\fill}
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/8.png}
+        \captionof{figure}{System B odbiera nowe dane i posiada teraz takie same bloki, co system A.}
+        \label{fig:hydra8}
+    \end{minipage}
 \end{figure}
 
 \chapter{Delta kodowanie}
-System HYDRAstor, mimo wielu niew¹tpliwych zalet, mo¿e byæ znacznie bardziej wydajny.
-Iloœæ danych niezbêdnych do przes³ania z kolejn¹ wersj¹ mo¿e ulec znacznemu zmniejszeniu dziêki algorytmom delta kodowania.
-
 Delta kodowanie to sposób przechowywania i transmisji danych w formie ró¿nic (ang. \textit{delta}) pomiêdzy blokami danych.
 W sytuacjach, gdy ró¿nice pomiêdzy blokami s¹ ma³e, delta kodowania potrafi znacznie zmniejszyæ nadmiarowoœæ danych.
 Przechowywanie zbioru ró¿nic jest zdecydowanie bardziej efektywne pamiêciowo ni¿ przechowywanie ca³ych bloków.
@@ -291,35 +310,6 @@ Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
 \EndFunction
 \end{algorithmic}
 
-\chapter{Architektura}
-Aby sprawdziæ algorytmy delta kodowania, stworzyliœmy symulator systemu HYDRAstor.
-Jego architektura oparta jest o wzorzec Model-View-Controller, zapewniaj¹cy niezale¿noœæ kodu odpowiedzialnego za interakcjê z u¿ytkownikiem od kodu zajmuj¹cego siê logik¹ biznesow¹ aplikacji.
-Oprócz standardowych dla wzorca MVC czêœci: modelu, widoku i kontrolera, w architekturze naszego projektu mo¿emy wyró¿niæ Storage - osobn¹ czêœæ odpowiedzialn¹ za sk³adowanie danych w trakcie trwania symulacji oraz Chunker - czêœæ przetwarzaj¹c¹ pliki z dysku twardego.
-Zale¿noœci miêdzy poszczególnymi komponentami pokazane s¹ na poni¿szym schemacie.
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.5\textwidth]{img/Architecture.png}
-    \caption{Schemat architektury}
-    \label{fig:architecture}
-\end{figure}
-
-\section{Model-View-Controller}
-Przedstawimy w skrócie sposób realizacji wzorca MVC w naszym projekcie.
-Wiêkszoœæ modeli by³a pasywna, czyli nie zmienia³a swojego stanu samoczynnie.
-Zaraz po tym jak kontroler modyfikowa³ jakiœ model, powiadamia³ on odpowiedni widok o zmianie.
-Mechanizm ten zosta³ zaimplementowany przy u¿yciu sygna³ów biblioteki wxPython.
-Kolejka reprezentuj¹ca kolejne zadania do wykonania by³a modelem aktywnym, czyli takim który mo¿e zmieniæ swój stan niezale¿nie od akcji wykonywanych przez u¿ytkownika.
-Do jego obs³ugi zastosowaliœmy bibliotekê Publisher pakietu wxPython.
-Pozwala ona na wysy³anie komunikatów do kontrolera, gdy kolejka ulega zmianie.
-
-\section{Chunker}
-Chunker jest osobnym modu³em zajmuj¹cym siê dzieleniem plików na bloki zmiennej d³ugoœci w taki sposób, aby wprowadzenie modyfikacji w pliku nie wymaga³o przes³ania du¿ej iloœci danych.
-Zosta³ nam dostarczony przez firmê 9LivesData w formie biblioteki statycznej napisanej w C++.
-
-\section{Storage}
-Storage odpowiada za gromadzenie bloków danych powsta³ych w trakcie fazy dzielenia plików przez Chunker.
-Ta czêœæ symulatora jest odpowiedzialna równie¿ za wykrywanie duplikatów bloków oraz ich zliczanie.
-Wykrywanie duplikatów zosta³o zaimplementowane przy u¿yciu funkcji skrótu SHA-256.
 
 \chapter{Funkcjonalnoœci}
 Symulator zosta³ stworzony, aby szybko i wygodnie przeprowadzaæ eksperymenty na rzeczywistych danych.
@@ -374,6 +364,36 @@ W rezultacie posiada on szereg wymienionych ni¿ej funkcjonalnoœci.
     \label{fig:chart_screen}
 \end{figure}
 
+\chapter{Architektura}
+Aby sprawdziæ algorytmy delta kodowania, stworzyliœmy symulator systemu HYDRAstor.
+Jego architektura oparta jest o wzorzec Model-View-Controller, zapewniaj¹cy niezale¿noœæ kodu odpowiedzialnego za interakcjê z u¿ytkownikiem od kodu zajmuj¹cego siê logik¹ biznesow¹ aplikacji.
+Oprócz standardowych dla wzorca MVC czêœci: modelu, widoku i kontrolera, w architekturze naszego projektu mo¿emy wyró¿niæ Storage - osobn¹ czêœæ odpowiedzialn¹ za sk³adowanie danych w trakcie trwania symulacji oraz Chunker - czêœæ przetwarzaj¹c¹ pliki z dysku twardego.
+Zale¿noœci miêdzy poszczególnymi komponentami pokazane s¹ na poni¿szym schemacie.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Architecture.png}
+    \caption{Schemat architektury}
+    \label{fig:architecture}
+\end{figure}
+
+\section{Model-View-Controller}
+Przedstawimy w skrócie sposób realizacji wzorca MVC w naszym projekcie.
+Wiêkszoœæ modeli by³a pasywna, czyli nie zmienia³a swojego stanu samoczynnie.
+Zaraz po tym jak kontroler modyfikowa³ jakiœ model, powiadamia³ on odpowiedni widok o zmianie.
+Mechanizm ten zosta³ zaimplementowany przy u¿yciu sygna³ów biblioteki wxPython.
+Kolejka reprezentuj¹ca kolejne zadania do wykonania by³a modelem aktywnym, czyli takim który mo¿e zmieniæ swój stan niezale¿nie od akcji wykonywanych przez u¿ytkownika.
+Do jego obs³ugi zastosowaliœmy bibliotekê Publisher pakietu wxPython.
+Pozwala ona na wysy³anie komunikatów do kontrolera, gdy kolejka ulega zmianie.
+
+\section{Chunker}
+Chunker jest osobnym modu³em zajmuj¹cym siê dzieleniem plików na bloki zmiennej d³ugoœci w taki sposób, aby wprowadzenie modyfikacji w pliku nie wymaga³o przes³ania du¿ej iloœci danych.
+Zosta³ nam dostarczony przez firmê 9LivesData w formie biblioteki statycznej napisanej w C++.
+
+\section{Storage}
+Storage odpowiada za gromadzenie bloków danych powsta³ych w trakcie fazy dzielenia plików przez Chunker.
+Ta czêœæ symulatora jest odpowiedzialna równie¿ za wykrywanie duplikatów bloków oraz ich zliczanie.
+Wykrywanie duplikatów zosta³o zaimplementowane przy u¿yciu funkcji skrótu SHA-256.
+
 \chapter{Technologie}
 Bardzo du¿e znaczenie dla jakoœci systemu informatycznego maj¹ zastosowane technologie.
 Ich wybór ma wp³yw na wydajnoœæ, ³atwoœæ pisania kodu, dostêpnoœæ bibliotek (w przypadku jêzyka programowania).
@@ -423,6 +443,75 @@ LevelDB to nierelacyjna baza danych, która umo¿liwia efektywne przechowywanie da
 W naszym przypadku ma miejsce odwzorowanie wartoœci funkcji skrótu w odpowiadaj¹cy jej blok.
 Jej zastosowanie pozwoli³o nam na wykonywanie eksperymentów, których rozmiar danych wejœciowych przekracza³ wielokrotnie rozmiar pamiêci RAM.
 Dziêki temu mogliœmy sprawdziæ, jak zachowuj¹ siê algorytmy na znacznie wiêkszych danych.
+
+\chapter{Zarz¹dzanie projektem}
+
+\section{System kontroli wersji}
+Tworzony przez nas symulator by³ rozwijany za pomoc¹ systemu kontroli
+wersji git. Korzystaliœmy ze zdalnego repozytorium w serwisie github.com.
+\section{Metodyka pracy}
+Pracowaliœmy w metodyce agile z dodatkiem kanbana.
+Zespó³ spotyka³ siê co tydzieñ, aby ustaliæ priorytety na najbli¿szy czas, podzieliæ siê prac¹ i omówiæ wyniki dotychczasowych dzia³añ.
+Otrzymywaliœmy odgórne wytyczne co do kszta³tu symulatora od 9LivesData ("du¿e zadania"), które realizowaliœmy mniejszymi fragmentami ("ma³e zadania").
+Ka¿de z mniejszych zadañ by³o realizowane przez jednego cz³onka zespo³u.
+\section{Realizacja pojedynczego zadania}
+Zadanie by³o wybierane przez cz³onka zespo³u, tworzy³ on oddzieln¹ ga³¹Ÿ, pisa³ testy, a nastêpnie to zadanie realizowa³.
+PóŸniej kod podlega³ inspekcji przeprowadzonej przez innego cz³onka zespo³u.
+Przy koniecznoœci wprowadzenia poprawek kod wraca³ do autora.
+Autor poprawia³ kod zgodnie z uwagami recenzuj¹cego, a po zaakceptowaniu poprawek w³¹cza³ kod do g³ównej ga³êzi projektu.
+W przypadku dalszych zastrze¿eñ innych cz³onków zespo³u cykl siê powtarza³.
+\section{Tworzenie oprogramowania oparte o testy}
+Stosowaliœmy tzw. TDD (ang. \textit{Test Driven Development}).
+Przed napisaniem fragmentu kodu programista materializowa³ wymagania funkcjonalne jako testy jednostkowe, które pocz¹tkowo ponosi³y pora¿kê.
+Nastêpnie zaœ doprowadza³ kod do takiego stanu, aby owe testy koñczy³y siê z sukcesem.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/trello_screen.png}
+    \caption{Platforma Trello do zarz¹dzania zadaniami}
+    \label{fig:trello_screen}
+\end{figure}
+
+\section{Podzia³ pracy}
+
+\begin{center}
+    \begin{longtable}{ | l | p{10cm} |}
+    \nobreakhline
+    Cz³onek zespo³u & Wykonane zadania \\* \nobreakhline
+    Krzysztof Kiewicz &
+    Integracja mo¿liwoœci testowania ca³ych katalogów/wersji z GUI. \newline
+    Refaktoryzacja GUI.
+    
+    \\ \hline
+    Pawe³ Kura & 
+    Zaimplementowanie domyœlnego dodawania danych do Storage'u (algorytm naiwny). \newline
+    Zaimplementowanie klasy FileProcessor, przetwarzaj¹cej pliki i dodaj¹cej je do Storage'u. \newline
+    Dodanie mo¿liwoœci testowania ca³ych katalogów i wersji. \newline
+    Przygotowanie danych do testowania.
+      
+    \\ \hline
+    Dawid £azarczyk &
+    Zaimplementowanie ca³ej komunikacji z Chunkerem. \newline
+    Dodanie interfejsów do ChunkUpdate. \newline
+    Dodanie xdelta3. \newline
+    Zaimplementowanie optymalnego algorytmu delta kodowania. \newline
+    Generowanie wykresów dla wielu eksperymentów na raz. \newline
+    Zaimplementowanie algorytmu z indeksem podobieñstwa. \newline
+    Zaimplementowanie serializacji wyników.
+    
+    \\ \hline
+    Marcel Ziêba &
+    Przygotowanie œrodowiska - repozytorium, frameworku do testowania, narzêdzia do statycznej analizy kodu \newline
+    Zaimplementowanie podstawowych klas odpowiadaj¹cych za przechowywanie danych. \newline
+    Zaimplementowanie podstawowej wersji GUI. \newline
+    Dodanie kompresji LZO i ZIP. \newline
+    Dodanie mo¿liwoœci generowania i wyœwietlania wykresów w GUI. \newline
+    Dodanie asynchronicznego wykonywania eksperymentów. \newline
+    Implementacja mierzenia kosztów operacji wejœcia-wyjœcia. \newline
+    Przeprowadzenie eksperymentów i opracowanie wyników.
+       
+    \\ \hline
+    \end{longtable}
+\end{center}
 
 \chapter{Wyniki symulacji}
 W tym rozdziale zostan¹ przedstawione i omówione rezultaty eksperymentów na danych ró¿nych typów.
@@ -567,75 +656,6 @@ Dla stacji roboczych osi¹gniêto zysk rzêdu 65\%, u nas zaœ by³ on symboliczny.
 
 Nale¿y przypuszczaæ, ¿e porównanie wypad³oby odrobinê inaczej, gdybyœmy przeprowadzili eksperymenty bardziej zbli¿one do tych z pracy Shilane'a i innych.
 Jednak kluczowe by³o dla nas i firmy 9LivesData, aby konfiguracja jak najbardziej odwzorowywa³a warunki pracy systemu HYDRAstor.
-
-\chapter{Organizacja pracy}
-
-\section{System kontroli wersji}
-Tworzony przez nas symulator by³ rozwijany za pomoc¹ systemu kontroli
-wersji git. Korzystaliœmy ze zdalnego repozytorium w serwisie github.com.
-\section{Metodyka pracy}
-Pracowaliœmy w metodyce agile z dodatkiem kanbana.
-Zespó³ spotyka³ siê co tydzieñ, aby ustaliæ priorytety na najbli¿szy czas, podzieliæ siê prac¹ i omówiæ wyniki dotychczasowych dzia³añ.
-Otrzymywaliœmy odgórne wytyczne co do kszta³tu symulatora od 9LivesData ("du¿e zadania"), które realizowaliœmy mniejszymi fragmentami ("ma³e zadania").
-Ka¿de z mniejszych zadañ by³o realizowane przez jednego cz³onka zespo³u.
-\section{Realizacja pojedynczego zadania}
-Zadanie by³o wybierane przez cz³onka zespo³u, tworzy³ on oddzieln¹ ga³¹Ÿ, pisa³ testy, a nastêpnie to zadanie realizowa³.
-PóŸniej kod podlega³ inspekcji przeprowadzonej przez innego cz³onka zespo³u.
-Przy koniecznoœci wprowadzenia poprawek kod wraca³ do autora.
-Autor poprawia³ kod zgodnie z uwagami recenzuj¹cego, a po zaakceptowaniu poprawek w³¹cza³ kod do g³ównej ga³êzi projektu.
-W przypadku dalszych zastrze¿eñ innych cz³onków zespo³u cykl siê powtarza³.
-\section{Tworzenie oprogramowania oparte o testy}
-Stosowaliœmy tzw. TDD (ang. \textit{Test Driven Development}).
-Przed napisaniem fragmentu kodu programista materializowa³ wymagania funkcjonalne jako testy jednostkowe, które pocz¹tkowo ponosi³y pora¿kê.
-Nastêpnie zaœ doprowadza³ kod do takiego stanu, aby owe testy koñczy³y siê z sukcesem.
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{img/trello_screen.png}
-    \caption{Platforma Trello do zarz¹dzania zadaniami}
-    \label{fig:trello_screen}
-\end{figure}
-
-\section{Podzia³ pracy}
-
-\begin{center}
-    \begin{longtable}{ | l | p{10cm} |}
-    \nobreakhline
-    Cz³onek zespo³u & Wykonane zadania \\* \nobreakhline
-    Krzysztof Kiewicz &
-    Integracja mo¿liwoœci testowania ca³ych katalogów/wersji z GUI. \newline
-    Refaktoryzacja GUI.
-    
-    \\ \hline
-    Pawe³ Kura & 
-    Zaimplementowanie domyœlnego dodawania danych do Storage'u (algorytm naiwny). \newline
-    Zaimplementowanie klasy FileProcessor, przetwarzaj¹cej pliki i dodaj¹cej je do Storage'u. \newline
-    Dodanie mo¿liwoœci testowania ca³ych katalogów i wersji. \newline
-    Przygotowanie danych do testowania.
-      
-    \\ \hline
-    Dawid £azarczyk &
-    Zaimplementowanie ca³ej komunikacji z Chunkerem. \newline
-    Dodanie interfejsów do ChunkUpdate. \newline
-    Dodanie xdelta3. \newline
-    Zaimplementowanie optymalnego algorytmu delta kodowania. \newline
-    Generowanie wykresów dla wielu eksperymentów na raz. \newline
-    Zaimplementowanie algorytmu z indeksem podobieñstwa. \newline
-    Zaimplementowanie serializacji wyników.
-    
-    \\ \hline
-    Marcel Ziêba &
-    Przygotowanie œrodowiska - repozytorium, frameworku do testowania, narzêdzia do statycznej analizy kodu \newline
-    Zaimplementowanie podstawowych klas odpowiadaj¹cych za przechowywanie danych. \newline
-    Zaimplementowanie podstawowej wersji GUI. \newline
-    Dodanie kompresji LZO i ZIP. \newline
-    Dodanie mo¿liwoœci generowania i wyœwietlania wykresów w GUI. \newline
-    Dodanie asynchronicznego wykonywania eksperymentów. \newline
-    Implementacja mierzenia kosztów operacji wejœcia-wyjœcia. \newline
-    Przeprowadzenie eksperymentów i opracowanie wyników.
-       
-    \\ \hline
-    \end{longtable}
-\end{center}
 
 \chapter{Podsumowanie}
 Eksperymenty przeprowadzone w naszym symulatorze pokaza³y, ¿e jest sens analizowania i rozwijania algorytmów delta kodowania.
