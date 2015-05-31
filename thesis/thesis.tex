@@ -242,32 +242,39 @@ Opiszemy je szerzej w nastêpnym rozdziale.
 \chapter{Delta kodowanie}
 Delta kodowanie to sposób przechowywania i transmisji danych w formie ró¿nic (ang. \textit{delta}) pomiêdzy blokami danych.
 W sytuacjach, gdy ró¿nice pomiêdzy blokami s¹ ma³e, delta kodowania potrafi znacznie zmniejszyæ nadmiarowoœæ danych.
-Przechowywanie zbioru ró¿nic jest zdecydowanie bardziej efektywne pamiêciowo ni¿ przechowywanie ca³ych bloków.
-Oczywiœcie, na ich wielkoœæ ma bardzo du¿y wp³yw to, które dane ze sob¹ porównujemy, a tak¿e jak liczymy ró¿nice.
+Przesy³anie zbioru ró¿nic jest zdecydowanie bardziej efektywne pamiêciowo ni¿ przesy³anie ca³ych bloków.
+Oczywiœcie, na ich wielkoœæ ma bardzo du¿y wp³yw to, które dane ze sob¹ porównujemy, a tak¿e to, jak liczymy ró¿nice.
 Dlatego delta kodowanie mo¿na sprowadziæ do dwóch zasadniczych problemów: znajdowania podobnych bloków i liczenia ró¿nic miêdzy nimi.
 \section{Liczenie ró¿nic}
-Jest to popularny w informatyce problem, aby na podstawie dwóch fragmentów danych stworzyæ ró¿nicê (ang. \textit{delta}), dziêki której maj¹c tylko pierwszy fragment i ow¹ ró¿nicê, mo¿na  by³o odtworzyæ drugi fragment.
-Oczywiœcie rola fragmentów nie jest symetryczna - liczymy ró¿nicê jednego wzglêdem drugiego.
-Powsta³ szereg algorytmów, które siê tym zajmuj¹.
+Chcemy efektywnie rozwi¹zywaæ nastêpuj¹cy problem.
+Mamy dwa bloki danych.
+Ustalmy jeden z nich jako blok bazowy.
+Naszym celem jest obliczyæ ró¿nicê drugiego bloku w stosunku do bloku bazowego tak, aby maj¹c jedynie blok bazowy i tê ró¿nicê, odtworzyæ drugi blok.
+Oczywiœcie, im mniejsza jest ta ró¿nica, tym lepiej.
 
-Jeden z nich implementuje popularny program Diff z systemów Unix.
-Jednak nie jest dobrym rozwi¹zaniem dla naszego problemu, gdy¿ porównuje pliki na poziomie linii, co ma szanse siê sprawdziæ jedynie dla specyficznego rodzaju plików tekstowych.
+Problem ten rozwi¹zuje popularny algorytm Diff z systemów Unix.
+Jednak nie sprawdzi siê on w przypadku delta kodowania.
+Algorytm Diff porównuje bloki na poziomie linii, co ma szanse sprawdziæ siê jedynie dla specyficznego rodzaju danych tekstowych.
 
-Interesuj¹ nas przede wszystkim algorytmy przeznaczone do liczenia ró¿nic miêdzy danymi binarnymi.
-Ograniczymy siê jednak do xdelta3, którego u¿ywamy w symulatorze.
-W du¿ym uproszczeniu jego dzia³anie polega na odtwarzaniu po kolei pliku, wykonuj¹c kilka operacji:
+Interesuj¹ nas wiêc przede wszystkim algorytmy przeznaczone do liczenia ró¿nic miêdzy danymi binarnymi.
+Jednym z nich jest xdelta3.
+W du¿ym uproszczeniu jego dzia³anie polega na sekwencyjnym odtwarzaniu bloku za pomoc¹ nastêpuj¹cych operacji:
 \begin{itemize}
 \item wstawienie danego ci¹gu bajtów
 \item skopiowanie ci¹gu bajtów z odtworzonego ju¿ fragmentu
-\item skopiowanie ci¹gu bajtów z bazowego fragmentu
+\item skopiowanie ci¹gu bajtów z fragmentu bloku bazowego
 \end{itemize}
 
 \section{Znajdowanie podobnych bloków}
-W symulatorze zaimplementowaliœmy dwa ró¿ne podejœcia do tego problemu.
+Szukamy rozwi¹zania nastêpuj¹cego problemu.
+Mamy zbiór starych bloków i jeden nowy blok.
+Chcemy znaleŸæ stary blok, dla którego ró¿nica z nowym blokiem jest mo¿liwie ma³a.
+Jednoczeœnie algorytm powinien mieæ dobr¹ z³o¿onoœæ czasow¹.
+Zaprezentujemy dwa rozwi¹zania tego problemu: algorytm optymalny oraz algorytm z indeksem podobieñstwa.
 \subsection{Algorytm optymalny}
 W algorytmie optymalnym porównujemy nowy blok ze wszystkimi blokami, które posiadamy.
-Jest on niemo¿liwy do zastosowania w praktyce przez asymptotycznie kwadratowy czas dzia³ania ze wzglêdu na iloœæ bloków.
-Jednak jest on dobrym punktem odniesienia do innych algorytmów - daje on informacjê, jakie jest dolne ograniczenie na rozmiar danych w klasie algorytmów delta kodowania porównuj¹cych z jednym blokiem.
+Jest on niemo¿liwy do zastosowania w praktyce przez asymptotycznie liniowy czas dzia³ania ze wzglêdu na liczbê bloków w systemie (która jest rzêdu milionów).
+Jednak jest on dobrym punktem odniesienia do innych algorytmów - daje on informacjê, jakie jest dolne ograniczenie na rozmiar przesy³anych danych w klasie algorytmów delta kodowania porównuj¹cych z jednym blokiem.
 \begin{algorithmic}
 \Function{optimalDeltaEncoding}{$blocks, block$}
 \State $best\_block \gets blocks[1]$
@@ -288,11 +295,11 @@ Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ iloœæ $K$ wartoœci liczbowych
 W tym celu poruszamy siê po bloku oknem (ang. \textit{window}) o sta³ym rozmiarze $W$ i dla ka¿dego okna $w$ liczymy znacznik Rabina (ang. \textit{Rabin’s fingerprint}) $fp(w) = \sum\limits_{i=0}^{W-1} w[i] \times P^{i} \mod Q$, gdzie $P$ i $Q$ to ustalone liczby pierwsze.
 Dla cechy o numerze $i$ definiujemy dwie wartoœci $m_i$ oraz $a_i$.
 Wartoœci¹ cechy o numerze $i$ bêdzie minimum po wszystkich oknach $w$ z $(fp(w) * m_i + a_i) \mod 2^{32}$.
-Wartoœciami $a_i$ oraz $m_i$ powinny byæ du¿e, losowe liczby pierwsze, jednak w celu zapewnienia powtarzalnoœci eksperymentów s¹ one w naszym symulatorze ustalone.
+Wartoœciami $a_i$ oraz $m_i$ powinny byæ du¿e, losowe liczby pierwsze, jednak u nas bêd¹ ustalone, aby zapewniæ powtarzalnoœæ wyników.
 Nastêpnie tworzymy super cechy (ang. \textit{superfeature}) z ustalonej liczby $S$ zwyk³ych cech.
-W tym celu dzielimy cechy danego bloku na grupy po $K$ kolejnych cech i dla ka¿dej z grup liczymy znacznik Rabina - jego wartoœæ bêdzie wartoœci¹ danej supercechy.
+W tym celu dzielimy cechy danego bloku na grupy po $K$ kolejnych cech i dla ka¿dej z grup liczymy znacznik Rabina - jego wartoœæ bêdzie wartoœci¹ danej super cechy.
 Wszystkie znaczniki liczymy przy u¿yciu du¿ych liczb pierwszych $P$ i $Q$.
-Aby znaleŸæ podobny blok do danego, wybieramy taki, który ma najwiêcej wspólnych super cech (jeœli jest takich wiêcej, wybieramy dowolny).
+Aby znaleŸæ podobny blok do danego, wybieramy taki, który ma najwiêcej wspólnych super cech (w przypadku remisu wybieramy dowolny).
 Jeœli zaœ nie ma bloku z jak¹kolwiek wspóln¹ super cech¹, wysy³amy ca³y blok.
 Eksperymentalnie wyznaczyliœmy, ¿e najlepiej dzia³aj¹ wartoœci $K=4$ i $S=2$ - pod uwagê braliœmy iloœæ czasu potrzebn¹ na obliczenia, iloœæ znajdowanych bloków oraz ich jakoœæ.
 Oczywiœcie, im wiêksze $K$, tym lepsza jakoœæ kandydatów.
@@ -395,8 +402,7 @@ W rezultacie posiada on szereg wymienionych ni¿ej funkcjonalnoœci.
 \end{figure}
 
 \chapter{Architektura}
-Aby sprawdziæ algorytmy delta kodowania, stworzyliœmy symulator systemu HYDRAstor.
-Jego architektura oparta jest o wzorzec Model-View-Controller, zapewniaj¹cy niezale¿noœæ kodu odpowiedzialnego za interakcjê z u¿ytkownikiem od kodu zajmuj¹cego siê logik¹ biznesow¹ aplikacji.
+Architektura symulatora oparta jest o wzorzec Model-View-Controller, zapewniaj¹cy niezale¿noœæ kodu odpowiedzialnego za interakcjê z u¿ytkownikiem od kodu zajmuj¹cego siê logik¹ biznesow¹ aplikacji.
 Oprócz standardowych dla wzorca MVC czêœci: modelu, widoku i kontrolera, w architekturze naszego projektu mo¿emy wyró¿niæ Storage - osobn¹ czêœæ odpowiedzialn¹ za sk³adowanie danych w trakcie trwania symulacji oraz Chunker - czêœæ przetwarzaj¹c¹ pliki z dysku twardego.
 Zale¿noœci miêdzy poszczególnymi komponentami pokazane s¹ na poni¿szym schemacie.
 \begin{figure}[h]
@@ -444,7 +450,7 @@ Byæ mo¿e warto wyjaœniæ, dlaczego nie zdecydowaliœmy siê na wersjê Pythona z pre
 Otó¿ nie jest ona kompatybilna wstecznie i dlatego u¿ycie wielu bibliotek, które s¹ dostêpne dla wersji 2.7, staje siê problematyczne.
 Poza tym, mieliœmy wiêcej doœwiadczenia z u¿ywaniem poprzednich wersji.
 
-Mo¿e siê równie¿ nasuwaæ pytanie, dlaczego nie zastowaliœmy implementacji Pythona o nazwie PyPy.
+Mo¿e siê równie¿ nasuwaæ pytanie, dlaczego nie zastosowaliœmy implementacji Pythona o nazwie PyPy.
 Jest ona wszak du¿o bardziej wydajna ni¿ popularny CPython.
 Niestety, u¿ywanie wielu pakietów, które zosta³y napisane w C (np. wxPython) jest w niej trudne lub wrêcz niemo¿liwe.
 Poza tym, nie jest ona do koñca kompatybilna z innymi implementacjami.
@@ -588,13 +594,13 @@ Wszystkie trzy nie u¿ywaj¹ indeksu podobieñstwa, a ró¿ni¹ siê jedynie typem komp
 Widzimy, ¿e kompresja LZO zmniejsza rozmiar danych prawie o 85\%.
 Z kolei zastosowanie LZMA daje dla pierwszej wersji oszczêdnoœæ oko³o 41\% w stosunku do LZO.
 Widaæ zatem, ¿e w systemie HYDRAstor warto rozwa¿yæ u¿ycie znacznie bardziej kosztownej obliczeniowo kompresji LZMA.
-Podobne wnioski mo¿na wyci¹gn¹æ patrz¹c na drug¹ i trzeci¹ wersjê Ÿróde³ j¹dra linuxa.
+Podobne wnioski mo¿na wyci¹gn¹æ patrz¹c na drug¹ i trzeci¹ wersjê Ÿróde³ j¹dra Linuxa.
 W ka¿dym przypadku kompresja LZMA znacznie zmniejszy³a rozmiar danych koniecznych do wys³ania.
 
 Zajmijmy siê teraz delta kodowaniem z indeksem podobieñstwa.
 Dla pierwszej wersji wyniki samego usuwania duplikatów z ró¿nymi typami kompresji (kolory czerwony, zielony, ¿ó³ty) prawie idealnie odpowiadaj¹ metodzie z u¿yciem indeksu podobieñstwa (kolory b³êkitny, fioletowy, szary).
 Wynika to z tego, ¿e indeks podobieñstwa nie mia³ danych, do których móg³by porównywaæ nowe bloki.
-Jednak do przes³ania drugiej i trzeciej wersji Ÿróde³ linuxa rozmiar wynikowych danych jest znacznie mniejszy.
+Jednak do przes³ania drugiej i trzeciej wersji Ÿróde³ Linuxa rozmiar wynikowych danych jest znacznie mniejszy.
 Odpowiednio dla standardowej metody i kompresji LZO - 57MB, a dla indeksu podobieñstwa 26MB.
 Oznacza to zmniejszenie rozmiaru danych o ponad 50\%!
 Podobny wynik mo¿na zaobserwowaæ dla trzeciej wersji.
@@ -621,7 +627,7 @@ Obie u¿ywaj¹ tej samej kompresji, wiêc ró¿ni¹ siê tylko algorytmem delta kodowan
 Dla pierwszej wersji zysk z u¿ycia indeksu podobieñstwa jest prawie zerowy (dok³adnie z takich samych powodów jak poprzednio).
 Dla drugiej i trzeciej wersji zysk wynosi odpowiednio 15\% i 9\%.
 Jeszcze gorzej prezentuje siê porównanie tych metod, gdy u¿ywamy kompresji LZMA (kolory ¿ó³ty i szary).
-Dane zosta³y zmniejszone odpowiednio o 11\% oraz 7\% dla drugiej i trzeciej wersji Ÿróde³ j¹dra linuxa.
+Dane zosta³y zmniejszone odpowiednio o 11\% oraz 7\% dla drugiej i trzeciej wersji Ÿróde³ j¹dra Linuxa.
 Warto dodaæ, ¿e po raz kolejny kompresja LZMA znacznie zmniejszy³a dane konieczne do wys³ania - œrednio o 40\%.
 \section{Wyniki dla kopii zapasowych katalogu domowego}
 Tym razem eksperyment dotyczy³ danych, które pochodzi³y z naszych katalogów domowych.
