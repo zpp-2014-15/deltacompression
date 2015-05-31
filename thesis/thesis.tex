@@ -118,18 +118,18 @@ Badane mo¿e byæ znaczenie kompresji, rozmiaru bloku, a przede wszystkim samego d
 
 \chapter{System HYDRAstor}
 HYDRAstor to nowoczesny, rozproszony, skalowalny system kopii zapasowych.
-Jest jednym z najwiêkszych i najszybszych takich systemów na œwiecie u¿ywanym przez klientów w Japonii i Stanach Zjednoczonych (zgodnie z \cite{HYDRAstor}).
-Zosta³ stworzony, aby dostarczyæ klientom funkcjonalnoœci takie, jak: deduplikacja, bloki zmiennej d³ugoœci i pe³ny indeks bloków u¿ywaj¹cy rozproszonej tablicy mieszaj¹cej.
+Jest jednym z najwiêkszych i najszybszych takich systemów na œwiecie u¿ywanym przez klientów w Japonii i Stanach Zjednoczonych (\cite{HYDRAstor}).
+Dostarcza klientom funkcjonalnoœci takie, jak: deduplikacja, bloki zmiennej d³ugoœci i pe³ny indeks bloków u¿ywaj¹cy rozproszonej tablicy mieszaj¹cej.
 Ponadto system charakteryzuje siê du¿¹ odpornoœci¹ na b³êdy.
 
-System HYDRAstor jest niezwykle z³o¿ony i skomplikowany, dlatego zaprezentujemy go w du¿ym uproszczeniu.
+System HYDRAstor jest niezwykle z³o¿ony i skomplikowany, dlatego zostanie zaprezentowany w du¿ym uproszczeniu.
 Rysunek \ref{fig:hydra_scheme} przedstawia schemat systemu.
 Do Chunkera dostarczane s¹ dane i metadane systemu plików w postaci strumienia bajtów.
 Chunker zamienia strumieñ na bloki zmiennej d³ugoœci.
 Bloki wraz z metadanymi s¹ dostarczane do systemu HYDRAstor poprzez po³¹czenie lokalne.
-System HYDRAstor znajduje wartoœci funkcji skrótu dla ka¿dego z bloków i przechowuje jedynie unikalne bloki.
+System HYDRAstor oblicza wartoœæ funkcji skrótu dla ka¿dego z bloków i przechowuje jedynie unikalne bloki.
 Proces ten nosi nazwê deduplikacji.
-Aby zaktualizowaæ wersjê systemu na zdalnym serwerze, niezbêdne dane s¹ kompresowane i przesy³ane przez sieæ globaln¹ (replikacja).
+W celu przes³ania kopii zapasowej na zdalny serwer niezbêdne dane s¹ kompresowane i przesy³ane przez Internet (replikacja).
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{img/HYDRAstor.png}
@@ -137,41 +137,13 @@ Aby zaktualizowaæ wersjê systemu na zdalnym serwerze, niezbêdne dane s¹ kompreso
     \label{fig:hydra_scheme}
 \end{figure}
 
-Na serii rysunków \ref{fig:hydra1} - \ref{fig:hydra8} mo¿emy zaobserwowaæ, jakie akcje wykonuje system przy tworzeniu dwóch kolejnych kopii zapasowych.
-Przed pierwsz¹ kopi¹ w systemie nie by³o ¿adnych danych.
-Natomiast w drugiej kopii zostaj¹ dodane dwa bajty w œrodku strumienia danych.
+Rysunki \ref{fig:hydra1} - \ref{fig:hydra8} przedstawiaj¹ akcje, które s¹ wykonywane przy tworzeniu dwóch kolejnych kopii zapasowych.
 
 Skupimy siê teraz na replikacji.
-Bêdziemy rozwa¿aæ wp³yw bloków zmiennej d³ugoœci, deduplikacji i kompresji na rozmiar przesy³anych danych.
+Bêdziemy rozwa¿aæ wp³yw bloków zmiennej d³ugoœci i deduplikacji na rozmiar przesy³anych danych.
 Na koniec powiemy, w jaki sposób delta kodowanie mo¿e niezale¿nie od istniej¹cych mechanizmów zwiêkszyæ efektywnoœæ replikacji.
-\section{Bloki zmiennej d³ugoœci}
-Bloki zmiennej d³ugoœci pozwalaj¹ w znacznym stopniu zmniejszyæ rozmiar danych, które zostan¹ przes³ane podczas replikacji.
-Za³ó¿my chwilowo, ¿e stosujemy bloki sta³ej wielkoœci i mamy na serwerze strumieñ danych o bardzo du¿ym rozmiarze.
-Nastêpnie w œrodku tego strumienia zostaje dodany jeden znak.
-Sprawia to, ¿e po³owa strumienia zostanie podzielona na zupe³nie inne bloki, mimo ¿e dane siê praktycznie nie zmieni³y.
 
-Stosowanie bloków zmiennej d³ugoœci w po³¹czeniu z komponentem zwanym Chunkerem, który wybiera granice bloków na podstawie samych danych, pozwala unikn¹æ tego problemu. 
-W powy¿szym przyk³adzie zadzia³a³by tak, ¿e kilka bloków po nowym znaku by³oby innych, ale reszta nie zmieni³aby siê.
-\section{Deduplikacja}
-Dla ka¿dego z nowo dodanych bloków jest tworzony identyfikator za pomoc¹ jednej z popularnych funkcji skrótu.
-Pozwala to na eliminacjê duplikatów ze zbioru przesy³anych bloków.
-Ma to du¿e znaczenie praktyczne, jeœli kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
-\section{Kompresja}
-Przed przes³aniem bloki s¹ poddawane dzia³aniu kompresji, co pozwala znacz¹co zmniejszyæ rozmiar danych.
-Stosowana kompresja musi nie tylko mieæ dobry stopieñ, ale te¿ nie zu¿ywaæ zbyt du¿o zasobów systemu.
-Du¿e znaczenie ma te¿ to, jak wiele danych kompresujemy na raz.
-Korzystniej jest kompresowaæ du¿e fragmenty danych.
-Nale¿y pamiêtaæ jednak, ¿e w wiêkszym stopniu obci¹¿a to system.
-\section{Potencjalne korzyœci z delta kodowania}
-Istniej¹ce w systemie HYDRAstor mechanizmy znacznie przyspieszaj¹ replikacjê.
-W pewnych sytuacjach mo¿na jednak przesy³aæ zdecydowanie mniej danych.
-Dla wielu nowych bloków mo¿emy znaleŸæ w systemie bloki bardzo podobne (np. ró¿ni¹ce siê kilkoma znakami).
-Dla ka¿dego z takich nowych bloków moglibyœmy przes³aæ jedynie identyfikator bloku bazowego (tzn. podobnego do niego i znajduj¹cego siê ju¿ w systemie) oraz ró¿nicê.
-W wiêkszoœci przypadków mia³oby to znacznie mniejszy rozmiar ni¿ ca³y nowy blok.
-Zajmuj¹ siê tym algorytmy delta kodowania.
-Opiszemy je szerzej w nastêpnym rozdziale.
-\newpage
-\begin{figure}[h]
+\begin{figure}[p]
     \centering
     \begin{minipage}[t]{0.45\textwidth}
         \centering
@@ -188,7 +160,7 @@ Opiszemy je szerzej w nastêpnym rozdziale.
     \end{minipage}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[p]
     \centering
     \begin{minipage}[t]{0.45\textwidth}
         \centering
@@ -205,7 +177,7 @@ Opiszemy je szerzej w nastêpnym rozdziale.
     \end{minipage}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[p]
     \centering
     \begin{minipage}[t]{0.45\textwidth}
         \centering
@@ -222,7 +194,7 @@ Opiszemy je szerzej w nastêpnym rozdziale.
     \end{minipage}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[p]
     \centering
     \begin{minipage}[t]{0.45\textwidth}
         \centering
@@ -239,11 +211,33 @@ Opiszemy je szerzej w nastêpnym rozdziale.
     \end{minipage}
 \end{figure}
 
+
+\section{Bloki zmiennej d³ugoœci}
+Bloki zmiennej d³ugoœci pozwalaj¹ w znacznym stopniu zmniejszyæ rozmiar danych, które zostan¹ przes³ane podczas replikacji.
+Za³ó¿my chwilowo, ¿e stosujemy bloki sta³ej wielkoœci i mamy na serwerze strumieñ danych o bardzo du¿ym rozmiarze.
+Nastêpnie w œrodku tego strumienia zostaje dodany jeden znak.
+Sprawia to, ¿e po³owa strumienia zostaje podzielona na zupe³nie inne bloki, mimo ¿e dane siê praktycznie nie zmieni³y.
+
+Zastosowanie bloków zmiennej d³ugoœci pozwala unikn¹æ tego problemu.
+Za dzielenie danych na bloki odpowiada komponent zwany Chunkerem.
+W powy¿szym przyk³adzie zadzia³a³by tak, ¿e kilka bloków po nowym znaku by³oby innych, ale reszta nie zmieni³aby siê.
+\section{Deduplikacja}
+Dla ka¿dego z nowo dodanych bloków jest tworzony identyfikator za pomoc¹ jednej z popularnych funkcji skrótu.
+Pozwala to na eliminacjê duplikatów ze zbioru przesy³anych bloków.
+Ma to du¿e znaczenie, gdy kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
+\section{Potencjalne korzyœci z delta kodowania}
+Istniej¹ce w systemie HYDRAstor mechanizmy znacznie przyspieszaj¹ replikacjê.
+W pewnych sytuacjach mo¿na jednak przesy³aæ zdecydowanie mniej danych.
+Dla wielu nowych bloków mo¿emy znaleŸæ w systemie bloki bardzo podobne (np. ró¿ni¹ce siê kilkoma znakami).
+Dla ka¿dego z takich nowych bloków moglibyœmy przes³aæ jedynie identyfikator bloku bazowego (tzn. podobnego do niego i znajduj¹cego siê ju¿ w systemie) oraz ró¿nicê.
+W wiêkszoœci przypadków mia³oby to znacznie mniejszy rozmiar ni¿ ca³y nowy blok.
+Zajmuj¹ siê tym algorytmy delta kodowania.
+Opiszemy je szerzej w nastêpnym rozdziale.
+
 \chapter{Delta kodowanie}
 Delta kodowanie to sposób przechowywania i transmisji danych w formie ró¿nic (ang. \textit{delta}) pomiêdzy blokami danych.
-W sytuacjach, gdy ró¿nice pomiêdzy blokami s¹ ma³e, delta kodowania potrafi znacznie zmniejszyæ nadmiarowoœæ danych.
-Przesy³anie zbioru ró¿nic jest zdecydowanie bardziej efektywne pamiêciowo ni¿ przesy³anie ca³ych bloków.
-Oczywiœcie, na ich wielkoœæ ma bardzo du¿y wp³yw to, które dane ze sob¹ porównujemy, a tak¿e to, jak liczymy ró¿nice.
+Gdy ró¿nice miêdzy blokami s¹ ma³e, delta kodowania potrafi znacznie zmniejszyæ rozmiar przesy³anych danych.
+Na wielkoœæ ró¿nic wp³yw ma to, które dane s¹ ze sob¹ porównywane oraz jaki algorytm liczenia ró¿nic zosta³ u¿yty.
 Dlatego delta kodowanie mo¿na sprowadziæ do dwóch zasadniczych problemów: znajdowania podobnych bloków i liczenia ró¿nic miêdzy nimi.
 \section{Liczenie ró¿nic}
 Chcemy efektywnie rozwi¹zywaæ nastêpuj¹cy problem.
@@ -253,8 +247,8 @@ Naszym celem jest obliczyæ ró¿nicê drugiego bloku w stosunku do bloku bazowego t
 Oczywiœcie, im mniejsza jest ta ró¿nica, tym lepiej.
 
 Problem ten rozwi¹zuje popularny algorytm Diff z systemów Unix.
-Jednak nie sprawdzi siê on w przypadku delta kodowania.
-Algorytm Diff porównuje bloki na poziomie linii, co ma szanse sprawdziæ siê jedynie dla specyficznego rodzaju danych tekstowych.
+Jednak nie sprawdza siê on w przypadku delta kodowania.
+Algorytm Diff porównuje bloki na poziomie linii, co nie dzia³a³oby zbyt dobrze dla danych innych ni¿ tekstowe.
 
 Interesuj¹ nas wiêc przede wszystkim algorytmy przeznaczone do liczenia ró¿nic miêdzy danymi binarnymi.
 Jednym z nich jest xdelta3.
@@ -269,12 +263,12 @@ W du¿ym uproszczeniu jego dzia³anie polega na sekwencyjnym odtwarzaniu bloku za 
 Szukamy rozwi¹zania nastêpuj¹cego problemu.
 Mamy zbiór starych bloków i jeden nowy blok.
 Chcemy znaleŸæ stary blok, dla którego ró¿nica z nowym blokiem jest mo¿liwie ma³a.
-Jednoczeœnie algorytm powinien mieæ dobr¹ z³o¿onoœæ czasow¹.
 Zaprezentujemy dwa rozwi¹zania tego problemu: algorytm optymalny oraz algorytm z indeksem podobieñstwa.
 \subsection{Algorytm optymalny}
 W algorytmie optymalnym porównujemy nowy blok ze wszystkimi blokami, które posiadamy.
-Jest on niemo¿liwy do zastosowania w praktyce przez asymptotycznie liniowy czas dzia³ania ze wzglêdu na liczbê bloków w systemie (która jest rzêdu milionów).
-Jednak jest on dobrym punktem odniesienia do innych algorytmów - daje on informacjê, jakie jest dolne ograniczenie na rozmiar przesy³anych danych w klasie algorytmów delta kodowania porównuj¹cych z jednym blokiem.
+Jest on trudny do zastosowania w praktyce przez asymptotycznie liniowy czas dzia³ania ze wzglêdu na liczbê bloków w systemie (która w œrodowisko produkcyjnym mo¿e siêgaæ wielu milionów).
+Jednak jest on dobrym punktem odniesienia dla innych algorytmów.
+Dziêki niemu mo¿emy znaleŸæ dolne ograniczenie na rozmiar danych do przes³ania w klasie algorytmów delta kodowania porównuj¹cych z jednym blokiem.
 \begin{algorithmic}
 \Function{optimalDeltaEncoding}{$blocks, block$}
 \State $best\_block \gets blocks[1]$
@@ -295,12 +289,12 @@ Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ iloœæ $K$ wartoœci liczbowych
 W tym celu poruszamy siê po bloku oknem (ang. \textit{window}) o sta³ym rozmiarze $W$ i dla ka¿dego okna $w$ liczymy znacznik Rabina (ang. \textit{Rabin’s fingerprint}) $fp(w) = \sum\limits_{i=0}^{W-1} w[i] \times P^{i} \mod Q$, gdzie $P$ i $Q$ to ustalone liczby pierwsze.
 Dla cechy o numerze $i$ definiujemy dwie wartoœci $m_i$ oraz $a_i$.
 Wartoœci¹ cechy o numerze $i$ bêdzie minimum po wszystkich oknach $w$ z $(fp(w) * m_i + a_i) \mod 2^{32}$.
-Wartoœciami $a_i$ oraz $m_i$ powinny byæ du¿e, losowe liczby pierwsze, jednak u nas bêd¹ ustalone, aby zapewniæ powtarzalnoœæ wyników.
+Wartoœciami $a_i$ oraz $m_i$ powinny byæ du¿e, losowe liczby pierwsze.
 Nastêpnie tworzymy super cechy (ang. \textit{superfeature}) z ustalonej liczby $S$ zwyk³ych cech.
-W tym celu dzielimy cechy danego bloku na grupy po $K$ kolejnych cech i dla ka¿dej z grup liczymy znacznik Rabina - jego wartoœæ bêdzie wartoœci¹ danej super cechy.
+W tym celu dzielimy cechy bloku na grupy po $K$ kolejnych cech i dla ka¿dej z grup liczymy znacznik Rabina - jego wartoœæ bêdzie wartoœci¹ super cechy.
 Wszystkie znaczniki liczymy przy u¿yciu du¿ych liczb pierwszych $P$ i $Q$.
-Aby znaleŸæ podobny blok do danego, wybieramy taki, który ma najwiêcej wspólnych super cech (w przypadku remisu wybieramy dowolny).
-Jeœli zaœ nie ma bloku z jak¹kolwiek wspóln¹ super cech¹, wysy³amy ca³y blok.
+Algorytm zwróci stary blok, który ma najwiêcej wspólnych super cech z nowym blokiem.
+Jeœli zaœ ¿aden stary blok nie ma wspólnych super cech z nowym blokiem, powinniœmy wys³aæ ca³y nowy blok.
 Eksperymentalnie wyznaczyliœmy, ¿e najlepiej dzia³aj¹ wartoœci $K=4$ i $S=2$ - pod uwagê braliœmy iloœæ czasu potrzebn¹ na obliczenia, iloœæ znajdowanych bloków oraz ich jakoœæ.
 Oczywiœcie, im wiêksze $K$, tym lepsza jakoœæ kandydatów.
 Z kolei, im wiêksze $S$, tym wiêcej bloków znajdujemy.
