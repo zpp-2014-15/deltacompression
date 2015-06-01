@@ -15,8 +15,12 @@
 \usepackage{pgffor}
 \usepackage{amsmath}
 \usepackage{algpseudocode}
+\usepackage{algorithm}
 \usepackage{indentfirst}
 \usepackage{longtable}
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup[sub]{labelsep=space}
 \urlstyle{same}
 
 % it's for non-breaking hlines in longtable
@@ -120,115 +124,166 @@ W niniejszej pracy przedstawiamy symulator oraz wyniki symulacji uzyskane przy j
 % pamiêtamy [*] W wielu wspó³czesnych systemach kopii zapasowych w¹skim gard³em procesu tworzenia repliki jest przesy³anie danych ³¹czem internetowym.
 
 \chapter{System HYDRAstor}
-HYDRAstor to nowoczesny, rozproszony, skalowalny system kopii zapasowych u¿ywaj¹cy dysku.
-Jest jednym z najwiêkszych i najszybszych takich systemów na œwiecie u¿ywanym przez klientów w Japonii i Stanach Zjednoczonych.
-Zosta³ stworzony, aby dostarczyæ klientom funkcjonalnoœci takie, jak: deduplikacja, mo¿liwoœæ konfiguracji wed³ug potrzeb.
-Ci¹g³e aktualizacje nie przerywaj¹ dzia³ania produktu.
-Ponadto system charakteryzuje siê du¿¹ odpornoœci¹ na b³êdy (patrz \cite{HYDRAstor}).
+HYDRAstor to nowoczesny, rozproszony, skalowalny system kopii zapasowych.
+Jest jednym z najwiêkszych i najszybszych takich systemów na œwiecie u¿ywanym przez klientów w Japonii i Stanach Zjednoczonych (\cite{HYDRAstor}).
+Dostarcza klientom funkcjonalnoœci takie, jak: deduplikacja, bloki zmiennej d³ugoœci i pe³ny indeks bloków u¿ywaj¹cy rozproszonej tablicy mieszaj¹cej.
+Ponadto system charakteryzuje siê du¿¹ odpornoœci¹ na b³êdy.
 
-HYDRAstor jest niezwykle z³o¿ony i skomplikowany, dlatego stworzony przez nas symulator uwzglêdnia jedynie jego kluczowe dla naszego problemu w³asnoœci.
-Na sekwencji rysunków zosta³a oddana idea dzia³ania systemu.
-Nale¿y opowiedzieæ o najwa¿niejszych z naszego punktu widzenia elementach systemu: blokach zmiennej d³ugoœci, deduplikacji i kompresji.
+System HYDRAstor jest niezwykle z³o¿ony i skomplikowany, dlatego zostanie zaprezentowany w du¿ym uproszczeniu.
+Rysunek \ref{fig:hydra_scheme} przedstawia schemat systemu.
+Do Chunkera dostarczane s¹ dane i metadane systemu plików w postaci strumienia bajtów.
+Chunker dzieli strumieñ na bloki zmiennej d³ugoœci.
+Bloki wraz z metadanymi s¹ dostarczane do systemu HYDRAstor poprzez po³¹czenie lokalne.
+System HYDRAstor oblicza wartoœæ funkcji skrótu dla ka¿dego z bloków i przechowuje jedynie unikalne bloki.
+Proces ten nosi nazwê deduplikacji.
+W celu przes³ania kopii zapasowej na zdalny serwer nowe dane s¹ kompresowane i przesy³ane przez Internet (replikacja).
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/HYDRAstor.png}
+    \caption{Schemat systemu HYDRAstor}
+    \label{fig:hydra_scheme}
+\end{figure}
+
+Rysunki \ref{fig:hydra1} - \ref{fig:hydra8} przedstawiaj¹ akcje, które s¹ wykonywane przy tworzeniu dwóch kolejnych kopii zapasowych.
+
+Skupimy siê teraz na replikacji.
+Bêdziemy rozwa¿aæ wp³yw bloków zmiennej d³ugoœci i deduplikacji na rozmiar przesy³anych danych.
+Na koniec powiemy, w jaki sposób mo¿na niezale¿nie od istniej¹cych mechanizmów zwiêkszyæ efektywnoœæ replikacji.
+
+\begin{figure}[p]
+    \centering
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/visualization/1.png}
+        \captionof{figure}{System A chce przes³aæ do systemu B dane.}
+        \label{fig:hydra1}
+    \end{minipage}
+    \hspace{\fill}
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/visualization/2.png}
+        \captionof{figure}{System A dzieli dane na bloki, dla ka¿dego z bloków liczy wartoœæ funkcji skrótu.}
+        \label{fig:hydra2}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/3.png}
+        \captionof{figure}{System A przesy³a do systemu B informacje o po³o¿eniu kolejnych bloków (tj. ci¹g identyfikatorów) oraz zawartoœci bloków z pominiêciem duplikatów.}
+        \label{fig:hydra3}
+    \end{minipage}
+    \hspace{\fill}
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/4.png}
+        \captionof{figure}{System B posiada teraz takie same bloki co system A.}
+        \label{fig:hydra4}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/5.png}
+        \captionof{figure}{System A chce przes³aæ do systemu B kolejn¹ wersjê danych.}
+        \label{fig:hydra5}
+    \end{minipage}
+    \hspace{\fill}
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/6.png}
+        \captionof{figure}{System A dzieli dane na bloki i liczy wartoœci funkcji skrótu. Zmieni³y siê tylko dwa bloki, co jest zas³ug¹ Chunkera.}
+        \label{fig:hydra6}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/7.png}
+        \captionof{figure}{System A przesy³a do systemu B informacje o rozmieszczeniu bloków oraz zawartoœci jedynie tych bloków, które s¹ nowe. Znacz¹co zmniejsza to objêtoœæ przesy³anych danych.}
+        \label{fig:hydra7}
+    \end{minipage}
+    \hspace{\fill}
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/8.png}
+        \captionof{figure}{System B odbiera nowe dane i posiada teraz takie same bloki, co system A.}
+        \label{fig:hydra8}
+    \end{minipage}
+\end{figure}
+
+
 \section{Bloki zmiennej d³ugoœci}
-Bloki zmiennej d³ugoœci pozwalaj¹ w znacznym stopniu zmniejszyæ rozmiar danych, które zostan¹ przes³ane podczas replikacji, czyli procesu tworzenia nowej kopii.
+U¿ycie bloków zmiennej d³ugoœci pozwala w znacznym stopniu zmniejszyæ rozmiar danych, które zostan¹ przes³ane podczas replikacji.
 Za³ó¿my chwilowo, ¿e stosujemy bloki sta³ej wielkoœci i mamy na serwerze strumieñ danych o bardzo du¿ym rozmiarze.
 Nastêpnie w œrodku tego strumienia zostaje dodany jeden znak.
-Sprawia to, ¿e po³owa strumienia zostanie podzielona na zupe³nie nowe bloki, mimo ¿e dane siê praktycznie nie zmieni³y.
+Sprawia to, ¿e po³owa strumienia zostaje podzielona na zupe³nie inne bloki, mimo ¿e dane siê praktycznie nie zmieni³y.
 
-Stosowanie bloków zmiennej d³ugoœci w po³¹czeniu z komponentem zwanym Chunkerem, który wybiera granice bloków na podstawie samych danych, stosuj¹c pewne heurystyki, pozwala unikn¹æ tego problemu. 
-W powy¿szym przyk³adzie zadzia³a³by tak, ¿e kilka bloków po nowym znaku by³oby innych, ale reszta nie zmieni³aby siê.
+Zastosowanie bloków zmiennej d³ugoœci pozwala unikn¹æ tego problemu.
+Jednak wybór granic dla bloków nie mo¿e byæ przypadkowy.
+Chunker wybiera miejsce podzia³u, bior¹c pod uwagê lokalne w³aœciwoœci strumienia danych.
+Dziêki temu wiêkszoœæ granic nie zmieni siê przy niewielkich modyfikacjach danych.
+We wczeœniejszym przyk³adzie Chunker wyznaczy³by granice tak, ¿e kilka bloków po nowym znaku by³oby innych, ale reszta nie zmieni³aby siê.
 \section{Deduplikacja}
 Dla ka¿dego z nowo dodanych bloków jest tworzony identyfikator za pomoc¹ jednej z popularnych funkcji skrótu.
-Pozwala to na eliminacjê duplikatów ze zbioru przechowywanych bloków.
-Ma to du¿e znaczenie praktyczne, jeœli kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
-\section{Kompresja}
-Przed przes³aniem bloki s¹ poddawane dzia³aniu kompresji, co pozwala znacz¹co zmieniæ rozmiar danych.
-Stosowana kompresja musi nie tylko mieæ dobry stopieñ, ale te¿ nie zu¿ywaæ zbyt du¿o zasobów systemu.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/1.png}
-    \caption{Z systemu A chcemy przes³aæ do systemu B dane.}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/2.png}
-    \caption{System A dzieli dane na bloki, dla ka¿dego z bloków liczy wartoœæ funkcji skrótu. Dla identycznych bloków dostajemy takie same wartoœci.}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/3.png}
-    \caption{System A przesy³a do systemu B informacje o po³o¿eniu kolejnych bloków (tj. ci¹g identyfikatorów) oraz zawartoœci bloków z pominiêciem duplikatów (deduplikacja).}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/4.png}
-    \caption{System B posiada teraz te same bloki co system A.}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/5.png}
-    \caption{System A chce przes³aæ do systemu B kolejn¹ wersjê danych.}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/6.png}
-    \caption{System A dzieli dane na bloki i liczy wartoœci funkcji skrótu. Zmieni³y siê tylko dwa bloki, co jest zas³ug¹ Chunkera.}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/7.png}
-    \caption{System A przesy³a do systemu B informacje o rozmieszczeniu bloków oraz zawartoœci jedynie tych bloków, które s¹ nowe. Znacz¹co zmniejsza to objêtoœæ przesy³anych danych.}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/visualization/8.png}
-    \caption{System B odbiera nowe dane i posiada teraz takie same bloki, co system A.}
-\end{figure}
+Pozwala to na eliminacjê duplikatów ze zbioru przesy³anych bloków.
+Ma to du¿e znaczenie, gdy kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
+\section{Mo¿liwe optymalizacje}
+Istniej¹ce w systemie HYDRAstor mechanizmy znacznie przyspieszaj¹ replikacjê.
+W pewnych sytuacjach mo¿na jednak przesy³aæ zdecydowanie mniej danych.
+Dla wielu nowych bloków mo¿emy znaleŸæ w systemie bloki bardzo podobne (np. ró¿ni¹ce siê kilkoma znakami).
+Dla ka¿dego z takich nowych bloków moglibyœmy przes³aæ jedynie identyfikator bloku bazowego (tzn. podobnego do niego i znajduj¹cego siê ju¿ w systemie) oraz ró¿nicê.
+W wiêkszoœci przypadków mia³oby to znacznie mniejszy rozmiar ni¿ ca³y nowy blok.
+Zajmuj¹ siê tym algorytmy delta kodowania.
+Opiszemy je szerzej w nastêpnym rozdziale.
 
 \chapter{Delta kodowanie}
-System HYDRAstor, mimo wielu niew¹tpliwych zalet, mo¿e byæ znacznie bardziej wydajny.
-Iloœæ danych niezbêdnych do przes³ania z kolejn¹ wersj¹ mo¿e ulec znacznemu zmniejszeniu dziêki algorytmom delta kodowania.
-
 Delta kodowanie to sposób przechowywania i transmisji danych w formie ró¿nic (ang. \textit{delta}) pomiêdzy blokami danych.
-W sytuacjach, gdy ró¿nice pomiêdzy blokami s¹ ma³e, delta kodowania potrafi znacznie zmniejszyæ nadmiarowoœæ danych.
-Przechowywanie zbioru ró¿nic jest zdecydowanie bardziej efektywne pamiêciowo ni¿ przechowywanie ca³ych bloków.
-Oczywiœcie, na ich wielkoœæ ma bardzo du¿y wp³yw to, które dane ze sob¹ porównujemy, a tak¿e jak liczymy ró¿nice.
+Gdy ró¿nice miêdzy blokami s¹ ma³e, delta kodowanie potrafi znacznie zmniejszyæ rozmiar przesy³anych danych.
+Na wielkoœæ ró¿nic wp³yw ma to, które dane s¹ ze sob¹ porównywane oraz jaki algorytm liczenia ró¿nic jest u¿ywany.
 Dlatego delta kodowanie mo¿na sprowadziæ do dwóch zasadniczych problemów: znajdowania podobnych bloków i liczenia ró¿nic miêdzy nimi.
 \section{Liczenie ró¿nic}
-Jest to popularny w informatyce problem, aby na podstawie dwóch fragmentów danych stworzyæ ró¿nicê (ang. \textit{delta}), dziêki której maj¹c tylko pierwszy fragment i ow¹ ró¿nicê, mo¿na  by³o odtworzyæ drugi fragment.
-Oczywiœcie rola fragmentów nie jest symetryczna - liczymy ró¿nicê jednego wzglêdem drugiego.
-Powsta³ szereg algorytmów, które siê tym zajmuj¹.
+Chcemy efektywnie rozwi¹zywaæ nastêpuj¹cy problem.
+Mamy dane dwa bloki danych.
+Ustalmy jeden z nich jako blok bazowy.
+Naszym celem jest obliczyæ ró¿nicê drugiego bloku w stosunku do bloku bazowego tak, aby maj¹c jedynie blok bazowy i tê ró¿nicê, odtworzyæ drugi blok.
+Oczywiœcie, im mniejsza jest ta ró¿nica, tym lepiej.
 
-Jeden z nich implementuje popularny program Diff z systemów Unix.
-Jednak nie jest dobrym rozwi¹zaniem dla naszego problemu, gdy¿ porównuje pliki na poziomie linii, co ma szanse siê sprawdziæ jedynie dla specyficznego rodzaju plików tekstowych.
+Popularnym algorytmem liczenia ró¿nic jest Diff z systemów Unix.
+Jednak nie sprawdza siê on w przypadku delta kodowania.
+Algorytm Diff porównuje bloki na poziomie linii, co nie dzia³a³oby zbyt dobrze dla danych innych ni¿ tekstowe.
 
-Interesuj¹ nas przede wszystkim algorytmy przeznaczone do liczenia ró¿nic miêdzy danymi binarnymi.
-Ograniczymy siê jednak do xdelta3, którego u¿ywamy w symulatorze.
-W du¿ym uproszczeniu jego dzia³anie polega na odtwarzaniu po kolei pliku, wykonuj¹c kilka operacji:
+Interesuj¹ nas wiêc przede wszystkim algorytmy przeznaczone do liczenia ró¿nic miêdzy danymi binarnymi.
+Jednym z nich jest xdelta3.
+W du¿ym uproszczeniu jego dzia³anie polega na sekwencyjnym odtwarzaniu bloku za pomoc¹ nastêpuj¹cych operacji:
 \begin{itemize}
 \item wstawienie danego ci¹gu bajtów
 \item skopiowanie ci¹gu bajtów z odtworzonego ju¿ fragmentu
-\item skopiowanie ci¹gu bajtów z bazowego fragmentu
+\item skopiowanie ci¹gu bajtów z fragmentu bloku bazowego
 \end{itemize}
 
 \section{Znajdowanie podobnych bloków}
-W symulatorze zaimplementowaliœmy dwa ró¿ne podejœcia do tego problemu.
+Szukamy rozwi¹zania nastêpuj¹cego problemu.
+Mamy dane: zbiór starych bloków i jeden nowy blok.
+Chcemy znaleŸæ stary blok, dla którego ró¿nica z nowym blokiem jest mo¿liwie ma³a.
+Zaprezentujemy dwa rozwi¹zania tego problemu: algorytm optymalny oraz algorytm z indeksem podobieñstwa.
 \subsection{Algorytm optymalny}
 W algorytmie optymalnym porównujemy nowy blok ze wszystkimi blokami, które posiadamy.
-Jest on niemo¿liwy do zastosowania w praktyce przez asymptotycznie kwadratowy czas dzia³ania ze wzglêdu na iloœæ bloków.
-Jednak jest on dobrym punktem odniesienia do innych algorytmów - daje on informacjê, jakie jest dolne ograniczenie na rozmiar danych w klasie algorytmów delta kodowania porównuj¹cych z jednym blokiem.
+Jest on trudny do zastosowania w praktyce przez asymptotycznie liniowy czas dzia³ania ze wzglêdu na liczbê bloków w systemie (która w œrodowisko produkcyjnym mo¿e siêgaæ wielu milionów).
+Jednak jest on dobrym punktem odniesienia dla innych algorytmów.
+Dziêki niemu mo¿emy znaleŸæ dolne ograniczenie na rozmiar danych do przes³ania w klasie algorytmów delta kodowania porównuj¹cych z jednym blokiem.
+
 \begin{algorithmic}
+\begin{algorithm}
 \Function{optimalDeltaEncoding}{$blocks, block$}
-\State $best\_block \gets blocks[1]$
-\State $best\_diff \gets \Call{Diff}{block, blocks[1]}$
+\State $best\_block \gets blocks[0]$
+\State $best\_diff \gets \Call{Diff}{block, blocks[0]}$
 \For{$old\_block \ \textbf{in} \ blocks$}
     \State $diff \gets \Call{Diff}{block, old\_block}$
     \If{$\Call{length}{diff} < \Call{length}{best\_diff}$}
@@ -238,31 +293,34 @@ Jednak jest on dobrym punktem odniesienia do innych algorytmów - daje on informa
 \EndFor
 \State \Return $best\_block.getHash()$
 \EndFunction
+\end{algorithm}
 \end{algorithmic}
+
 \subsection{Algorytm z indeksem podobieñstwa}
-W algorytmie z indeksem podobieñstwa stosujemy zdecydowanie bardziej wyrafinowan¹ strategiê.
-Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ iloœæ $K$ wartoœci liczbowych zwanych cechami (ang. \textit{feature}).
+W algorytmie z indeksem podobieñstwa stosujemy znacznie bardziej wyrafinowan¹ strategiê.
+Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ iloœæ $S \times K$ wartoœci liczbowych zwanych cechami (ang. \textit{feature}).
 W tym celu poruszamy siê po bloku oknem (ang. \textit{window}) o sta³ym rozmiarze $W$ i dla ka¿dego okna $w$ liczymy znacznik Rabina (ang. \textit{Rabin’s fingerprint}) $fp(w) = \sum\limits_{i=0}^{W-1} w[i] \times P^{i} \mod Q$, gdzie $P$ i $Q$ to ustalone liczby pierwsze.
 Dla cechy o numerze $i$ definiujemy dwie wartoœci $m_i$ oraz $a_i$.
-Wartoœci¹ cechy o numerze $i$ bêdzie minimum po wszystkich oknach $w$ z $(fp(w) * m_i + a_i) \mod 2^{32}$.
-Wartoœciami $a_i$ oraz $m_i$ powinny byæ du¿e, losowe liczby pierwsze, jednak w celu zapewnienia powtarzalnoœci eksperymentów s¹ one w naszym symulatorze ustalone.
+Wartoœci¹ cechy o numerze $i$ bêdzie minimum po wszystkich oknach $w$ z $(fp(w) \times m_i + a_i) \mod 2^{32}$.
+Wartoœciami $a_i$ oraz $m_i$ powinny byæ du¿e, losowe liczby pierwsze.
 Nastêpnie tworzymy super cechy (ang. \textit{superfeature}) z ustalonej liczby $S$ zwyk³ych cech.
-W tym celu dzielimy cechy danego bloku na grupy po $K$ kolejnych cech i dla ka¿dej z grup liczymy znacznik Rabina - jego wartoœæ bêdzie wartoœci¹ danej supercechy.
+W tym celu dzielimy cechy bloku na grupy po $K$ kolejnych cech i dla ka¿dej z grup liczymy znacznik Rabina - jego wartoœæ bêdzie wartoœci¹ super cechy.
 Wszystkie znaczniki liczymy przy u¿yciu du¿ych liczb pierwszych $P$ i $Q$.
-Aby znaleŸæ podobny blok do danego, wybieramy taki, który ma najwiêcej wspólnych super cech (jeœli jest takich wiêcej, wybieramy dowolny).
-Jeœli zaœ nie ma bloku z jak¹kolwiek wspóln¹ super cech¹, wysy³amy ca³y blok.
+Algorytm zwróci stary blok, który ma najwiêcej wspólnych super cech z nowym blokiem.
+Jeœli zaœ ¿aden stary blok nie ma wspólnych super cech z nowym blokiem, powinniœmy wys³aæ ca³y nowy blok.
 Eksperymentalnie wyznaczyliœmy, ¿e najlepiej dzia³aj¹ wartoœci $K=4$ i $S=2$ - pod uwagê braliœmy iloœæ czasu potrzebn¹ na obliczenia, iloœæ znajdowanych bloków oraz ich jakoœæ.
 Oczywiœcie, im wiêksze $K$, tym lepsza jakoœæ kandydatów.
 Z kolei, im wiêksze $S$, tym wiêcej bloków znajdujemy.
 Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
 
 \begin{algorithmic}
+\begin{algorithm}
 \Function{calculateFeatures}{$block$}
 \State $N \gets S \times K$
 \State $features[N] \gets {None, ... }$
 \State $best[N] \gets {2^{32}, ... }$
 \ForAll{window $w$ in $block$}
-    \For{$i \ \textbf{in} \ \{1, ..., N\}$}
+    \For{$i \ \textbf{in} \ \{0, ..., N - 1\}$}
         \State $value \gets m[i] \times \Call{fp}{w} + a[i] \mod 2^{32}$
         \If {$value < best[i]$}
             \State $best[i] \gets value$
@@ -271,6 +329,16 @@ Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
     \EndFor
 \EndFor
 \State \Return $features$
+\EndFunction
+\\
+\Function{createSuperfeatures}{$features$}
+\State $sfeatures[S] \gets 0, ...$
+\For{$i \ \textbf{in} \ \{0, ... S - 1\}$}
+    \For{$j \ \textbf{in} \ \{0, ..., K - 1\}$}
+        \State $sfeatures[i] \gets sfeatures[i] \times P + features[i \times K + j] \mod Q$
+    \EndFor
+\EndFor
+\State \Return $sfeatures$
 \EndFunction
 \\
 \Function{similarityIndexEncoding}{$block, hashes\_map, sfeatures\_map$}
@@ -295,37 +363,9 @@ Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
 \EndFor
 \State \Return $best$
 \EndFunction
+\end{algorithm}
 \end{algorithmic}
 
-\chapter{Architektura}
-Aby sprawdziæ algorytmy delta kodowania, stworzyliœmy symulator systemu HYDRAstor.
-Jego architektura oparta jest o wzorzec Model-View-Controller, zapewniaj¹cy niezale¿noœæ kodu odpowiedzialnego za interakcjê z u¿ytkownikiem od kodu zajmuj¹cego siê logik¹ biznesow¹ aplikacji.
-Oprócz standardowych dla wzorca MVC czêœci: modelu, widoku i kontrolera, w architekturze naszego projektu mo¿emy wyró¿niæ Storage - osobn¹ czêœæ odpowiedzialn¹ za sk³adowanie danych w trakcie trwania symulacji oraz Chunker - czêœæ przetwarzaj¹c¹ pliki z dysku twardego.
-Zale¿noœci miêdzy poszczególnymi komponentami pokazane s¹ na poni¿szym schemacie.
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.5\textwidth]{img/Architecture.png}
-    \caption{Schemat architektury}
-    \label{fig:architecture}
-\end{figure}
-
-\section{Model-View-Controller}
-Przedstawimy w skrócie sposób realizacji wzorca MVC w naszym projekcie.
-Wiêkszoœæ modeli by³a pasywna, czyli nie zmienia³a swojego stanu samoczynnie.
-Zaraz po tym jak kontroler modyfikowa³ jakiœ model, powiadamia³ on odpowiedni widok o zmianie.
-Mechanizm ten zosta³ zaimplementowany przy u¿yciu sygna³ów biblioteki wxPython.
-Kolejka reprezentuj¹ca kolejne zadania do wykonania by³a modelem aktywnym, czyli takim który mo¿e zmieniæ swój stan niezale¿nie od akcji wykonywanych przez u¿ytkownika.
-Do jego obs³ugi zastosowaliœmy bibliotekê Publisher pakietu wxPython.
-Pozwala ona na wysy³anie komunikatów do kontrolera, gdy kolejka ulega zmianie.
-
-\section{Chunker}
-Chunker jest osobnym modu³em zajmuj¹cym siê dzieleniem plików na bloki zmiennej d³ugoœci w taki sposób, aby wprowadzenie modyfikacji w pliku nie wymaga³o przes³ania du¿ej iloœci danych.
-Zosta³ nam dostarczony przez firmê 9LivesData w formie biblioteki statycznej napisanej w C++.
-
-\section{Storage}
-Storage odpowiada za gromadzenie bloków danych powsta³ych w trakcie fazy dzielenia plików przez Chunker.
-Ta czêœæ symulatora jest odpowiedzialna równie¿ za wykrywanie duplikatów bloków oraz ich zliczanie.
-Wykrywanie duplikatów zosta³o zaimplementowane przy u¿yciu funkcji skrótu SHA-256.
 
 \chapter{Funkcjonalnoœci}
 Symulator zosta³ stworzony, aby szybko i wygodnie przeprowadzaæ eksperymenty na rzeczywistych danych.
@@ -380,6 +420,35 @@ W rezultacie posiada on szereg wymienionych ni¿ej funkcjonalnoœci.
     \label{fig:chart_screen}
 \end{figure}
 
+\chapter{Architektura}
+Architektura symulatora oparta jest o wzorzec Model-View-Controller, zapewniaj¹cy niezale¿noœæ kodu odpowiedzialnego za interakcjê z u¿ytkownikiem od kodu zajmuj¹cego siê logik¹ biznesow¹ aplikacji.
+Oprócz standardowych dla wzorca MVC czêœci: modelu, widoku i kontrolera, w architekturze naszego projektu mo¿emy wyró¿niæ Storage - osobn¹ czêœæ odpowiedzialn¹ za sk³adowanie danych w trakcie trwania symulacji oraz Chunker - czêœæ przetwarzaj¹c¹ pliki z dysku twardego.
+Zale¿noœci miêdzy poszczególnymi komponentami pokazane s¹ na poni¿szym schemacie.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Architecture.png}
+    \caption{Schemat architektury}
+    \label{fig:architecture}
+\end{figure}
+
+\section{Model-View-Controller}
+Przedstawimy w skrócie sposób realizacji wzorca MVC w naszym projekcie.
+Wiêkszoœæ modeli by³a pasywna, czyli nie zmienia³a swojego stanu samoczynnie.
+Zaraz po tym jak kontroler modyfikowa³ jakiœ model, powiadamia³ on odpowiedni widok o zmianie.
+Mechanizm ten zosta³ zaimplementowany przy u¿yciu sygna³ów biblioteki wxPython.
+Kolejka reprezentuj¹ca kolejne zadania do wykonania by³a modelem aktywnym, czyli takim który mo¿e zmieniæ swój stan niezale¿nie od akcji wykonywanych przez u¿ytkownika.
+Do jego obs³ugi zastosowaliœmy bibliotekê Publisher pakietu wxPython.
+Pozwala ona na wysy³anie komunikatów do kontrolera, gdy kolejka ulega zmianie.
+
+\section{Chunker}
+Chunker jest osobnym modu³em zajmuj¹cym siê dzieleniem plików na bloki zmiennej d³ugoœci w taki sposób, aby wprowadzenie modyfikacji w pliku nie wymaga³o przes³ania du¿ej iloœci danych.
+Zosta³ nam dostarczony przez firmê 9LivesData w formie biblioteki statycznej napisanej w C++.
+
+\section{Storage}
+Storage odpowiada za gromadzenie bloków danych powsta³ych w trakcie fazy dzielenia plików przez Chunker.
+Ta czêœæ symulatora jest odpowiedzialna równie¿ za wykrywanie duplikatów bloków oraz ich zliczanie.
+Wykrywanie duplikatów zosta³o zaimplementowane przy u¿yciu funkcji skrótu SHA-256.
+
 \chapter{Technologie}
 Bardzo du¿e znaczenie dla jakoœci systemu informatycznego maj¹ zastosowane technologie.
 Ich wybór ma wp³yw na wydajnoœæ, ³atwoœæ pisania kodu, dostêpnoœæ bibliotek (w przypadku jêzyka programowania).
@@ -400,7 +469,7 @@ Byæ mo¿e warto wyjaœniæ, dlaczego nie zdecydowaliœmy siê na wersjê Pythona z pre
 Otó¿ nie jest ona kompatybilna wstecznie i dlatego u¿ycie wielu bibliotek, które s¹ dostêpne dla wersji 2.7, staje siê problematyczne.
 Poza tym, mieliœmy wiêcej doœwiadczenia z u¿ywaniem poprzednich wersji.
 
-Mo¿e siê równie¿ nasuwaæ pytanie, dlaczego nie zastowaliœmy implementacji Pythona o nazwie PyPy.
+Mo¿e siê równie¿ nasuwaæ pytanie, dlaczego nie zastosowaliœmy implementacji Pythona o nazwie PyPy.
 Jest ona wszak du¿o bardziej wydajna ni¿ popularny CPython.
 Niestety, u¿ywanie wielu pakietów, które zosta³y napisane w C (np. wxPython) jest w niej trudne lub wrêcz niemo¿liwe.
 Poza tym, nie jest ona do koñca kompatybilna z innymi implementacjami.
@@ -430,151 +499,7 @@ W naszym przypadku ma miejsce odwzorowanie wartoœci funkcji skrótu w odpowiadaj¹
 Jej zastosowanie pozwoli³o nam na wykonywanie eksperymentów, których rozmiar danych wejœciowych przekracza³ wielokrotnie rozmiar pamiêci RAM.
 Dziêki temu mogliœmy sprawdziæ, jak zachowuj¹ siê algorytmy na znacznie wiêkszych danych.
 
-\chapter{Wyniki symulacji}
-W tym rozdziale zostan¹ przedstawione i omówione rezultaty eksperymentów na danych ró¿nych typów.
-Przygotowanie danych do testowania by³o istotn¹ czêœci¹ pracy.
-Dobrze dobrane dane testowe pozwalaj¹ na lepsze zrozumienie dzia³ania algorytmów.
-Dziêki nim mo¿na oszacowaæ zysk, który zostanie osi¹gniêty w systemie HYDRAstor.
-\section{Format wyników}
-Wyniki s¹ przedstawione w formie wykresów s³upkowych. Jeden kolor odpowiada jednej metodzie przesy³ania danych.
-Wybór metody obejmuje jednoczeœnie algorytm delta kodowania (np. algorytm optymalny) oraz rodzaj kompresji (np. LZMA).
-Wysokoœæ ka¿dego s³upka okreœla, ile danych trzeba przes³aæ dla danej wersji danych wejœciowych.
-
-\section{Wyniki dla Ÿróde³ j¹dra Linuxa - ma³e odstêpy}
-Pierwsza symulacja zosta³a przeprowadzona dla Ÿróde³ j¹dra Linuxa.
-Zosta³y przygotowane trzy wersje Ÿróde³ j¹dra Linuxa z ró¿nicami wynosz¹cymi 5 tysiêcy zmian pomiêdzy ka¿dymi dwiema kolejnymi.
-Rozmiar danych potrzebnych do przes³ania zosta³ policzony dla szeœciu metod.
-
-Znaczenie kolorów:
-\begin{itemize}
-\item Czerwony - usuwanie duplikatów, brak kompresji
-\item Zielony - usuwanie duplikatów, kompresja LZO. Warto dodaæ, ¿e jest to obecny wynik systemu HYDRAstor
-\item ¯ó³ty - usuwanie duplikatów, kompresja LZMA
-\item B³êkitny - indeks podobieñstwa, brak kompresji
-\item Fioletowy - indeks podobieñstwa, kompresja LZO
-\item Szary - indeks podobieñstwa, kompresja LZMA
-\end{itemize}
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{img/linuxSmall.png}
-    \caption{Wyniki dla Ÿróde³ j¹dra Linuxa z ma³ymi odstêpami}
-    \label{fig:linuxSmall}
-\end{figure}
-
-Na wykresie s¹ widoczne trzy grupy.
-Ka¿da grupa sk³adaj¹ca siê z szeœciu s³upków.
-Pierwsza grupa pokazuje, ile danych trzeba przes³aæ dla pierwszej wersji przy u¿yciu ka¿dej z metod, druga grupa dla drugiej wersji itd. 
-
-Zacznijmy od iloœci duplikatów, które zosta³y wykryte wœród bloków.
-Dla pierwszej wersji jest to 0.05\%, wiêc bardzo ma³o. Dla drugiej wersji duplikaty stanowi¹ 8.05\% bloków.
-Pomimo tego, ¿e wersje by³y od siebie oddalone o tylko 5 tysiêcy zmian, wiêkszoœæ bloków zosta³a zmieniona.
-Dla trzeciej wersji liczba usuniêtych duplikatów to nieco ponad 10\%. Jest to niewiele lepszy wynik.
-
-Przeanalizujmy najpierw metody oznaczone kolorami: czerwonym, zielonym i ¿ó³tym.
-Wszystkie trzy nie u¿ywaj¹ indeksu podobieñstwa, a ró¿ni¹ siê jedynie typem kompresji u¿ytym przed wys³aniem danych.
-Widzimy, ¿e kompresja LZO zmniejsza rozmiar danych prawie o 85\%.
-Z kolei zastosowanie LZMA daje dla pierwszej wersji oszczêdnoœæ oko³o 41\% w stosunku do LZO.
-Widaæ zatem, ¿e w systemie HYDRAstor warto rozwa¿yæ u¿ycie znacznie bardziej kosztownej obliczeniowo kompresji LZMA.
-Podobne wnioski mo¿na wyci¹gn¹æ patrz¹c na drug¹ i trzeci¹ wersjê Ÿróde³ j¹dra linuxa.
-W ka¿dym przypadku kompresja LZMA znacznie zmniejszy³a rozmiar danych koniecznych do wys³ania.
-
-Zajmijmy siê teraz delta kodowaniem z indeksem podobieñstwa.
-Dla pierwszej wersji wyniki samego usuwania duplikatów z ró¿nymi typami kompresji (kolory czerwony, zielony, ¿ó³ty) prawie idealnie odpowiadaj¹ metodzie z u¿yciem indeksu podobieñstwa (kolory b³êkitny, fioletowy, szary).
-Wynika to z tego, ¿e indeks podobieñstwa nie mia³ danych, do których móg³by porównywaæ nowe bloki.
-Jednak do przes³ania drugiej i trzeciej wersji Ÿróde³ linuxa rozmiar wynikowych danych jest znacznie mniejszy.
-Odpowiednio dla standardowej metody i kompresji LZO - 57MB, a dla indeksu podobieñstwa 26MB.
-Oznacza to zmniejszenie rozmiaru danych o ponad 50\%!
-Podobny wynik mo¿na zaobserwowaæ dla trzeciej wersji.
-
-Równie¿ dla metody indeksu podobieñstwa zysk z u¿ycia kompresji LZMA jest znaczny.
-Dla kolejnych wersji mamy odpowiednio zmniejszenie rozmiaru o 41\%, 34\% oraz 34\%.
-\section{Wyniki dla Ÿróde³ j¹dra Linuxa - du¿e odstêpy}
-Drugi eksperyment tak¿e zosta³ przeprowadzony dla Ÿróde³ j¹dra Linuxa.
-W tym przypadku dane w kolejnych wersjach znacznie siê od siebie ró¿ni¹ - ka¿da kolejna wersja jest odleg³a od poprzedniej o 20 tysiêcy zmian.
-Znaczenie kolorów jest takie samo jak w poprzednim eksperymencie.
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{img/linuxBig.png}
-    \caption{Wyniki dla Ÿróde³ j¹dra Linuxa z du¿ymi odstêpami}
-    \label{fig:linuxBig}
-\end{figure}
-
-Na pocz¹tku warto zauwa¿yæ, ¿e liczba duplikatów jest znacznie mniejsza ni¿ poprzednio.
-Dla drugiej i trzeciej wersji znaleziono mniej ni¿ 2\% podobnych bloków.
-
-Niestety, delta kodowanie radzi sobie znacznie gorzej ni¿ w ostatnim eksperymencie.
-Porównajmy metody oznaczone kolorem zielonym i fioletowym.
-Obie u¿ywaj¹ tej samej kompresji, wiêc ró¿ni¹ siê tylko algorytmem delta kodowania.
-Dla pierwszej wersji zysk z u¿ycia indeksu podobieñstwa jest prawie zerowy (dok³adnie z takich samych powodów jak poprzednio).
-Dla drugiej i trzeciej wersji zysk wynosi odpowiednio 15\% i 9\%.
-Jeszcze gorzej prezentuje siê porównanie tych metod, gdy u¿ywamy kompresji LZMA (kolory ¿ó³ty i szary).
-Dane zosta³y zmniejszone odpowiednio o 11\% oraz 7\% dla drugiej i trzeciej wersji Ÿróde³ j¹dra linuxa.
-Warto dodaæ, ¿e po raz kolejny kompresja LZMA znacznie zmniejszy³a dane konieczne do wys³ania - œrednio o 40\%.
-\section{Wyniki dla kopii zapasowych katalogu domowego}
-Tym razem eksperyment dotyczy³ danych, które pochodzi³y z naszych katalogów domowych.
-Znaczenie kolorów jest identyczne jak poprzednio.
-W przypadku katalogów domowych deduplikacja dzia³a znacznie lepiej.
-Dla drugiej i trzeciej wersji katalogu domowego (s¹ one oddalone o oko³o miesi¹c u¿ytkowania) liczba duplikatów to odpowiednio 64\% oraz 75\%.
-Jest to spowodowane specyfik¹ sposobu u¿ytkowania katalogu domowego.
-Najczêœciej dodaje siê b¹dŸ usuwa ca³e pliki, du¿o rzadziej je modyfikuje.
-To mo¿e t³umaczyæ, dlaczego metoda indeksu podobieñstwa nie daje praktycznie ¿adnego zysku.
-Przy jej u¿yciu musielibyœmy przesy³aæ tyle samo danych co w przypadku obecnej wersji systemu HYDRAstor.
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{img/backups.png}
-    \caption{Wyniki dla kopii zapasowych katalogu domowego}
-    \label{fig:backup}
-\end{figure}
-
-\section{Wyniki dla Ÿróde³ ma³ego projektu torch}
-Interesuj¹cym mo¿e wydaæ siê pytanie, jak indeks podobieñstwa dzia³a w porównaniu z optymalnym algorytmem delta kodowania.
-Pokazuje to kolejny eksperyment.
-
-Znaczenie kolorów:
-\begin{itemize}
-\item Jasnoczerwony - usuwanie duplikatów, kompresja LZO
-\item Zielony - optymalny algorytm delta kodowania, kompresja LZO
-\item ¯ó³ty - indeks podobieñstwa, kompresja LZO
-\end{itemize}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{img/torch.png}
-    \caption{Wyniki dla projektu torch}
-    \label{fig:torch}
- \end{figure}
-Niestety, dane s¹ bardzo ma³e ze wzglêdu na kwadratow¹ z³o¿onoœæ algorytmu optymalnego delta kodowania.
-Jednak dziêki temu mo¿emy porównaæ algorytm optymalny z indeksem podobieñstwa.
-Pozwala to zobaczyæ, jakie jest dolne ograniczenie na iloœæ przes³anych danych dla indeksu podobieñstwa.
-Dla drugiej wersji algorytm optymalny przygotowa³ o 54\% mniej danych do przes³ania, a dla trzeciej wersji o 41\% mniej.
-Oznacza to, ¿e daleko algorytmowi z indeksem podobieñstwa do optymalnoœci.
-
-\section{Porównanie z innymi publikacjami}
-W pracy Philipa Shilane'a i innych (\cite{work1}) wykonywano podobne eksperymenty, jednak k³adziono nacisk na odrobinê inne aspekty.
-Badano tam m. in. sposób odwzorowywania super cech na bloki - porównywano indeks pe³ny, czêœciowy oraz przechowywanie informacji w pamiêci podrêcznej LRU, co opiera³o siê na za³o¿eniu, ¿e podobne bloki bêd¹ siê znajdowaæ w niedu¿ej odleg³oœci.
-W naszych eksperymentach jednak nie by³o to istotne, dlatego weŸmiemy pod uwagê jedynie wyniki dla indeksu pe³nego.
-Zanim zaczniemy analizowaæ tê pracê, warto zauwa¿yæ, ¿e mieliœmy trochê inn¹ konfiguracjê symulatora ni¿ autorzy tej pracy.
-Przeciêtny rozmiar bloku w wy¿ej wymienionej pracy to 8KB, z kolei u nas to 64KB.
-Jednoczeœnie koñcowe eksperymenty przeprowadzano tam z 3 super cechami na blok, u nas z 2.
-Ró¿nice te mog³y znacznie wp³yn¹æ na wyniki eksperymentów.
-Wiêksza liczba super cech na blok zwiêksza szanse na dopasowanie jakiegoœ bloku.
-Taki sam wp³yw na ma³y rozmiar bloku - jest ich wtedy wiêcej i ³atwiej znaleŸæ podobny.
-Kolejn¹, wart¹ wspomnienia, ró¿nic¹ jest rozmiar danych.
-Nasze dane testowe, ze wzglêdu na ograniczenia sprzêtowe i trudn¹ dostêpnoœæ, by³y rzêdu gigabajtów, w owej pracy zaœ rzêdu terabajtów.
-To równie¿ niebagatelnie zwiêksza szansê na znalezienie podobnych bloków.
-W ró¿ny sposób wykonywano te¿ sam¹ kompresjê - by³a wykonywana jedynie lokalnie, w ma³ych grupach bloków, z kolei u nas mia³a charakter globalny.
-Powodowa³o to u nas wiêkszy zysk z kompresji, zaœ mniejszy z samego delta kodowania.
-Oczywiœcie, dysponowaliœmy tak¿e innym Chunkerem.
-
-PrzejdŸmy zatem do porównania wyników.
-Dla kodów Ÿród³owych uzyskano tam samym delta kodowaniem poprawê rzêdu 73\%.
-Przypomnijmy, ¿e my osi¹gnêliœmy wynik 50\% i oko³o 10\% w zale¿noœci od czêstoœci wykonywania kopii zapasowych.
-Dla stacji roboczych osi¹gniêto zysk rzêdu 65\%, u nas zaœ by³ on symboliczny.
-
-Nale¿y przypuszczaæ, ¿e porównanie wypad³oby odrobinê inaczej, gdybyœmy przeprowadzili eksperymenty bardziej zbli¿one do tych z pracy Shilane'a i innych.
-Jednak kluczowe by³o dla nas i firmy 9LivesData, aby konfiguracja jak najbardziej odwzorowywa³a warunki pracy systemu HYDRAstor.
-
-\chapter{Organizacja pracy}
+\chapter{Zarz¹dzanie projektem}
 
 \section{System kontroli wersji}
 Tworzony przez nas symulator by³ rozwijany za pomoc¹ systemu kontroli
@@ -642,6 +567,150 @@ Nastêpnie zaœ doprowadza³ kod do takiego stanu, aby owe testy koñczy³y siê z suk
     \\ \hline
     \end{longtable}
 \end{center}
+
+\chapter{Wyniki symulacji}
+W tym rozdziale zostan¹ przedstawione i omówione rezultaty eksperymentów na danych ró¿nych typów.
+Przygotowanie danych do testowania by³o istotn¹ czêœci¹ pracy.
+Dobrze dobrane dane testowe pozwalaj¹ na lepsze zrozumienie dzia³ania algorytmów.
+Dziêki nim mo¿na oszacowaæ zysk, który zostanie osi¹gniêty w systemie HYDRAstor.
+\section{Format wyników}
+Wyniki s¹ przedstawione w formie wykresów s³upkowych. Jeden kolor odpowiada jednej metodzie przesy³ania danych.
+Wybór metody obejmuje jednoczeœnie algorytm delta kodowania (np. algorytm optymalny) oraz rodzaj kompresji (np. LZMA).
+Wysokoœæ ka¿dego s³upka okreœla, ile danych trzeba przes³aæ dla danej wersji danych wejœciowych.
+
+\section{Wyniki dla Ÿróde³ j¹dra Linuxa - ma³e odstêpy}
+Pierwsza symulacja zosta³a przeprowadzona dla Ÿróde³ j¹dra Linuxa.
+Zosta³y przygotowane trzy wersje Ÿróde³ j¹dra Linuxa z ró¿nicami wynosz¹cymi 5 tysiêcy zmian pomiêdzy ka¿dymi dwiema kolejnymi.
+Rozmiar danych potrzebnych do przes³ania zosta³ policzony dla szeœciu metod.
+
+Znaczenie kolorów:
+\begin{itemize}
+\item Czerwony - usuwanie duplikatów, brak kompresji
+\item Zielony - usuwanie duplikatów, kompresja LZO. Warto dodaæ, ¿e jest to obecny wynik systemu HYDRAstor
+\item ¯ó³ty - usuwanie duplikatów, kompresja LZMA
+\item B³êkitny - indeks podobieñstwa, brak kompresji
+\item Fioletowy - indeks podobieñstwa, kompresja LZO
+\item Szary - indeks podobieñstwa, kompresja LZMA
+\end{itemize}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/linuxSmall.png}
+    \caption{Wyniki dla Ÿróde³ j¹dra Linuxa z ma³ymi odstêpami}
+    \label{fig:linuxSmall}
+\end{figure}
+
+Na wykresie s¹ widoczne trzy grupy.
+Ka¿da grupa sk³adaj¹ca siê z szeœciu s³upków.
+Pierwsza grupa pokazuje, ile danych trzeba przes³aæ dla pierwszej wersji przy u¿yciu ka¿dej z metod, druga grupa dla drugiej wersji itd. 
+
+Zacznijmy od iloœci duplikatów, które zosta³y wykryte wœród bloków.
+Dla pierwszej wersji jest to 0.05\%, wiêc bardzo ma³o. Dla drugiej wersji duplikaty stanowi¹ 8.05\% bloków.
+Pomimo tego, ¿e wersje by³y od siebie oddalone o tylko 5 tysiêcy zmian, wiêkszoœæ bloków zosta³a zmieniona.
+Dla trzeciej wersji liczba usuniêtych duplikatów to nieco ponad 10\%. Jest to niewiele lepszy wynik.
+
+Przeanalizujmy najpierw metody oznaczone kolorami: czerwonym, zielonym i ¿ó³tym.
+Wszystkie trzy nie u¿ywaj¹ indeksu podobieñstwa, a ró¿ni¹ siê jedynie typem kompresji u¿ytym przed wys³aniem danych.
+Widzimy, ¿e kompresja LZO zmniejsza rozmiar danych prawie o 85\%.
+Z kolei zastosowanie LZMA daje dla pierwszej wersji oszczêdnoœæ oko³o 41\% w stosunku do LZO.
+Widaæ zatem, ¿e w systemie HYDRAstor warto rozwa¿yæ u¿ycie znacznie bardziej kosztownej obliczeniowo kompresji LZMA.
+Podobne wnioski mo¿na wyci¹gn¹æ patrz¹c na drug¹ i trzeci¹ wersjê Ÿróde³ j¹dra Linuxa.
+W ka¿dym przypadku kompresja LZMA znacznie zmniejszy³a rozmiar danych koniecznych do wys³ania.
+
+Zajmijmy siê teraz delta kodowaniem z indeksem podobieñstwa.
+Dla pierwszej wersji wyniki samego usuwania duplikatów z ró¿nymi typami kompresji (kolory czerwony, zielony, ¿ó³ty) prawie idealnie odpowiadaj¹ metodzie z u¿yciem indeksu podobieñstwa (kolory b³êkitny, fioletowy, szary).
+Wynika to z tego, ¿e indeks podobieñstwa nie mia³ danych, do których móg³by porównywaæ nowe bloki.
+Jednak do przes³ania drugiej i trzeciej wersji Ÿróde³ Linuxa rozmiar wynikowych danych jest znacznie mniejszy.
+Odpowiednio dla standardowej metody i kompresji LZO - 57MB, a dla indeksu podobieñstwa 26MB.
+Oznacza to zmniejszenie rozmiaru danych o ponad 50\%!
+Podobny wynik mo¿na zaobserwowaæ dla trzeciej wersji.
+
+Równie¿ dla metody indeksu podobieñstwa zysk z u¿ycia kompresji LZMA jest znaczny.
+Dla kolejnych wersji mamy odpowiednio zmniejszenie rozmiaru o 41\%, 34\% oraz 34\%.
+\section{Wyniki dla Ÿróde³ j¹dra Linuxa - du¿e odstêpy}
+Drugi eksperyment tak¿e zosta³ przeprowadzony dla Ÿróde³ j¹dra Linuxa.
+W tym przypadku dane w kolejnych wersjach znacznie siê od siebie ró¿ni¹ - ka¿da kolejna wersja jest odleg³a od poprzedniej o 20 tysiêcy zmian.
+Znaczenie kolorów jest takie samo jak w poprzednim eksperymencie.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/linuxBig.png}
+    \caption{Wyniki dla Ÿróde³ j¹dra Linuxa z du¿ymi odstêpami}
+    \label{fig:linuxBig}
+\end{figure}
+
+Na pocz¹tku warto zauwa¿yæ, ¿e liczba duplikatów jest znacznie mniejsza ni¿ poprzednio.
+Dla drugiej i trzeciej wersji znaleziono mniej ni¿ 2\% podobnych bloków.
+
+Niestety, delta kodowanie radzi sobie znacznie gorzej ni¿ w ostatnim eksperymencie.
+Porównajmy metody oznaczone kolorem zielonym i fioletowym.
+Obie u¿ywaj¹ tej samej kompresji, wiêc ró¿ni¹ siê tylko algorytmem delta kodowania.
+Dla pierwszej wersji zysk z u¿ycia indeksu podobieñstwa jest prawie zerowy (dok³adnie z takich samych powodów jak poprzednio).
+Dla drugiej i trzeciej wersji zysk wynosi odpowiednio 15\% i 9\%.
+Jeszcze gorzej prezentuje siê porównanie tych metod, gdy u¿ywamy kompresji LZMA (kolory ¿ó³ty i szary).
+Dane zosta³y zmniejszone odpowiednio o 11\% oraz 7\% dla drugiej i trzeciej wersji Ÿróde³ j¹dra Linuxa.
+Warto dodaæ, ¿e po raz kolejny kompresja LZMA znacznie zmniejszy³a dane konieczne do wys³ania - œrednio o 40\%.
+\section{Wyniki dla kopii zapasowych katalogu domowego}
+Tym razem eksperyment dotyczy³ danych, które pochodzi³y z naszych katalogów domowych.
+Znaczenie kolorów jest identyczne jak poprzednio.
+W przypadku katalogów domowych deduplikacja dzia³a znacznie lepiej.
+Dla drugiej i trzeciej wersji katalogu domowego (s¹ one oddalone o oko³o miesi¹c u¿ytkowania) liczba duplikatów to odpowiednio 64\% oraz 75\%.
+Jest to spowodowane specyfik¹ sposobu u¿ytkowania katalogu domowego.
+Najczêœciej dodaje siê b¹dŸ usuwa ca³e pliki, du¿o rzadziej je modyfikuje.
+To mo¿e t³umaczyæ, dlaczego metoda indeksu podobieñstwa nie daje praktycznie ¿adnego zysku.
+Przy jej u¿yciu musielibyœmy przesy³aæ tyle samo danych co w przypadku obecnej wersji systemu HYDRAstor.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/backups.png}
+    \caption{Wyniki dla kopii zapasowych katalogu domowego}
+    \label{fig:backup}
+\end{figure}
+
+\section{Wyniki dla Ÿróde³ ma³ego projektu torch}
+Interesuj¹cym mo¿e wydaæ siê pytanie, jak indeks podobieñstwa dzia³a w porównaniu z optymalnym algorytmem delta kodowania.
+Pokazuje to kolejny eksperyment.
+
+Znaczenie kolorów:
+\begin{itemize}
+\item Jasnoczerwony - usuwanie duplikatów, kompresja LZO
+\item Zielony - optymalny algorytm delta kodowania, kompresja LZO
+\item ¯ó³ty - indeks podobieñstwa, kompresja LZO
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/torch.png}
+    \caption{Wyniki dla projektu torch}
+    \label{fig:torch}
+ \end{figure}
+Niestety, dane s¹ bardzo ma³e ze wzglêdu na kwadratow¹ z³o¿onoœæ algorytmu optymalnego delta kodowania.
+Jednak dziêki temu mo¿emy porównaæ algorytm optymalny z indeksem podobieñstwa.
+Pozwala to zobaczyæ, jakie jest dolne ograniczenie na iloœæ przes³anych danych dla indeksu podobieñstwa.
+Dla drugiej wersji algorytm optymalny przygotowa³ o 54\% mniej danych do przes³ania, a dla trzeciej wersji o 41\% mniej.
+Oznacza to, ¿e daleko algorytmowi z indeksem podobieñstwa do optymalnoœci.
+
+\section{Porównanie z innymi publikacjami}
+W pracy Philipa Shilane'a i innych (\cite{work1}) wykonywano podobne eksperymenty, jednak k³adziono nacisk na odrobinê inne aspekty.
+Badano tam m. in. sposób odwzorowywania super cech na bloki - porównywano indeks pe³ny, czêœciowy oraz przechowywanie informacji w pamiêci podrêcznej LRU, co opiera³o siê na za³o¿eniu, ¿e podobne bloki bêd¹ siê znajdowaæ w niedu¿ej odleg³oœci.
+W naszych eksperymentach jednak nie by³o to istotne, dlatego weŸmiemy pod uwagê jedynie wyniki dla indeksu pe³nego.
+Zanim zaczniemy analizowaæ tê pracê, warto zauwa¿yæ, ¿e mieliœmy trochê inn¹ konfiguracjê symulatora ni¿ autorzy tej pracy.
+Przeciêtny rozmiar bloku w wy¿ej wymienionej pracy to 8KB, z kolei u nas to 64KB.
+Jednoczeœnie koñcowe eksperymenty przeprowadzano tam z 3 super cechami na blok, u nas z 2.
+Ró¿nice te mog³y znacznie wp³yn¹æ na wyniki eksperymentów.
+Wiêksza liczba super cech na blok zwiêksza szanse na dopasowanie jakiegoœ bloku.
+Taki sam wp³yw na ma³y rozmiar bloku - jest ich wtedy wiêcej i ³atwiej znaleŸæ podobny.
+Kolejn¹, wart¹ wspomnienia, ró¿nic¹ jest rozmiar danych.
+Nasze dane testowe, ze wzglêdu na ograniczenia sprzêtowe i trudn¹ dostêpnoœæ, by³y rzêdu gigabajtów, w owej pracy zaœ rzêdu terabajtów.
+To równie¿ niebagatelnie zwiêksza szansê na znalezienie podobnych bloków.
+W ró¿ny sposób wykonywano te¿ sam¹ kompresjê - by³a wykonywana jedynie lokalnie, w ma³ych grupach bloków, z kolei u nas mia³a charakter globalny.
+Powodowa³o to u nas wiêkszy zysk z kompresji, zaœ mniejszy z samego delta kodowania.
+Oczywiœcie, dysponowaliœmy tak¿e innym Chunkerem.
+
+PrzejdŸmy zatem do porównania wyników.
+Dla kodów Ÿród³owych uzyskano tam samym delta kodowaniem poprawê rzêdu 73\%.
+Przypomnijmy, ¿e my osi¹gnêliœmy wynik 50\% i oko³o 10\% w zale¿noœci od czêstoœci wykonywania kopii zapasowych.
+Dla stacji roboczych osi¹gniêto zysk rzêdu 65\%, u nas zaœ by³ on symboliczny.
+
+Nale¿y przypuszczaæ, ¿e porównanie wypad³oby odrobinê inaczej, gdybyœmy przeprowadzili eksperymenty bardziej zbli¿one do tych z pracy Shilane'a i innych.
+Jednak kluczowe by³o dla nas i firmy 9LivesData, aby konfiguracja jak najbardziej odwzorowywa³a warunki pracy systemu HYDRAstor.
 
 \chapter{Podsumowanie}
 Eksperymenty przeprowadzone w naszym symulatorze pokaza³y, ¿e jest sens analizowania i rozwijania algorytmów delta kodowania.
