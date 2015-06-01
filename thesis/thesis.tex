@@ -240,7 +240,7 @@ Opiszemy je szerzej w nastêpnym rozdziale.
 \chapter{Delta kodowanie}
 Delta kodowanie to sposób przechowywania i transmisji danych w formie ró¿nic (ang. \textit{delta}) pomiêdzy blokami danych.
 Gdy ró¿nice miêdzy blokami s¹ ma³e, delta kodowanie potrafi znacznie zmniejszyæ rozmiar przesy³anych danych.
-Na wielkoœæ ró¿nic wp³yw ma to, które dane s¹ ze sob¹ porównywane oraz jaki algorytm liczenia ró¿nic zostaje u¿yty.
+Na wielkoœæ ró¿nic wp³yw ma to, które dane s¹ ze sob¹ porównywane oraz jaki algorytm liczenia ró¿nic jest u¿ywany.
 Dlatego delta kodowanie mo¿na sprowadziæ do dwóch zasadniczych problemów: znajdowania podobnych bloków i liczenia ró¿nic miêdzy nimi.
 \section{Liczenie ró¿nic}
 Chcemy efektywnie rozwi¹zywaæ nastêpuj¹cy problem.
@@ -276,8 +276,8 @@ Dziêki niemu mo¿emy znaleŸæ dolne ograniczenie na rozmiar danych do przes³ania w
 \begin{algorithmic}
 \begin{algorithm}
 \Function{optimalDeltaEncoding}{$blocks, block$}
-\State $best\_block \gets blocks[1]$
-\State $best\_diff \gets \Call{Diff}{block, blocks[1]}$
+\State $best\_block \gets blocks[0]$
+\State $best\_diff \gets \Call{Diff}{block, blocks[0]}$
 \For{$old\_block \ \textbf{in} \ blocks$}
     \State $diff \gets \Call{Diff}{block, old\_block}$
     \If{$\Call{length}{diff} < \Call{length}{best\_diff}$}
@@ -292,7 +292,7 @@ Dziêki niemu mo¿emy znaleŸæ dolne ograniczenie na rozmiar danych do przes³ania w
 
 \subsection{Algorytm z indeksem podobieñstwa}
 W algorytmie z indeksem podobieñstwa stosujemy znacznie bardziej wyrafinowan¹ strategiê.
-Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ iloœæ $K$ wartoœci liczbowych zwanych cechami (ang. \textit{feature}).
+Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ iloœæ $S*K$ wartoœci liczbowych zwanych cechami (ang. \textit{feature}).
 W tym celu poruszamy siê po bloku oknem (ang. \textit{window}) o sta³ym rozmiarze $W$ i dla ka¿dego okna $w$ liczymy znacznik Rabina (ang. \textit{Rabin’s fingerprint}) $fp(w) = \sum\limits_{i=0}^{W-1} w[i] \times P^{i} \mod Q$, gdzie $P$ i $Q$ to ustalone liczby pierwsze.
 Dla cechy o numerze $i$ definiujemy dwie wartoœci $m_i$ oraz $a_i$.
 Wartoœci¹ cechy o numerze $i$ bêdzie minimum po wszystkich oknach $w$ z $(fp(w) * m_i + a_i) \mod 2^{32}$.
@@ -314,7 +314,7 @@ Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
 \State $features[N] \gets {None, ... }$
 \State $best[N] \gets {2^{32}, ... }$
 \ForAll{window $w$ in $block$}
-    \For{$i \ \textbf{in} \ \{1, ..., N\}$}
+    \For{$i \ \textbf{in} \ \{0, ..., N - 1\}$}
         \State $value \gets m[i] \times \Call{fp}{w} + a[i] \mod 2^{32}$
         \If {$value < best[i]$}
             \State $best[i] \gets value$
@@ -323,6 +323,16 @@ Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
     \EndFor
 \EndFor
 \State \Return $features$
+\EndFunction
+\\
+\Function{createSuperfeatures}{$features$}
+\State $sfeatures[S] \gets 0, ...$
+\For{$i \ \textbf{in} \ \{0, ... S - 1\}$}
+    \For{$j \ \textbf{in} \ \{0, ..., K - 1\}$}
+        \State $sfeatures[i] \gets sfeatures[i] \times P + features[i \times K + j] \mod Q$
+    \EndFor
+\EndFor
+\State \Return $sfeatures$
 \EndFunction
 \\
 \Function{similarityIndexEncoding}{$block, hashes\_map, sfeatures\_map$}
