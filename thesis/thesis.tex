@@ -15,6 +15,7 @@
 \usepackage{pgffor}
 \usepackage{amsmath}
 \usepackage{algpseudocode}
+\usepackage{algorithm}
 \usepackage{indentfirst}
 \usepackage{longtable}
 \usepackage{caption}
@@ -125,11 +126,11 @@ Ponadto system charakteryzuje siê du¿¹ odpornoœci¹ na b³êdy.
 System HYDRAstor jest niezwykle z³o¿ony i skomplikowany, dlatego zostanie zaprezentowany w du¿ym uproszczeniu.
 Rysunek \ref{fig:hydra_scheme} przedstawia schemat systemu.
 Do Chunkera dostarczane s¹ dane i metadane systemu plików w postaci strumienia bajtów.
-Chunker zamienia strumieñ na bloki zmiennej d³ugoœci.
+Chunker dzieli strumieñ na bloki zmiennej d³ugoœci.
 Bloki wraz z metadanymi s¹ dostarczane do systemu HYDRAstor poprzez po³¹czenie lokalne.
 System HYDRAstor oblicza wartoœæ funkcji skrótu dla ka¿dego z bloków i przechowuje jedynie unikalne bloki.
 Proces ten nosi nazwê deduplikacji.
-W celu przes³ania kopii zapasowej na zdalny serwer niezbêdne dane s¹ kompresowane i przesy³ane przez Internet (replikacja).
+W celu przes³ania kopii zapasowej na zdalny serwer nowe dane s¹ kompresowane i przesy³ane przez Internet (replikacja).
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{img/HYDRAstor.png}
@@ -141,7 +142,7 @@ Rysunki \ref{fig:hydra1} - \ref{fig:hydra8} przedstawiaj¹ akcje, które s¹ wykony
 
 Skupimy siê teraz na replikacji.
 Bêdziemy rozwa¿aæ wp³yw bloków zmiennej d³ugoœci i deduplikacji na rozmiar przesy³anych danych.
-Na koniec powiemy, w jaki sposób delta kodowanie mo¿e niezale¿nie od istniej¹cych mechanizmów zwiêkszyæ efektywnoœæ replikacji.
+Na koniec powiemy, w jaki sposób mo¿na niezale¿nie od istniej¹cych mechanizmów zwiêkszyæ efektywnoœæ replikacji.
 
 \begin{figure}[p]
     \centering
@@ -213,19 +214,21 @@ Na koniec powiemy, w jaki sposób delta kodowanie mo¿e niezale¿nie od istniej¹cyc
 
 
 \section{Bloki zmiennej d³ugoœci}
-Bloki zmiennej d³ugoœci pozwalaj¹ w znacznym stopniu zmniejszyæ rozmiar danych, które zostan¹ przes³ane podczas replikacji.
+U¿ycie bloków zmiennej d³ugoœci pozwala w znacznym stopniu zmniejszyæ rozmiar danych, które zostan¹ przes³ane podczas replikacji.
 Za³ó¿my chwilowo, ¿e stosujemy bloki sta³ej wielkoœci i mamy na serwerze strumieñ danych o bardzo du¿ym rozmiarze.
 Nastêpnie w œrodku tego strumienia zostaje dodany jeden znak.
 Sprawia to, ¿e po³owa strumienia zostaje podzielona na zupe³nie inne bloki, mimo ¿e dane siê praktycznie nie zmieni³y.
 
 Zastosowanie bloków zmiennej d³ugoœci pozwala unikn¹æ tego problemu.
-Za dzielenie danych na bloki odpowiada komponent zwany Chunkerem.
-W powy¿szym przyk³adzie zadzia³a³by tak, ¿e kilka bloków po nowym znaku by³oby innych, ale reszta nie zmieni³aby siê.
+Jednak wybór granic dla bloków nie mo¿e byæ przypadkowy.
+Chunker wybiera miejsce podzia³u, bior¹c pod uwagê lokalne w³aœciwoœci strumienia danych.
+Dziêki temu wiêkszoœæ granic nie zmieni siê przy niewielkich modyfikacjach danych.
+We wczeœniejszym przyk³adzie Chunker wyznaczy³by granice tak, ¿e kilka bloków po nowym znaku by³oby innych, ale reszta nie zmieni³aby siê.
 \section{Deduplikacja}
 Dla ka¿dego z nowo dodanych bloków jest tworzony identyfikator za pomoc¹ jednej z popularnych funkcji skrótu.
 Pozwala to na eliminacjê duplikatów ze zbioru przesy³anych bloków.
 Ma to du¿e znaczenie, gdy kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
-\section{Potencjalne korzyœci z delta kodowania}
+\section{Mo¿liwe optymalizacje}
 Istniej¹ce w systemie HYDRAstor mechanizmy znacznie przyspieszaj¹ replikacjê.
 W pewnych sytuacjach mo¿na jednak przesy³aæ zdecydowanie mniej danych.
 Dla wielu nowych bloków mo¿emy znaleŸæ w systemie bloki bardzo podobne (np. ró¿ni¹ce siê kilkoma znakami).
@@ -236,17 +239,17 @@ Opiszemy je szerzej w nastêpnym rozdziale.
 
 \chapter{Delta kodowanie}
 Delta kodowanie to sposób przechowywania i transmisji danych w formie ró¿nic (ang. \textit{delta}) pomiêdzy blokami danych.
-Gdy ró¿nice miêdzy blokami s¹ ma³e, delta kodowania potrafi znacznie zmniejszyæ rozmiar przesy³anych danych.
-Na wielkoœæ ró¿nic wp³yw ma to, które dane s¹ ze sob¹ porównywane oraz jaki algorytm liczenia ró¿nic zosta³ u¿yty.
+Gdy ró¿nice miêdzy blokami s¹ ma³e, delta kodowanie potrafi znacznie zmniejszyæ rozmiar przesy³anych danych.
+Na wielkoœæ ró¿nic wp³yw ma to, które dane s¹ ze sob¹ porównywane oraz jaki algorytm liczenia ró¿nic zostaje u¿yty.
 Dlatego delta kodowanie mo¿na sprowadziæ do dwóch zasadniczych problemów: znajdowania podobnych bloków i liczenia ró¿nic miêdzy nimi.
 \section{Liczenie ró¿nic}
 Chcemy efektywnie rozwi¹zywaæ nastêpuj¹cy problem.
-Mamy dwa bloki danych.
+Mamy dane dwa bloki danych.
 Ustalmy jeden z nich jako blok bazowy.
 Naszym celem jest obliczyæ ró¿nicê drugiego bloku w stosunku do bloku bazowego tak, aby maj¹c jedynie blok bazowy i tê ró¿nicê, odtworzyæ drugi blok.
 Oczywiœcie, im mniejsza jest ta ró¿nica, tym lepiej.
 
-Problem ten rozwi¹zuje popularny algorytm Diff z systemów Unix.
+Popularnym algorytmem liczenia ró¿nic jest Diff z systemów Unix.
 Jednak nie sprawdza siê on w przypadku delta kodowania.
 Algorytm Diff porównuje bloki na poziomie linii, co nie dzia³a³oby zbyt dobrze dla danych innych ni¿ tekstowe.
 
@@ -261,7 +264,7 @@ W du¿ym uproszczeniu jego dzia³anie polega na sekwencyjnym odtwarzaniu bloku za 
 
 \section{Znajdowanie podobnych bloków}
 Szukamy rozwi¹zania nastêpuj¹cego problemu.
-Mamy zbiór starych bloków i jeden nowy blok.
+Mamy dane: zbiór starych bloków i jeden nowy blok.
 Chcemy znaleŸæ stary blok, dla którego ró¿nica z nowym blokiem jest mo¿liwie ma³a.
 Zaprezentujemy dwa rozwi¹zania tego problemu: algorytm optymalny oraz algorytm z indeksem podobieñstwa.
 \subsection{Algorytm optymalny}
@@ -269,7 +272,9 @@ W algorytmie optymalnym porównujemy nowy blok ze wszystkimi blokami, które posia
 Jest on trudny do zastosowania w praktyce przez asymptotycznie liniowy czas dzia³ania ze wzglêdu na liczbê bloków w systemie (która w œrodowisko produkcyjnym mo¿e siêgaæ wielu milionów).
 Jednak jest on dobrym punktem odniesienia dla innych algorytmów.
 Dziêki niemu mo¿emy znaleŸæ dolne ograniczenie na rozmiar danych do przes³ania w klasie algorytmów delta kodowania porównuj¹cych z jednym blokiem.
+
 \begin{algorithmic}
+\begin{algorithm}
 \Function{optimalDeltaEncoding}{$blocks, block$}
 \State $best\_block \gets blocks[1]$
 \State $best\_diff \gets \Call{Diff}{block, blocks[1]}$
@@ -282,9 +287,11 @@ Dziêki niemu mo¿emy znaleŸæ dolne ograniczenie na rozmiar danych do przes³ania w
 \EndFor
 \State \Return $best\_block.getHash()$
 \EndFunction
+\end{algorithm}
 \end{algorithmic}
+
 \subsection{Algorytm z indeksem podobieñstwa}
-W algorytmie z indeksem podobieñstwa stosujemy zdecydowanie bardziej wyrafinowan¹ strategiê.
+W algorytmie z indeksem podobieñstwa stosujemy znacznie bardziej wyrafinowan¹ strategiê.
 Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ iloœæ $K$ wartoœci liczbowych zwanych cechami (ang. \textit{feature}).
 W tym celu poruszamy siê po bloku oknem (ang. \textit{window}) o sta³ym rozmiarze $W$ i dla ka¿dego okna $w$ liczymy znacznik Rabina (ang. \textit{Rabin’s fingerprint}) $fp(w) = \sum\limits_{i=0}^{W-1} w[i] \times P^{i} \mod Q$, gdzie $P$ i $Q$ to ustalone liczby pierwsze.
 Dla cechy o numerze $i$ definiujemy dwie wartoœci $m_i$ oraz $a_i$.
@@ -301,6 +308,7 @@ Z kolei, im wiêksze $S$, tym wiêcej bloków znajdujemy.
 Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
 
 \begin{algorithmic}
+\begin{algorithm}
 \Function{calculateFeatures}{$block$}
 \State $N \gets S \times K$
 \State $features[N] \gets {None, ... }$
@@ -339,6 +347,7 @@ Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
 \EndFor
 \State \Return $best$
 \EndFunction
+\end{algorithm}
 \end{algorithmic}
 
 
