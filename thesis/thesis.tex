@@ -126,7 +126,7 @@ W niniejszej pracy przedstawiamy symulator oraz wyniki symulacji uzyskane przy j
 \chapter{System HYDRAstor}
 HYDRAstor to nowoczesny, rozproszony, skalowalny system kopii zapasowych.
 Jest jednym z najwiêkszych i najszybszych takich systemów na œwiecie u¿ywanym przez klientów w Japonii i Stanach Zjednoczonych (\cite{HYDRAstor}).
-Dostarcza klientom funkcjonalnoœci takie, jak: deduplikacja, bloki zmiennej d³ugoœci i pe³ny indeks bloków u¿ywaj¹cy rozproszonej tablicy mieszaj¹cej.
+Dostarcza klientom funkcjonalnoœci takie jak: deduplikacja, bloki zmiennej d³ugoœci i pe³ny indeks bloków u¿ywaj¹cy rozproszonej tablicy mieszaj¹cej.
 Ponadto system charakteryzuje siê du¿¹ odpornoœci¹ na b³êdy.
 
 System HYDRAstor jest niezwykle z³o¿ony i skomplikowany, dlatego zostanie zaprezentowany w du¿ym uproszczeniu.
@@ -253,7 +253,7 @@ Chcemy efektywnie rozwi¹zywaæ nastêpuj¹cy problem.
 Mamy dane dwa bloki danych.
 Ustalmy jeden z nich jako blok bazowy.
 Naszym celem jest obliczyæ ró¿nicê drugiego bloku w stosunku do bloku bazowego tak, aby maj¹c jedynie blok bazowy i tê ró¿nicê, odtworzyæ drugi blok.
-Oczywiœcie, im mniejsza jest ta ró¿nica, tym lepiej.
+Oczywiœcie im mniejsza jest ta ró¿nica, tym lepiej.
 
 Popularnym algorytmem liczenia ró¿nic jest Diff z systemów Unix.
 Jednak nie sprawdza siê on w przypadku delta kodowania.
@@ -310,7 +310,7 @@ Algorytm zwróci stary blok, który ma najwiêcej wspólnych super cech z nowym blok
 Jeœli zaœ ¿aden stary blok nie ma wspólnych super cech z nowym blokiem, powinniœmy wys³aæ ca³y nowy blok.
 Eksperymentalnie wyznaczyliœmy, ¿e najlepiej dzia³aj¹ wartoœci $K=4$ i $S=2$ - pod uwagê braliœmy iloœæ czasu potrzebn¹ na obliczenia, iloœæ znajdowanych bloków oraz ich jakoœæ.
 Oczywiœcie, im wiêksze $K$, tym lepsza jakoœæ kandydatów.
-Z kolei, im wiêksze $S$, tym wiêcej bloków znajdujemy.
+Z kolei im wiêksze $S$, tym wiêcej bloków znajdujemy.
 Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
 
 \begin{algorithmic}
