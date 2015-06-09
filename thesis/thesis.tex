@@ -368,40 +368,37 @@ Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
 
 
 \chapter{Funkcjonalnoœci}
-Symulator zosta³ stworzony, aby szybko i wygodnie przeprowadzaæ eksperymenty na rzeczywistych danych.
-Zosta³o w³o¿one wiele trudu, by by³ intuicyjny i by spe³nia³ wszystkie wymagania.
-W rezultacie posiada on szereg wymienionych ni¿ej funkcjonalnoœci.
+Stworzony symulator umo¿liwia szybkie sprawdzanie efektywnoœci algorytmów delta kodowania na ró¿nych danych wejœciowych.
+Zale¿a³o nam, aby by³ intuicyjny i wygodny w u¿yciu, dlatego zosta³ wyposa¿ony w graficzny interfejs u¿ytkownika.
+Za jego pomoc¹ mo¿na tworzyæ i uruchamiaæ eksperymenty, czyli pojedyncze symulacje dla konkretnych danych i wybranych parametrów.
+Oto lista najwa¿niejszych funkcjonalnoœci symulatora:
 \begin{itemize}
         \item
         Mo¿liwoœæ wyboru sposobu przechowywania danych.
         
-        Wybiera siê miêdzy u¿ywaniem wy³¹cznie pamiêci RAM a wykorzystaniem bazy danych.
+        Mo¿na wybraæ miêdzy u¿ywaniem wy³¹cznie pamiêci RAM a wykorzystaniem bazy danych.
         Pozwala to na wykonywanie ma³ych testów w pamiêci (co je znacz¹co przyspiesza), a du¿ych z wykorzystaniem dysku (w przeciwnym razie nie starczy³oby pamiêci).	
 	
         \item
-        Symulowanie replikacji bez u¿ycia delta kodowania, z u¿yciem optymalnego delta kodowania oraz z heurystycznym delta kodowaniem.
+        Mo¿liwoœæ wyboru algorytmu delta kodowania.
         
-	Symulator pozwala na przetestowanie zaimplementowanych algorytmów oraz udostêpnia intuicyjny interfejs programistyczny dziêki czemu mo¿na w prosty sposób rozszerzaæ o kolejne algorytmy.
+        Zosta³y zaimplementowane: replikacja bez delta kodowania, algorytm optymalny oraz algorytm z indeksem podobieñstwa.
+	Symulator pozwala na przetestowanie tych algorytmów oraz udostêpnia intuicyjny interfejs programistyczny, dziêki czemu mo¿na w prosty sposób dodawaæ kolejne algorytmy.
         \item
         Kompresja danych przed przes³aniem.
         
-	Po zastosowaniu odpowiedniego algorytmu dane przed wys³aniem mog¹ byæ dodatkowo kompresowane przy pomocy LZO, ZIP lub LZMA.
-        \item
-        Wygodny graficzny interfejs u¿ytkownika
-	
-	Za pomoc¹ graficznego interfejsu u¿ytkownik mo¿e wybraæ interesuj¹ce go konfiguracje, które chce przetestowaæ oraz wygenerowaæ wykres przedstawiaj¹cy wyniki.
+	Po zastosowaniu odpowiedniego algorytmu delta kodowania dane przed wys³aniem mog¹ byæ dodatkowo kompresowane przy pomocy LZO, ZIP lub LZMA.
 	
 	\item
-	Kolejkowanie eksperymentów.
+	Asynchroniczna kolejka eksperymentów.
 	
 	Interfejs graficzny pozwala na dodawanie dowolnej liczby eksperymentów, które wykonuj¹ siê po kolei.
-	Sama symulacja jest realizowana przez oddzielny w¹tek, dziêki czemu interfejs graficzny nie jest blokowany.
+	Symulacja jest realizowana przez oddzielny w¹tek, dziêki czemu interfejs graficzny nie jest blokowany.
 	
 	\item
 	Prezentacja wyników w formie wykresów.
 	
-	Wyniki wykonanych symulacji mo¿na wyœwietliæ w postaci interaktywnych wykresów.
-	S¹ one œwietnym narzêdziem, które umo¿liwia zbadanie faktycznych rezultatów symulacji.
+	Wyniki wykonanych eksperymentów mo¿na wyœwietliæ w sposób czytelny i atrakcyjny wizualnie w postaci interaktywnych wykresów.
 	\item
 	Serializacja wyników.
 	
