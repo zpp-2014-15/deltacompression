@@ -459,19 +459,19 @@ By³o to wymuszone technologi¹, w jakiej zosta³ napisany Chunker.
 Sam symulator zdecydowaliœmy siê napisaæ w jêzyku Python w wersji 2.7.
 Wybraliœmy go ze wzglêdu na na mo¿liwoœæ szybkiego wytwarzania oprogramowania przy stosunkowo niewielkiej iloœci kodu Ÿród³owego.
 Jednoczeœnie jest w nim dostêpnych wiele ró¿norodnych bibliotek, z których chcieliœmy skorzystaæ w naszym projekcie.
-Niestety, Python przy wszystkich swoich zaletach nie oferuje zbyt dobrej wydajnoœci.
+Niestety Python przy wszystkich swoich zaletach nie oferuje zbyt dobrej wydajnoœci.
 Dlatego wymagaj¹ce obliczeniowo czêœci algorytmów zosta³y napisane w C.
 Zrobiliœmy to, u¿ywaj¹c zbioru nag³ówków implementacji CPython.
 Pozwoli³o to przyspieszyæ symulacjê kilkanaœcie razy.
 
 Byæ mo¿e warto wyjaœniæ, dlaczego nie zdecydowaliœmy siê na wersjê Pythona z prefiksem 3.
 Otó¿ nie jest ona kompatybilna wstecznie i dlatego u¿ycie wielu bibliotek, które s¹ dostêpne dla wersji 2.7, staje siê problematyczne.
-Poza tym, mieliœmy wiêcej doœwiadczenia z u¿ywaniem poprzednich wersji.
+Poza tym mieliœmy wiêcej doœwiadczenia z u¿ywaniem poprzednich wersji.
 
 Mo¿e siê równie¿ nasuwaæ pytanie, dlaczego nie zastosowaliœmy implementacji Pythona o nazwie PyPy.
 Jest ona wszak du¿o bardziej wydajna ni¿ popularny CPython.
-Niestety, u¿ywanie wielu pakietów, które zosta³y napisane w C (np. wxPython) jest w niej trudne lub wrêcz niemo¿liwe.
-Poza tym, nie jest ona do koñca kompatybilna z innymi implementacjami.
+Niestety u¿ywanie wielu pakietów, które zosta³y napisane w C (np. wxPython) jest w niej trudne lub wrêcz niemo¿liwe.
+Nie jest te¿ ona do koñca kompatybilna z innymi implementacjami.
 \section{Biblioteki}
 \subsection{wxPython}
 Obs³uga symulatora odbywa siê za pomoc¹ graficznego interfejsu u¿ytkownika stworzonego z u¿yciem pakietu wxPython.
