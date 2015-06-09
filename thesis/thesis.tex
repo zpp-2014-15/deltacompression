@@ -118,7 +118,7 @@ Jest on pozbawiony delta kodowania.
 Niestety zaimplementowanie nowego algorytmu w systemie produkcyjnym wymaga du¿ego nak³adu pracy.
 Trudno jest równie¿ przewidzieæ jak efektywnie bêdzie on dzia³a³.
 Dlatego na zlecenie firmy 9LivesData stworzyliœmy symulator systemu HYDRAstor.
-Dziêki niemu mo¿na testowaæ algorytmy delta kodowania przed ich czasoch³onn¹ implementacj¹.
+Dziêki niemu mo¿na testowaæ algorytmy delta kodowania przed ich czasoch³onn¹ implementacj¹ w prawdziwym systemie.
 W niniejszej pracy przedstawiamy symulator oraz wyniki symulacji uzyskane przy jego pomocy.
 
 % pamiêtamy [*] W wielu wspó³czesnych systemach kopii zapasowych w¹skim gard³em procesu tworzenia repliki jest przesy³anie danych ³¹czem internetowym.
@@ -235,7 +235,7 @@ Dla ka¿dego z nowo dodanych bloków jest tworzony identyfikator za pomoc¹ jednej 
 Pozwala to na eliminacjê duplikatów ze zbioru przesy³anych bloków.
 Ma to du¿e znaczenie, gdy kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
 \section{Mo¿liwe optymalizacje}
-Istniej¹ce w systemie HYDRAstor mechanizmy znacznie przyspieszaj¹ replikacjê.
+Istniej¹ce w systemie HYDRAstor mechanizmy przyspieszaj¹ replikacjê.
 W pewnych sytuacjach mo¿na jednak przesy³aæ zdecydowanie mniej danych.
 Dla wielu nowych bloków mo¿emy znaleŸæ w systemie bloki bardzo podobne (np. ró¿ni¹ce siê kilkoma znakami).
 Dla ka¿dego z takich nowych bloków moglibyœmy przes³aæ jedynie identyfikator bloku bazowego (tzn. podobnego do niego i znajduj¹cego siê ju¿ w systemie) oraz ró¿nicê.
@@ -253,7 +253,7 @@ Chcemy efektywnie rozwi¹zywaæ nastêpuj¹cy problem.
 Mamy dane dwa bloki danych.
 Ustalmy jeden z nich jako blok bazowy.
 Naszym celem jest obliczyæ ró¿nicê drugiego bloku w stosunku do bloku bazowego tak, aby maj¹c jedynie blok bazowy i tê ró¿nicê, odtworzyæ drugi blok.
-Oczywiœcie im mniejsza jest ta ró¿nica, tym lepiej.
+D¹¿ymy do minimalizacji rozmiaru ró¿nicy.
 
 Popularnym algorytmem liczenia ró¿nic jest Diff z systemów Unix.
 Jednak nie sprawdza siê on w przypadku delta kodowania.
@@ -305,7 +305,6 @@ Wartoœci¹ cechy o numerze $i$ bêdzie minimum po wszystkich oknach $w$ z $(fp(w) 
 Wartoœciami $a_i$ oraz $m_i$ powinny byæ du¿e, losowe liczby pierwsze.
 Nastêpnie tworzymy super cechy (ang. \textit{superfeature}) z ustalonej liczby $S$ zwyk³ych cech.
 W tym celu dzielimy cechy bloku na grupy po $K$ kolejnych cech i dla ka¿dej z grup liczymy znacznik Rabina - jego wartoœæ bêdzie wartoœci¹ super cechy.
-Wszystkie znaczniki liczymy przy u¿yciu du¿ych liczb pierwszych $P$ i $Q$.
 Algorytm zwróci stary blok, który ma najwiêcej wspólnych super cech z nowym blokiem.
 Jeœli zaœ ¿aden stary blok nie ma wspólnych super cech z nowym blokiem, powinniœmy wys³aæ ca³y nowy blok.
 Eksperymentalnie wyznaczyliœmy, ¿e najlepiej dzia³aj¹ wartoœci $K=4$ i $S=2$ - pod uwagê braliœmy iloœæ czasu potrzebn¹ na obliczenia, iloœæ znajdowanych bloków oraz ich jakoœæ.
@@ -455,7 +454,7 @@ Ich wybór ma wp³yw na wydajnoœæ, ³atwoœæ pisania kodu, dostêpnoœæ bibliotek (w p
 Podobnie by³o w przypadku symulatora, co zostanie pokazane w nastêpnych paragrafach.
 \section{Jêzyki programowania}
 W jêzyku C++ napisaliœmy adapter Chunkera.
-By³o to wymuszone technologi¹, w jakiej zosta³ napisany ten komponent.
+By³o to wymuszone technologi¹, w jakiej zosta³ napisany Chunker.
 
 Sam symulator zdecydowaliœmy siê napisaæ w jêzyku Python w wersji 2.7.
 Wybraliœmy go ze wzglêdu na na mo¿liwoœæ szybkiego wytwarzania oprogramowania przy stosunkowo niewielkiej iloœci kodu Ÿród³owego.
@@ -476,17 +475,16 @@ Poza tym, nie jest ona do koñca kompatybilna z innymi implementacjami.
 \section{Biblioteki}
 \subsection{wxPython}
 Obs³uga symulatora odbywa siê za pomoc¹ graficznego interfejsu u¿ytkownika stworzonego z u¿yciem pakietu wxPython.
-Zosta³ zaimplementowany jako nak³adka na napisan¹ w C++ bibliotekê wxWidgets.
-Warto wspomnieæ, ¿e jest on wieloplatformowy.
+Zosta³ zaimplementowany jako nak³adka na napisan¹ w C++ wieloplatformow¹ bibliotekê wxWidgets.
 \subsection{Pygal}
 Biblioteka ta umo¿liwia tworzenie wykresów w formacie SVG na podstawie ró¿norodnych statystyk opisuj¹cych wyniki eksperymentu.
 \subsection{Virtualenv}
 Jest to narzêdzie do tworzenia izolowanego œrodowiska dla aplikacji w Pythonie.
-Umo¿liwia ono posiadanie lokalnych instalacji wielu bibliotek, które mog¹ byæ ró¿ne od tych zainstalowanych globalnie.
-Dziêki temu nasz symulator jest niezale¿ny od systemowych aktualizacji, a tak¿e od innych aplikacji w obrêbie systemu
-\subsection{Xdelta}
-U¿yliœmy tej biblioteki w wersji 3 do liczenia ró¿nic miêdzy plikami binarnymi.
-Zosta³a napisana w C, co ma du¿y wp³yw na wydajnoœæ.
+Umo¿liwia ono posiadanie lokalnych wersji bibliotek, które mog¹ byæ ró¿ne od tych globalnych.
+Dziêki temu nasz symulator jest niezale¿ny od systemowych aktualizacji, a tak¿e od innych aplikacji w obrêbie systemu.
+\subsection{Xdelta 3.0}
+U¿yliœmy tej biblioteki do liczenia ró¿nic miêdzy plikami binarnymi.
+Zosta³a napisana w C, dziêki czemu jest bardzo wydajna.
 \subsection{Pylint}
 Narzêdzie do statycznej analizy kodu Ÿród³owego w Pythonie, które zdecydowanie u³atwia dbanie o jego jakoœæ.
 Sprawdza zgodnoœæ z zaleceniami PEP 8.
