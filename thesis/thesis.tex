@@ -304,7 +304,7 @@ Pozwala znaleŸæ dolne ograniczenie na rozmiar danych potrzebnych do przes³ania w
 \end{algorithm}
 \end{algorithmic}
 
-\subsection{Indeksem podobieñstwa}
+\subsection{Indeks podobieñstwa}
 W algorytmie z indeksem podobieñstwa stosujemy znacznie bardziej wyrafinowan¹ strategiê.
 Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ iloœæ $S \times K$ wartoœci liczbowych zwanych cechami (ang. \textit{feature}).
 W tym celu poruszamy siê po bloku oknem (ang. \textit{window}) o sta³ym rozmiarze $W$ i dla ka¿dego okna $w$ liczymy znacznik Rabina (ang. \textit{Rabin’s fingerprint}) $fp(w) = \sum\limits_{i=0}^{W-1} w[i] \times P^{i} \mod Q$, gdzie $P$ i $Q$ to ustalone liczby pierwsze.
