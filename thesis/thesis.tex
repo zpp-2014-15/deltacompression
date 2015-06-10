@@ -374,7 +374,7 @@ Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
 
 
 \chapter{Funkcjonalnoœci}
-Stworzony symulator umo¿liwia szybkie sprawdzanie efektywnoœci algorytmów delta kodowania na ró¿nych danych wejœciowych.
+Stworzony symulator umo¿liwia szybkie sprawdzanie efektywnoœci algorytmów delta kodowania dla ró¿nych danych wejœciowych.
 Zale¿a³o nam, aby by³ intuicyjny i wygodny w u¿yciu, dlatego zosta³ wyposa¿ony w graficzny interfejs u¿ytkownika.
 Za jego pomoc¹ mo¿na tworzyæ i uruchamiaæ eksperymenty, czyli pojedyncze symulacje dla konkretnych danych i wybranych parametrów.
 Przedstawimy listê najwa¿niejszych funkcjonalnoœci symulatora.
@@ -386,11 +386,11 @@ Przedstawimy listê najwa¿niejszych funkcjonalnoœci symulatora.
 
         \item[Wybór algorytmu delta kodowania.] \hfill
         
-        Zosta³y zaimplementowane: replikacja bez delta kodowania, algorytm optymalny oraz algorytm z indeksem podobieñstwa.
+        Zosta³y zaimplementowane algorytmy: bez delta kodowania, optymalny oraz z indeksem podobieñstwa.
 	Symulator pozwala na przetestowanie tych algorytmów oraz udostêpnia intuicyjny interfejs programistyczny, dziêki czemu mo¿na w prosty sposób dodawaæ kolejne.
         \item[Kompresja danych przed przes³aniem.] \hfill
         
-	Po zastosowaniu odpowiedniego algorytmu delta kodowania dane przed wys³aniem mog¹ byæ dodatkowo kompresowane przy pomocy LZO, ZIP lub LZMA.
+	Po zastosowaniu odpowiedniego algorytmu delta kodowania dane przed wys³aniem mog¹ byæ dodatkowo skompresowane przy u¿yciu LZO, ZIP lub LZMA.
 	
 	\item[Asynchroniczna kolejka eksperymentów.] \hfill
 	
@@ -437,20 +437,19 @@ Przedstawimy w skrócie sposób realizacji wzorca MVC w naszym projekcie.
 Opiszemy sposób komunikacji pomiêdzy modelami, widokami i kontrolerem.
 Gdy u¿ytkownik wykonuje jak¹œ akcjê, odpowiedni widok powiadamia kontroler za pomoc¹ sygna³ów biblioteki wxPython.
 Widoki dowiaduj¹ siê o zmianie modeli bezpoœrednio od kontrolera.
-Natomiast sposób, w jaki kontroler dostaje informacje o zmianie modeli jest zró¿nicowany.
+S¹ dwa sposoby, w jaki kontroler dostaje informacje o zmianie modeli.
 Wiêkszoœæ modeli jest pasywna, czyli nie zmienia swojego stanu samoczynnie - kontroler od razu dowiaduje siê o zmianach.
 Wyj¹tek to kolejka reprezentuj¹ca kolejne zadania do wykonania.
 Jest modelem aktywnym, czyli takim który mo¿e zmieniæ swój stan niezale¿nie od akcji wykonywanych przez u¿ytkownika.
 Do obs³ugi kolejki zastosowaliœmy bibliotekê Publisher pakietu wxPython, która pozwala na wysy³anie komunikatów do kontrolera, gdy kolejka ulega zmianie.
 
 \section{Chunker}
-Chunker jest modu³em umo¿liwiaj¹cym czytanie plików z danymi jako strumieñ bajtów i dzieleniem go na bloki.
-Zawiera adapter w Pythonie do napisanej w C++ biblioteki statycznej pochodz¹cej z systemu HYDRAstor.
+Chunker jest modu³em umo¿liwiaj¹cym czytanie plików z danymi jako strumieñ bajtów i dzieleniem go na bloki zmiennej d³ugoœci.
+Sk³ada siê z trzech czêœci: napisanej w C++ biblioteki statycznej dostarczonej przez firmê 9LivesData, zaimplementowanego przez nas adaptera w C++ oraz interfejsu w Pythonie.
 
 \section{Storage}
 Modu³ Storage odpowiada za gromadzenie bloków danych, wykrywanie duplikatów oraz zliczanie zapisów i odczytów.
 Wprowadza abstrakcjê, pod któr¹ mo¿e kryæ siê zarówno implementacja u¿ywaj¹ca tylko pamiêci RAM, jak i wykorzystuj¹ca bazê danych.
-Wykrywanie duplikatów zosta³o zaimplementowane przy u¿yciu funkcji skrótu SHA-256.
 
 \chapter{Technologie}
 Bardzo du¿e znaczenie dla jakoœci systemu informatycznego maj¹ zastosowane technologie.
