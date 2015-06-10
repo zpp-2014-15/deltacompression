@@ -285,7 +285,7 @@ Zaprezentujemy dwa rozwi¹zania tego problemu: algorytm optymalny oraz algorytm z
 W algorytmie optymalnym porównujemy nowy blok ze wszystkimi blokami, które posiadamy.
 Jest on trudny do zastosowania w praktyce przez asymptotycznie liniowy czas dzia³ania ze wzglêdu na liczbê bloków w systemie (która w œrodowisku produkcyjnym mo¿e siêgaæ wielu milionów).
 Jednak jest on dobrym punktem odniesienia dla innych algorytmów.
-Dziêki niemu mo¿emy znaleŸæ dolne ograniczenie na rozmiar danych do przes³ania w klasie algorytmów delta kodowania porównuj¹cych z jednym blokiem.
+Pozwala znaleŸæ dolne ograniczenie na rozmiar danych potrzebnych do przes³ania w klasie algorytmów delta kodowania.
 
 \begin{algorithmic}
 \begin{algorithm}
@@ -304,7 +304,7 @@ Dziêki niemu mo¿emy znaleŸæ dolne ograniczenie na rozmiar danych do przes³ania w
 \end{algorithm}
 \end{algorithmic}
 
-\subsection{Algorytm z indeksem podobieñstwa}
+\subsection{Indeksem podobieñstwa}
 W algorytmie z indeksem podobieñstwa stosujemy znacznie bardziej wyrafinowan¹ strategiê.
 Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ iloœæ $S \times K$ wartoœci liczbowych zwanych cechami (ang. \textit{feature}).
 W tym celu poruszamy siê po bloku oknem (ang. \textit{window}) o sta³ym rozmiarze $W$ i dla ka¿dego okna $w$ liczymy znacznik Rabina (ang. \textit{Rabin’s fingerprint}) $fp(w) = \sum\limits_{i=0}^{W-1} w[i] \times P^{i} \mod Q$, gdzie $P$ i $Q$ to ustalone liczby pierwsze.
