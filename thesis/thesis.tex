@@ -101,7 +101,6 @@ Symulator naœladuje pracê systemu HYDRAstor oraz pozwala na zbadanie wp³ywu wdro
 %\listoftables
 
 
-
 \chapter*{Wstêp}
 \addcontentsline{toc}{chapter}{Wstêp}
 Dyski komputerów na ca³ym œwiecie przechowuj¹ tysi¹ce terabajtów danych. 
@@ -126,7 +125,7 @@ W niniejszej pracy przedstawiamy symulator oraz wyniki symulacji uzyskane przy j
 \chapter{System HYDRAstor}
 HYDRAstor to nowoczesny, rozproszony, skalowalny system kopii zapasowych.
 Jest jednym z najwiêkszych i najszybszych takich systemów na œwiecie u¿ywanym przez klientów w Japonii i Stanach Zjednoczonych (\cite{HYDRAstor}).
-Dostarcza klientom funkcjonalnoœci takie jak: deduplikacja, bloki zmiennej d³ugoœci i pe³ny indeks bloków u¿ywaj¹cy rozproszonej tablicy mieszaj¹cej.
+Dostarcza klientom funkcjonalnoœci takie jak: samozarz¹dzanie, samoregulacja, deduplikacja oraz ci¹g³e, niezak³ócaj¹ce pracy, aktualizacje.
 Ponadto system charakteryzuje siê du¿¹ odpornoœci¹ na b³êdy.
 
 System HYDRAstor jest niezwykle z³o¿ony i skomplikowany, dlatego zostanie zaprezentowany w du¿ym uproszczeniu.
@@ -134,23 +133,30 @@ Rysunek \ref{fig:hydra_scheme} przedstawia schemat systemu.
 Do Chunkera dostarczane s¹ dane i metadane systemu plików w postaci strumienia bajtów.
 Chunker dzieli strumieñ na bloki zmiennej d³ugoœci.
 Bloki wraz z metadanymi s¹ dostarczane do systemu HYDRAstor poprzez po³¹czenie lokalne.
-System HYDRAstor oblicza wartoœæ funkcji skrótu dla ka¿dego z bloków i przechowuje jedynie unikalne bloki.
-Proces ten nosi nazwê deduplikacji.
-W celu przes³ania kopii zapasowej na zdalny serwer nowe dane s¹ kompresowane i przesy³ane przez Internet (replikacja).
-\begin{figure}[h]
+System HYDRAstor przechowuje jedynie unikalne bloki.
+Proces eliminowania powtarzaj¹cych siê bloków nosi nazwê deduplikacji.
+W celu przes³ania kopii zapasowej na zdalny serwer nowe dane s¹ kompresowane i przesy³ane przez sieæ Internet (replikacja).
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{img/HYDRAstor.png}
     \caption{Schemat systemu HYDRAstor}
     \label{fig:hydra_scheme}
 \end{figure}
 
-Rysunki \ref{fig:hydra1} - \ref{fig:hydra8} przedstawiaj¹ akcje, które s¹ wykonywane przy tworzeniu dwóch kolejnych kopii zapasowych.
-
-Skupimy siê teraz na replikacji.
-Bêdziemy rozwa¿aæ wp³yw bloków zmiennej d³ugoœci i deduplikacji na rozmiar przesy³anych danych.
+Bêdziemy teraz rozwa¿aæ wp³yw bloków zmiennej d³ugoœci i deduplikacji na dzia³anie systemu.
 Na koniec powiemy, w jaki sposób mo¿na niezale¿nie od istniej¹cych mechanizmów zwiêkszyæ efektywnoœæ replikacji.
 
-\begin{figure}[p]
+\section{Deduplikacja}
+Dla ka¿dego bloku tworzony jest identyfikator za pomoc¹ funkcji skrótu SHA-2.
+Ca³y system jest wyposa¿ony w rozproszon¹ tablicê mieszaj¹c¹, dziêki czemu mo¿na szybko sprawdziæ, czy dany blok jest ju¿ zapisany w systemie.
+Pozwala to na eliminacjê duplikatów i przechowywanie tylko unikalnych bloków.
+Pomaga to równie¿ w replikacji, poniewa¿ liczba bloków oraz rozmiar danych wymaganych do przes³ania jest znacznie mniejszy.
+Ma to przede wszystkim du¿e znaczenie, gdy kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
+
+Rysunki \ref{fig:hydra1} - \ref{fig:hydra4} przedstawiaj¹ tê sytuacjê.
+
+\begin{figure}[H]
     \centering
     \begin{minipage}[t]{0.45\textwidth}
         \centering
@@ -162,17 +168,17 @@ Na koniec powiemy, w jaki sposób mo¿na niezale¿nie od istniej¹cych mechanizmów z
     \begin{minipage}[t]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/visualization/2.png}
-        \captionof{figure}{System A dzieli dane na bloki, dla ka¿dego z bloków liczy wartoœæ funkcji skrótu.}
+        \captionof{figure}{System A dzieli dane na bloki i dla ka¿dego z bloków liczy wartoœæ funkcji skrótu. W tym momencie s¹ wykrywane duplikaty - blok H1 wystêpuje dwa razy.}
         \label{fig:hydra2}
     \end{minipage}
 \end{figure}
 
-\begin{figure}[p]
+\begin{figure}[H]
     \centering
     \begin{minipage}[t]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/3.png}
-        \captionof{figure}{System A przesy³a do systemu B informacje o po³o¿eniu kolejnych bloków (tj. ci¹g identyfikatorów) oraz zawartoœci bloków z pominiêciem duplikatów.}
+        \captionof{figure}{System A przesy³a do systemu B zawartoœci wszystkich nowych bloków. W tym przypadku s¹ to bloki H1, H2, H3.}
         \label{fig:hydra3}
     \end{minipage}
     \hspace{\fill}
@@ -184,41 +190,6 @@ Na koniec powiemy, w jaki sposób mo¿na niezale¿nie od istniej¹cych mechanizmów z
     \end{minipage}
 \end{figure}
 
-\begin{figure}[p]
-    \centering
-    \begin{minipage}[t]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/5.png}
-        \captionof{figure}{System A chce przes³aæ do systemu B kolejn¹ wersjê danych.}
-        \label{fig:hydra5}
-    \end{minipage}
-    \hspace{\fill}
-    \begin{minipage}[t]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/6.png}
-        \captionof{figure}{System A dzieli dane na bloki i liczy wartoœci funkcji skrótu. Zmieni³y siê tylko dwa bloki, co jest zas³ug¹ Chunkera.}
-        \label{fig:hydra6}
-    \end{minipage}
-\end{figure}
-
-\begin{figure}[p]
-    \centering
-    \begin{minipage}[t]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/7.png}
-        \captionof{figure}{System A przesy³a do systemu B informacje o rozmieszczeniu bloków oraz zawartoœci jedynie tych bloków, które s¹ nowe. Znacz¹co zmniejsza to objêtoœæ przesy³anych danych.}
-        \label{fig:hydra7}
-    \end{minipage}
-    \hspace{\fill}
-    \begin{minipage}[t]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/8.png}
-        \captionof{figure}{System B odbiera nowe dane i posiada teraz takie same bloki, co system A.}
-        \label{fig:hydra8}
-    \end{minipage}
-\end{figure}
-
-
 \section{Bloki zmiennej d³ugoœci}
 U¿ycie bloków zmiennej d³ugoœci pozwala w znacznym stopniu zmniejszyæ rozmiar danych, które zostan¹ przes³ane podczas replikacji.
 Za³ó¿my chwilowo, ¿e stosujemy bloki sta³ej wielkoœci i mamy na serwerze strumieñ danych o bardzo du¿ym rozmiarze.
@@ -226,21 +197,57 @@ Nastêpnie w œrodku tego strumienia zostaje dodany jeden znak.
 Sprawia to, ¿e po³owa strumienia zostaje podzielona na zupe³nie inne bloki, mimo ¿e dane siê praktycznie nie zmieni³y.
 
 Zastosowanie bloków zmiennej d³ugoœci pozwala unikn¹æ tego problemu.
-Jednak wybór granic dla bloków nie mo¿e byæ przypadkowy.
+Oczywiœcie wybór granic dla bloków nie mo¿e byæ przypadkowy.
 Chunker wybiera miejsce podzia³u, bior¹c pod uwagê lokalne w³aœciwoœci strumienia danych.
 Dziêki temu wiêkszoœæ granic nie zmieni siê przy niewielkich modyfikacjach danych.
-We wczeœniejszym przyk³adzie Chunker wyznaczy³by granice tak, ¿e kilka bloków po nowym znaku by³oby innych, ale reszta nie zmieni³aby siê.
-\section{Deduplikacja}
-Dla ka¿dego z nowo dodanych bloków jest tworzony identyfikator za pomoc¹ jednej z popularnych funkcji skrótu.
-Pozwala to na eliminacjê duplikatów ze zbioru przesy³anych bloków.
-Ma to du¿e znaczenie, gdy kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
+We wczeœniejszym przyk³adzie, w którym dodano jeden znak, Chunker wyznaczy³by granice tak, ¿e kilka bloków po nowym znaku by³oby innych, ale reszta nie zmieni³aby siê.
+Przyk³ad prezentuj¹ rysunki \ref{fig:hydra5} - \ref{fig:hydra8}.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/5.png}
+        \captionof{figure}{System A chce przes³aæ do systemu B now¹ wersjê danych.}
+        \label{fig:hydra5}
+    \end{minipage}
+    \hspace{\fill}
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/6.png}
+        \captionof{figure}{Dane uleg³y niewielkiej zmianie(kolor zielony). System A dzieli dane na bloki zmiennej d³ugoœci. Pojawi³y siê tylko dwa nowe bloki - H4, H5.}
+        \label{fig:hydra6}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/7.png}
+        \captionof{figure}{System A przesy³a do systemu B zawartoœci wszystkich nowych bloków. W tym przypadku s¹ to bloki H4, H5.}
+        \label{fig:hydra7}
+    \end{minipage}
+    \hspace{\fill}
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{img/visualization/8.png}
+        \captionof{figure}{System B odbiera nowe dane i posiada teraz takie same bloki co system A.}
+        \label{fig:hydra8}
+    \end{minipage}
+\end{figure}
+
+
+
 \section{Mo¿liwe optymalizacje}
-Istniej¹ce w systemie HYDRAstor mechanizmy przyspieszaj¹ replikacjê.
+Deduplikacja oraz bloki zmiennej d³ugoœci znacznie przyspieszaj¹ replikacjê w systemie HYDRAstor.
 W pewnych sytuacjach mo¿na jednak przesy³aæ zdecydowanie mniej danych.
 Dla wielu nowych bloków mo¿emy znaleŸæ w systemie bloki bardzo podobne (np. ró¿ni¹ce siê kilkoma znakami).
-Dla ka¿dego z takich nowych bloków moglibyœmy przes³aæ jedynie identyfikator bloku bazowego (tzn. podobnego do niego i znajduj¹cego siê ju¿ w systemie) oraz ró¿nicê.
+W powy¿szym przyk³adzie (rysunek \ref{fig:hydra6}) zmiana danych by³a bardzo ma³a.
+Bloki H4 i H5 niewiele siê ró¿ni¹ od bloku H2.
+Dla ka¿dego z nowych bloków mo¿na przes³aæ jedynie identyfikator bloku bazowego (w tym przypadku jest to identyfikator H2) oraz ró¿nicê.
 W wiêkszoœci przypadków mia³oby to znacznie mniejszy rozmiar ni¿ ca³y nowy blok.
-Zajmuj¹ siê tym algorytmy delta kodowania.
+Algorytmy delta kodowania zajmuj¹ siê w³aœnie tym zadaniem.
 Opiszemy je szerzej w nastêpnym rozdziale.
 
 \chapter{Delta kodowanie}
@@ -406,13 +413,13 @@ W rezultacie posiada on szereg wymienionych ni¿ej funkcjonalnoœci.
 	
 	W celu zwiêkszenia elastycznoœci i ergonomii symulatora mo¿na wczytywaæ i zapisywaæ do pliku wyniki wybranych eksperymentów.
 \end{itemize}
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{img/app1.png}
     \caption{Ekran tworzenia eksperymentu}
     \label{fig:experiment_screen}
 \end{figure}	
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{img/app2.png}
     \caption{Ekran tworzenia wykresu}
@@ -423,7 +430,7 @@ W rezultacie posiada on szereg wymienionych ni¿ej funkcjonalnoœci.
 Architektura symulatora oparta jest o wzorzec Model-View-Controller, zapewniaj¹cy niezale¿noœæ kodu odpowiedzialnego za interakcjê z u¿ytkownikiem od kodu zajmuj¹cego siê logik¹ biznesow¹ aplikacji.
 Oprócz standardowych dla wzorca MVC czêœci: modelu, widoku i kontrolera, w architekturze naszego projektu mo¿emy wyró¿niæ Storage - osobn¹ czêœæ odpowiedzialn¹ za sk³adowanie danych w trakcie trwania symulacji oraz Chunker - czêœæ przetwarzaj¹c¹ pliki z dysku twardego.
 Zale¿noœci miêdzy poszczególnymi komponentami pokazane s¹ na poni¿szym schemacie.
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{img/Architecture.png}
     \caption{Schemat architektury}
@@ -590,7 +597,7 @@ Znaczenie kolorów:
 \item Fioletowy - indeks podobieñstwa, kompresja LZO
 \item Szary - indeks podobieñstwa, kompresja LZMA
 \end{itemize}
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{img/linuxSmall.png}
     \caption{Wyniki dla Ÿróde³ j¹dra Linuxa z ma³ymi odstêpami}
@@ -628,7 +635,7 @@ Dla kolejnych wersji mamy odpowiednio zmniejszenie rozmiaru o 41\%, 34\% oraz 34
 Drugi eksperyment tak¿e zosta³ przeprowadzony dla Ÿróde³ j¹dra Linuxa.
 W tym przypadku dane w kolejnych wersjach znacznie siê od siebie ró¿ni¹ - ka¿da kolejna wersja jest odleg³a od poprzedniej o 20 tysiêcy zmian.
 Znaczenie kolorów jest takie samo jak w poprzednim eksperymencie.
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{img/linuxBig.png}
     \caption{Wyniki dla Ÿróde³ j¹dra Linuxa z du¿ymi odstêpami}
@@ -655,7 +662,7 @@ Jest to spowodowane specyfik¹ sposobu u¿ytkowania katalogu domowego.
 Najczêœciej dodaje siê b¹dŸ usuwa ca³e pliki, du¿o rzadziej je modyfikuje.
 To mo¿e t³umaczyæ, dlaczego metoda indeksu podobieñstwa nie daje praktycznie ¿adnego zysku.
 Przy jej u¿yciu musielibyœmy przesy³aæ tyle samo danych co w przypadku obecnej wersji systemu HYDRAstor.
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{img/backups.png}
     \caption{Wyniki dla kopii zapasowych katalogu domowego}
@@ -673,7 +680,7 @@ Znaczenie kolorów:
 \item ¯ó³ty - indeks podobieñstwa, kompresja LZO
 \end{itemize}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{img/torch.png}
     \caption{Wyniki dla projektu torch}
