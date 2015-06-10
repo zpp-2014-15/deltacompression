@@ -116,7 +116,7 @@ Jednym z takich rozwi¹zañ s¹ algorytmy delta kodowania.
 HYDRAstor to system firmy 9LivesData, który pozwala na szybkie i bezpieczne tworzenie kopii zapasowych.
 Jest on pozbawiony delta kodowania.
 Niestety zaimplementowanie nowego algorytmu w systemie produkcyjnym wymaga du¿ego nak³adu pracy.
-Trudno jest równie¿ przewidzieæ jak efektywnie bêdzie on dzia³a³.
+Trudno jest równie¿ przewidzieæ, jak efektywnie bêdzie on dzia³a³.
 Dlatego na zlecenie firmy 9LivesData stworzyliœmy symulator systemu HYDRAstor.
 Dziêki niemu mo¿na testowaæ algorytmy delta kodowania przed ich czasoch³onn¹ implementacj¹.
 W niniejszej pracy przedstawiamy symulator oraz wyniki symulacji uzyskane przy jego pomocy.
@@ -377,13 +377,7 @@ Przedstawimy listê najwa¿niejszych funkcjonalnoœci symulatora.
         
         Mo¿na wybraæ miêdzy u¿ywaniem wy³¹cznie pamiêci RAM a wykorzystaniem bazy danych.
         Pozwala to na wykonywanie ma³ych testów w pamiêci (co je znacz¹co przyspiesza), a du¿ych z wykorzystaniem dysku (w przeciwnym razie nie starczy³oby pamiêci).	
-        \begin{figure}[h]
-            \centering
-            \includegraphics[width=0.6\textwidth]{img/app1.png}
-            \caption{Ekran tworzenia eksperymentu}
-            \label{fig:experiment_screen}
-        \end{figure}	
-	
+
         \item[Wybór algorytmu delta kodowania.] \hfill
         
         Zosta³y zaimplementowane: replikacja bez delta kodowania, algorytm optymalny oraz algorytm z indeksem podobieñstwa.
@@ -396,6 +390,12 @@ Przedstawimy listê najwa¿niejszych funkcjonalnoœci symulatora.
 	
 	Interfejs graficzny pozwala na dodawanie dowolnej liczby eksperymentów, które wykonuj¹ siê po kolei.
 	Symulacja jest realizowana przez oddzielny w¹tek, dziêki czemu interfejs graficzny nie jest blokowany.
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\textwidth]{img/app1.png}
+            \caption{Kolejka eksperymentów}
+            \label{fig:async_queue}
+        \end{figure}	
 	
 	\item[Prezentacja wyników w formie wykresów.] \hfill
 	
@@ -403,7 +403,7 @@ Przedstawimy listê najwa¿niejszych funkcjonalnoœci symulatora.
 	Dla ka¿dej z wersji wyœwietlany jest procentowy udzia³ duplikatów we wszystkich jej blokach.
 	\item[Zliczanie odczytów i zapisów.] \hfill
 	
-	Symulator umo¿liwia liczenie, ile odczytów i zapisów do Storage'u wykona³ na danej wersji ka¿dy z algorytmów delta kodowania.
+	Symulator umo¿liwia liczenie, ile szacunkowo odczytów i zapisów na dysk wykonuje dla danej wersji ka¿dy z algorytmów delta kodowania.
 	\item[Serializacja wyników.] \hfill
 	
 	W celu zwiêkszenia elastycznoœci i ergonomii symulatora mo¿na wczytywaæ i zapisywaæ do pliku wyniki wybranych eksperymentów.
@@ -413,7 +413,7 @@ Przedstawimy listê najwa¿niejszych funkcjonalnoœci symulatora.
 Architektura symulatora oparta jest o wzorzec Model-View-Controller, zapewniaj¹cy niezale¿noœæ kodu odpowiedzialnego za interakcjê z u¿ytkownikiem od kodu zajmuj¹cego siê logik¹ biznesow¹ aplikacji.
 Oprócz standardowych dla wzorca MVC czêœci: modelu, widoku i kontrolera, w architekturze naszego projektu mo¿emy wyró¿niæ modu³y Algorithms, Storage i Chunker.
 Zale¿noœci miêdzy poszczególnymi komponentami pokazane s¹ na rysunku \ref{fig:architecture}.
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{img/Architecture.png}
     \caption{Schemat architektury}
@@ -429,14 +429,14 @@ Przedstawimy w skrócie sposób realizacji wzorca MVC w naszym projekcie.
 Opiszemy sposób komunikacji pomiêdzy modelami, widokami i kontrolerem.
 Gdy u¿ytkownik wykonuje jak¹œ akcjê, odpowiedni widok powiadamia kontroler za pomoc¹ sygna³ów biblioteki wxPython.
 Widoki dowiaduj¹ siê o zmianie modeli bezpoœrednio od kontrolera.
-Natomiast sposób, w jaki kontroler dostaje informacje o zmianie modeli jest zale¿ny od konkretnego modelu.
+Natomiast sposób, w jaki kontroler dostaje informacje o zmianie modeli jest zró¿nicowany.
 Wiêkszoœæ modeli jest pasywna, czyli nie zmienia swojego stanu samoczynnie - kontroler od razu dowiaduje siê o zmianach.
 Wyj¹tek to kolejka reprezentuj¹ca kolejne zadania do wykonania.
 Jest modelem aktywnym, czyli takim który mo¿e zmieniæ swój stan niezale¿nie od akcji wykonywanych przez u¿ytkownika.
 Do obs³ugi kolejki zastosowaliœmy bibliotekê Publisher pakietu wxPython, która pozwala na wysy³anie komunikatów do kontrolera, gdy kolejka ulega zmianie.
 
 \section{Chunker}
-Chunker jest modu³em zajmuj¹cym siê zamienianiem katalogów z wersjami danych na strumieñ i dzieleniem go na bloki.
+Chunker jest modu³em umo¿liwiaj¹cym czytanie plików z danymi jako strumieñ bajtów i dzieleniem go na bloki.
 Zawiera adapter w Pythonie do napisanej w C++ biblioteki statycznej pochodz¹cej z systemu HYDRAstor.
 
 \section{Storage}
