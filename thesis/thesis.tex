@@ -135,8 +135,8 @@ Chunker dzieli strumieñ na bloki zmiennej d³ugoœci.
 Bloki wraz z metadanymi s¹ dostarczane do systemu HYDRAstor poprzez po³¹czenie lokalne.
 System HYDRAstor przechowuje jedynie unikalne bloki.
 Proces eliminowania powtarzaj¹cych siê bloków nosi nazwê deduplikacji.
-
 W celu przes³ania kopii zapasowej na zdalny serwer nowe dane s¹ kompresowane i przesy³ane przez sieæ Internet (replikacja).
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{img/HYDRAstor.png}
@@ -149,7 +149,7 @@ Na koniec powiemy, w jaki sposób mo¿na niezale¿nie od istniej¹cych mechanizmów z
 
 \section{Deduplikacja}
 Dla ka¿dego bloku tworzony jest identyfikator za pomoc¹ funkcji skrótu SHA-2.
-Ca³y system jest wyposa¿ony w rozproszon¹ tablicê mieszaj¹c¹, dziêki czemu mo¿na szybko sprawdziæ czy dany blok jest ju¿ zapisany w systemie.
+Ca³y system jest wyposa¿ony w rozproszon¹ tablicê mieszaj¹c¹, dziêki czemu mo¿na szybko sprawdziæ, czy dany blok jest ju¿ zapisany w systemie.
 Pozwala to na eliminacjê duplikatów i przechowywanie tylko unikalnych bloków.
 Pomaga to równie¿ w replikacji, poniewa¿ liczba bloków oraz rozmiar danych wymaganych do przes³ania jest znacznie mniejszy.
 Ma to przede wszystkim du¿e znaczenie, gdy kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
@@ -168,7 +168,7 @@ Rysunki \ref{fig:hydra1} - \ref{fig:hydra4} przedstawiaj¹ tê sytuacjê.
     \begin{minipage}[t]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/visualization/2.png}
-        \captionof{figure}{System A dzieli dane na bloki i dla ka¿dego z bloków liczy wartoœæ funkcji skrótu. W tym momencie s¹ ju¿ wykrywane duplikaty - blok H1 wytêpuje dwa razy.}
+        \captionof{figure}{System A dzieli dane na bloki i dla ka¿dego z bloków liczy wartoœæ funkcji skrótu. W tym momencie s¹ wykrywane duplikaty - blok H1 wystêpuje dwa razy.}
         \label{fig:hydra2}
     \end{minipage}
 \end{figure}
@@ -200,7 +200,7 @@ Zastosowanie bloków zmiennej d³ugoœci pozwala unikn¹æ tego problemu.
 Oczywiœcie wybór granic dla bloków nie mo¿e byæ przypadkowy.
 Chunker wybiera miejsce podzia³u, bior¹c pod uwagê lokalne w³aœciwoœci strumienia danych.
 Dziêki temu wiêkszoœæ granic nie zmieni siê przy niewielkich modyfikacjach danych.
-We wczeœniejszym przyk³adzie z dodaniem jednego znaku Chunker wyznaczy³by granice tak, ¿e kilka bloków po nowym znaku by³oby innych, ale reszta nie zmieni³aby siê.
+We wczeœniejszym przyk³adzie, w którym dodano jeden znak, Chunker wyznaczy³by granice tak, ¿e kilka bloków po nowym znaku by³oby innych, ale reszta nie zmieni³aby siê.
 Przyk³ad prezentuj¹ rysunki \ref{fig:hydra5} - \ref{fig:hydra8}.
 
 \begin{figure}[H]
@@ -240,10 +240,10 @@ Przyk³ad prezentuj¹ rysunki \ref{fig:hydra5} - \ref{fig:hydra8}.
 
 
 \section{Mo¿liwe optymalizacje}
-Dedublipacja oraz bloki zmiennej d³ugoœci znacznie przyspieszaj¹ replikacjê w systemie HYDRAstor.
+Deduplikacja oraz bloki zmiennej d³ugoœci znacznie przyspieszaj¹ replikacjê w systemie HYDRAstor.
 W pewnych sytuacjach mo¿na jednak przesy³aæ zdecydowanie mniej danych.
 Dla wielu nowych bloków mo¿emy znaleŸæ w systemie bloki bardzo podobne (np. ró¿ni¹ce siê kilkoma znakami).
-W powy¿szym przyk³adzie (\ref{fig:hydra6}) zmiana danych by³a bardzo ma³a.
+W powy¿szym przyk³adzie (reysunek \ref{fig:hydra6}) zmiana danych by³a bardzo ma³a.
 Bloki H4 i H5 niewiele siê ró¿ni¹ od bloku H2.
 Dla ka¿dego z nowych bloków mo¿na przes³aæ jedynie identyfikator bloku bazowego (w tym przypadku jest to identyfikator H2) oraz ró¿nicê.
 W wiêkszoœci przypadków mia³oby to znacznie mniejszy rozmiar ni¿ ca³y nowy blok.
