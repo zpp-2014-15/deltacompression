@@ -274,6 +274,7 @@ W du¿ym uproszczeniu jego dzia³anie polega na sekwencyjnym odtwarzaniu bloku za 
 \item skopiowanie ci¹gu bajtów z odtworzonego ju¿ fragmentu
 \item skopiowanie ci¹gu bajtów z fragmentu bloku bazowego
 \end{itemize}
+Wiêcej na temat xdelta3 mo¿na przeczytaæ na stronie autora \cite{xDelta}.
 
 \section{Znajdowanie podobnych bloków}
 Szukamy rozwi¹zania nastêpuj¹cego problemu.
@@ -282,7 +283,7 @@ Chcemy znaleŸæ stary blok, dla którego ró¿nica z nowym blokiem jest mo¿liwie ma³
 Zaprezentujemy dwa rozwi¹zania tego problemu: algorytm optymalny oraz algorytm z indeksem podobieñstwa.
 \subsection{Algorytm optymalny}
 W algorytmie optymalnym porównujemy nowy blok ze wszystkimi blokami, które posiadamy.
-Jest on trudny do zastosowania w praktyce przez asymptotycznie liniowy czas dzia³ania ze wzglêdu na liczbê bloków w systemie (która w œrodowisko produkcyjnym mo¿e siêgaæ wielu milionów).
+Jest on trudny do zastosowania w praktyce przez asymptotycznie liniowy czas dzia³ania ze wzglêdu na liczbê bloków w systemie (która w œrodowisku produkcyjnym mo¿e siêgaæ wielu milionów).
 Jednak jest on dobrym punktem odniesienia dla innych algorytmów.
 Dziêki niemu mo¿emy znaleŸæ dolne ograniczenie na rozmiar danych do przes³ania w klasie algorytmów delta kodowania porównuj¹cych z jednym blokiem.
 
