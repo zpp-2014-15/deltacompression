@@ -75,22 +75,19 @@ int processFile(const std::string &fileName, ChunkerAdapter &adapter) {
 
     size_t content_size = in.tellg();
     if (content_size != 0) {
-        size_t max_size = 16 * 1024 * 1024;
+        std::shared_ptr<char> content(new char[content_size]);
 
         in.seekg(0, std::ios::beg);
 
-        for (size_t i = 0; i < content_size; i += max_size) {
-            std::shared_ptr<char> content(new char[max_size]);
-            in.get(content.get(), max_size);
-            adapter.addMemoryRegion(content, std::min(max_size, content_size - i));
-
-            // we'll be only writing sizes of consecutive chunks to output
-            while (adapter.haveChunk()) {
-                std::cout << adapter.getChunk() << std::endl;
-            }
-        }
-
+        std::copy(std::istreambuf_iterator<char>(in),
+                  std::istreambuf_iterator<char>(),
+                  content.get());
         in.close();
+
+        adapter.addMemoryRegion(content, content_size);
+        // we'll be only writing sizes of consecutive chunks to output
+        while (adapter.haveChunk())
+            std::cout << adapter.getChunk() << std::endl;
     }
 
     return 0;
