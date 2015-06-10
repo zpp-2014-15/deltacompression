@@ -389,9 +389,24 @@ Przedstawimy listê najwa¿niejszych funkcjonalnoœci symulatora.
         
         Zosta³y zaimplementowane algorytmy: bez delta kodowania, optymalny oraz z indeksem podobieñstwa.
 	Symulator pozwala na przetestowanie tych algorytmów oraz udostêpnia intuicyjny interfejs programistyczny, dziêki czemu mo¿na w prosty sposób dodawaæ kolejne.
+	 \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\textwidth]{img/alg_choose.png}
+            \caption{Wybieranie algorytmu delta kodowania}
+            \label{fig:alg_choose}
+        \end{figure}	
+	
         \item[Kompresja danych przed przes³aniem.] \hfill
         
 	Po zastosowaniu odpowiedniego algorytmu delta kodowania dane przed wys³aniem mog¹ byæ dodatkowo skompresowane przy u¿yciu LZO, ZIP lub LZMA.
+	
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\textwidth]{img/compr_choose.png}
+            \caption{Wybieranie kompresji}
+            \label{fig:compr_choose}
+        \end{figure}	
+	
 	
 	\item[Asynchroniczna kolejka eksperymentów.] \hfill
 	
@@ -408,6 +423,14 @@ Przedstawimy listê najwa¿niejszych funkcjonalnoœci symulatora.
 	
 	Wyniki wykonanych eksperymentów mo¿na wyœwietliæ w postaci czytelnych i estetycznych wykresów.
 	Dla ka¿dej z wersji wyœwietlany jest procentowy udzia³ duplikatów we wszystkich jej blokach.
+	
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\textwidth]{img/chart.png}
+            \caption{Wykres stworzony przez symulator}
+            \label{fig:chart}
+        \end{figure}
+        
 	\item[Zliczanie odczytów i zapisów.] \hfill
 	
 	Symulator umo¿liwia liczenie, ile szacunkowo odczytów i zapisów na dysk wykonuje dla danej wersji ka¿dy z algorytmów delta kodowania.
@@ -416,6 +439,13 @@ Przedstawimy listê najwa¿niejszych funkcjonalnoœci symulatora.
 	W celu zwiêkszenia elastycznoœci i ergonomii symulatora mo¿na wczytywaæ i zapisywaæ do pliku wyniki wybranych eksperymentów.
 
 \end{description}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{img/app2.png}
+    \caption{Wybieranie eksperymentów do stworzenia wykresu. Mo¿na te¿ wczytaæ nowe eksperymenty z pliku lub zapisaæ istniej¹ce.}
+    \label{fig:charts_panel}
+\end{figure}
 
 \chapter{Architektura}
 Architektura symulatora oparta jest o wzorzec Model-View-Controller, zapewniaj¹cy niezale¿noœæ kodu odpowiedzialnego za interakcjê z u¿ytkownikiem od kodu zajmuj¹cego siê logik¹ biznesow¹ aplikacji.
