@@ -20,6 +20,7 @@
 \usepackage{longtable}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{multirow}
 \captionsetup[sub]{labelsep=space}
 \urlstyle{same}
 
@@ -734,6 +735,45 @@ Zmniejszenie d³ugoœci okna oraz zwiêkszenie liczby cech mog³oby znacznie poprawi
 Oczywiœcie wynik indeksu podobieñstwa nie mo¿e byæ lepszy od wyniku algorytmu optymalnego.
 Wynik algorytmu optymalnego jest dolnym oszacowaniem na wynik indeksu podobieñstwa.
 
+\section{Zbiorcze wyniki}
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\cline{1-6}
+ & & \multicolumn{4}{ c| }{Dane testowe} \\
+Delta kodowanie & Kompresja & \multicolumn{2}{ c| }{J¹dro linuxa} & Katolog domowy & Django \\
+ &  & 5k odstêpy & 20k odstêpy &  &  \\
+\cline{1-6}
+\multicolumn{1}{ |c  }{\multirow{3}{*}{Brak} } &
+\multicolumn{1}{ |c| }{Brak} & 658MB & 1052MB & 660MB & 79.48MB    \\ 
+\cline{2-6}
+\multicolumn{1}{ |c  }{}                        &
+\multicolumn{1}{ |c| }{LZO} & 174MB & 271MB & 450MB & 19.24MB  \\ 
+\cline{2-6}
+\multicolumn{1}{ |c  }{}                        &
+\multicolumn{1}{ |c| }{LZMA} & 103MB & 160MB & 400MB & 12.35MB \\ 
+\cline{1-6}
+\multicolumn{1}{ |c  }{\multirow{3}{*}{Indeks podobieñstwa} } &
+\multicolumn{1}{ |c| }{Brak} & 396MB & 941MB & 566MB & 76.33MB     \\ 
+\cline{2-6}
+\multicolumn{1}{ |c  }{}                        &
+\multicolumn{1}{ |c| }{LZO} & 110MB & 248MB & 446MB & 18.72MB      \\ 
+\cline{2-6}
+\multicolumn{1}{ |c  }{}                        &
+\multicolumn{1}{ |c| }{LZMA} & 68MB & 149MB & 400MB & 12.11MB      \\ 
+\cline{1-6}
+\multicolumn{1}{ |c  }{\multirow{3}{*}{Optymalne delta kodowanie} } &
+\multicolumn{1}{ |c| }{Brak} & N/A & N/A & N/A & N/A     \\ 
+\cline{2-6}
+\multicolumn{1}{ |c  }{}                        &
+\multicolumn{1}{ |c| }{LZO} & N/A & N/A & N/A & 14.6MB      \\ 
+\cline{2-6}
+\multicolumn{1}{ |c  }{}                        &
+\multicolumn{1}{ |c| }{LZMA} & N/A & N/A & N/A & N/A      \\ 
+\cline{1-6}
+\end{tabular}
+
+Tabelê powinno siê analizowaæ kolumnami. Jedna kolumna przedstawia wyniki dla jednych danych testowych przy u¿yciu ró¿nych metod replikacji.
+
 \section{Porównanie z innymi publikacjami}
 W pracy Philipa Shilane'a i innych (\cite{work1}) wykonywano podobne eksperymenty, jednak k³adziono nacisk na odrobinê inne aspekty.
 Badano tam m. in. sposób odwzorowywania super cech na bloki - porównywano indeks pe³ny, czêœciowy oraz przechowywanie informacji w pamiêci podrêcznej LRU, co opiera³o siê na za³o¿eniu, ¿e podobne bloki bêd¹ siê znajdowaæ obok siebie.
@@ -751,7 +791,7 @@ Inaczej te¿ wykonywaliœmy kompresjê, u nas mia³a ona charakter globalny, a nie l
 Z tego powodu zysk z kompresji by³ wiêkszy, a z delta kodowania mniejszy.
 Dysponowaliœmy tak¿e zupe³nie innym Chunkerem.
 
-PrzejdŸmy zatem do porównania wyników.
+PrzejdŸmy do porównania wyników.
 Dla kodów Ÿród³owych uzyskano tam samym delta kodowaniem poprawê rzêdu 73\%.
 Przypomnijmy, ¿e my osi¹gnêliœmy wynik 50\% i oko³o 10\% w zale¿noœci od czêstoœci wykonywania kopii zapasowych.
 Dla stacji roboczych osi¹gniêto zysk rzêdu 65\%, u nas by³ on symboliczny.
