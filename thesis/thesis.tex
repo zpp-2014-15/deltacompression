@@ -639,27 +639,24 @@ Ka¿da grupa sk³ada siê z szeœciu s³upków.
 Pierwsza grupa pokazuje, ile danych trzeba przes³aæ dla pierwszej wersji danych przy u¿yciu ka¿dej z metod, druga grupa dla drugiej wersji, a trzecia grupa dla trzeciej wersji Ÿróde³ j¹dra Linuxa.
 
 Zacznijmy od iloœci duplikatów, które zosta³y wykryte podczas symulacji.
-Dla pierwszej wersji jest to 0.05\%, wiêc bardzo ma³o.
-Jest to spowodowane tym, ¿e dane siê nie powtarzaj¹.
-Prawie wszystkie dane, które system otrzyma³ by³y zupe³nie nowe.
+Dla pierwszej wersji jest to tylko 0.05\%.
+Prawie wszystkie dane, które otrzyma³ system by³y zupe³nie nowe.
 Dla drugiej wersji duplikaty stanowi¹ 8.05\% bloków.
 Pomimo tego, ¿e wersje by³y od siebie oddalone o tylko 5 tysiêcy zmian, wiêkszoœæ bloków zosta³a zmieniona.
 Dla trzeciej wersji liczba usuniêtych duplikatów to nieco ponad 10\%.
-Jest to niewiele lepszy wynik.
 
 Przeanalizujmy najpierw metody oznaczone kolorami: czerwonym, zielonym i ¿ó³tym.
-Wszystkie trzy nie u¿ywaj¹ indeksu podobieñstwa, ró¿ni¹ siê jedynie typem kompresji u¿ytym przed wys³aniem danych.
+Wszystkie trzy nie u¿ywaj¹ indeksu podobieñstwa, ró¿ni¹ siê jedynie typem kompresji u¿ytej przed wys³aniem danych.
 Widzimy, ¿e kompresja LZO zmniejsza rozmiar danych prawie o 85\%.
 Z kolei zastosowanie LZMA daje dla pierwszej wersji oszczêdnoœæ oko³o 41\% w stosunku do LZO.
-Widaæ zatem, ¿e w systemie HYDRAstor warto rozwa¿yæ u¿ycie znacznie bardziej kosztownej obliczeniowo kompresji LZMA.
 Podobne wnioski mo¿na wyci¹gn¹æ patrz¹c na drug¹ i trzeci¹ wersjê Ÿróde³ j¹dra Linuxa.
 W ka¿dym przypadku kompresja LZMA znacznie zmniejszy³a rozmiar danych koniecznych do wys³ania.
 
 Zajmijmy siê teraz delta kodowaniem z indeksem podobieñstwa.
-Dla pierwszej wersji wyniki braku delta kodowania z ró¿nymi typami kompresji (kolory czerwony, zielony, ¿ó³ty) prawie idealnie odpowiadaj¹ metodzie z u¿yciem indeksu podobieñstwa (kolory b³êkitny, fioletowy, szary).
-Wynika to z tego, ¿e indeks podobieñstwa nie mia³ danych, do których móg³by porównywaæ nowe bloki.
+Dla pierwszej wersji wyniki braku delta kodowania z ró¿nymi typami kompresji (kolory czerwony, zielony, ¿ó³ty) s¹ prawie równe wynikom metody z u¿yciem indeksu podobieñstwa (kolory b³êkitny, fioletowy, szary).
+Brak poprawy w stosunku do algorytmu bez delta kodowania wynika ze zbyt ma³ej iloœci bloków w systemie, aby znaleŸæ bloki podobne.
 Jednak do przes³ania drugiej i trzeciej wersji Ÿróde³ j¹dra Linuxa rozmiar wynikowych danych jest znacznie mniejszy.
-Odpowiednio dla standardowej metody i kompresji LZO jest to 57MB, a dla indeksu podobieñstwa 26MB.
+Odpowiednio dla braku delta kodowania i kompresji LZO jest to 57MB, a dla indeksu podobieñstwa 26MB.
 Oznacza to zmniejszenie rozmiaru danych o ponad 50\%!
 Podobny wynik mo¿na zaobserwowaæ dla trzeciej wersji.
 Równie¿ dla metody indeksu podobieñstwa zysk z u¿ycia kompresji LZMA jest znaczny.
@@ -704,9 +701,9 @@ Przy jej u¿yciu musielibyœmy przesy³aæ tyle samo danych co w przypadku obecnej w
     \label{fig:backup}
 \end{figure}
 
-\section{Wyniki dla Ÿróde³ projektu django}
-Kolejnymi danymi, na których testowaliœmy algorytmy delta kodowania by³y Ÿród³a projektu django.
-ród³a django zajmuj¹ kilkadziesi¹t MB i dlatego by³o mo¿liwe przetestowanie optymalnego algorytmu delta kodowania.
+\section{Wyniki dla Ÿróde³ projektu Django}
+Kolejnymi danymi, na których testowaliœmy algorytmy delta kodowania by³y Ÿród³a projektu Django.
+ród³a Django zajmuj¹ tylko kilkadziesi¹t megabajtów i dlatego by³o mo¿liwe przetestowanie optymalnego algorytmu delta kodowania.
 To pozwoli³o nam odpowiedzieæ na pytanie, jak dobrze dzia³a indeks podobieñstwa wzglêdem optymalnego algorytmu delta kodowania.
 
 Znaczenie kolorów:
@@ -719,7 +716,7 @@ Znaczenie kolorów:
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{img/django.png}
-    \caption{Wyniki dla projektu torch}
+    \caption{Wyniki dla projektu Django}
     \label{fig:torch}
  \end{figure}
 Równie¿ jak poprzednio przygotowaliœmy trzy wersje danych.
