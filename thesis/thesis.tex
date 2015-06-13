@@ -533,7 +533,7 @@ Jej zastosowanie pozwoli³o nam na wykonywanie eksperymentów, których rozmiar dan
 Dziêki temu mogliœmy sprawdziæ, jak zachowuj¹ siê algorytmy na znacznie wiêkszych danych.
 
 \chapter{Zarz¹dzanie projektem}
-Sposób organizacji pracy zespo³u ma du¿y wp³yw na jakoœæ efektu koñcowego i terminowoœæ, dlatego jego wybór nie powinien byæ przypadkowy.
+Sposób organizacji pracy zespo³u ma du¿y wp³yw na jakoœæ efektu koñcowego i terminowoœæ, dlatego nie powinien byæ przypadkowy.
 Metodyk¹ pracy, na któr¹ siê zdecydowaliœmy by³o programowanie zwinne (ang. \textit{Agile software development}) z elementami kanbana.
 Stosowaliœmy tak¿e technikê TDD (ang. \textit{Test-driven development}) oraz inspekcjê kodu (ang. \textit{Code review}).
 
@@ -545,11 +545,11 @@ Komunikacja w zespole ma charakter bezpoœredni, co pozwala ograniczyæ potrzebê t
 
 G³ównym powodem wybrania tej metodyki by³ nieprzesuwalny termin zakoñczenia projektu.
 Ewentualne spóŸnienie mia³o du¿o powa¿niejsze konsekwencje ni¿ ograniczenie zakresu czy zmniejszenie jakoœci.
-Kolejnym powodem by³a zapowiedŸ firmy 9LivesData, ¿e wymagania mog¹ siê zmieniaæ w zale¿noœci od osi¹ganych rezulatów.
+Drugim powodem by³o to, ¿e firma 9LivesData planowa³a zmieniaæ wymagania w zale¿noœci od kolejno osi¹ganych wyników.
 
 Zgodnie z za³o¿eniami metodyki \textit{agile} nasza praca by³a podzielona na iteracje.
 Na pocz¹tku ka¿dej z nich konsultowaliœmy siê z firm¹ w sprawie priorytetów na najbli¿szy czas.
-Nastêpnie realizowaliœmy zadania pojedynczej iteracji zgodnie z za³o¿eniami Kanbana, co opiszemy póŸniej.
+Nastêpnie realizowaliœmy zadania pojedynczej iteracji zgodnie z za³o¿eniami Kanbana, co opiszemy poni¿ej.
 Na zakoñczenie iteracji demonstrowaliœmy firmie dzia³aj¹c¹ wersjê produktu.
 
 \section{Kanban}
@@ -594,7 +594,7 @@ Aby ukazaæ pe³ny obraz pracy nad projektem, umieszczamy poni¿ej cykl ¿ycia pojed
     \item \label{item:review}Kod podlega inspekcji przeprowadzonej przez cz³onka zespo³u innego ni¿ autor.
     \item Jeœli kod bêdzie zaakceptowany, idŸ do punktu \ref{item:merge}, w przeciwnym razie do punktu \ref{item:fix}.
     \item \label{item:fix} Programista poprawia kod zgodnie z uwagami recenzuj¹cego. PrzejdŸ do punktu \ref{item:review}.
-    \item \label{item:merge}Programista w³¹cza kod do g³ównej ga³êzi projektu.
+    \item \label{item:merge}Programista do³¹cza kod do g³ównej ga³êzi projektu.
 \end{enumerate}
 
 \section{TDD}
