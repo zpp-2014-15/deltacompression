@@ -621,7 +621,7 @@ Rozmiar danych potrzebnych do przes³ania podczas replikacji zosta³ policzony dla
 Metody wraz z oznaczaj¹cymi je kolorami:
 \begin{itemize}
 \item Czerwony - brak delta kodowania, brak kompresji
-\item Zielony - brak delta kodowania, kompresja LZO. Warto dodaæ, ¿e jest to obecny wynik systemu HYDRAstor
+\item Zielony - brak delta kodowania, kompresja LZO. Warto dodaæ, ¿e jest to obecna metoda systemu HYDRAstor
 \item ¯ó³ty - brak delta kodowania, kompresja LZMA
 \item B³êkitny - indeks podobieñstwa, brak kompresji
 \item Fioletowy - indeks podobieñstwa, kompresja LZO
@@ -645,10 +645,11 @@ Dla drugiej wersji duplikaty stanowi¹ 8.05\% bloków.
 Pomimo tego, ¿e wersje by³y od siebie oddalone o tylko 5 tysiêcy zmian, wiêkszoœæ bloków zosta³a zmieniona.
 Dla trzeciej wersji liczba usuniêtych duplikatów to nieco ponad 10\%.
 
-Przeanalizujmy najpierw metody oznaczone kolorami: czerwonym, zielonym i ¿ó³tym.
-Wszystkie trzy nie u¿ywaj¹ indeksu podobieñstwa, ró¿ni¹ siê jedynie typem kompresji u¿ytej przed wys³aniem danych.
-Widzimy, ¿e kompresja LZO zmniejsza rozmiar danych prawie o 85\%.
-Z kolei zastosowanie LZMA daje dla pierwszej wersji oszczêdnoœæ oko³o 41\% w stosunku do LZO.
+Przeanalizujmy najpierw metody nie u¿ywaj¹ce delta kodowania.
+S¹ one oznaczone kolorami: czerwonym, zielonym i ¿ó³tym.
+Ró¿ni¹ siê jedynie typem kompresji u¿ytej przed wys³aniem danych.
+Widzimy, ¿e kompresja LZO zmniejsza rozmiar danych prawie o 74\%.
+Z kolei zastosowanie LZMA pozwala zaoszczêdziæ oko³o 85\%.
 Podobne wnioski mo¿na wyci¹gn¹æ patrz¹c na drug¹ i trzeci¹ wersjê Ÿróde³ j¹dra Linuxa.
 W ka¿dym przypadku kompresja LZMA znacznie zmniejszy³a rozmiar danych koniecznych do wys³ania.
 
@@ -719,16 +720,11 @@ Znaczenie kolorów:
     \caption{Wyniki dla projektu Django}
     \label{fig:torch}
  \end{figure}
-Równie¿ jak poprzednio przygotowaliœmy trzy wersje danych.
+Podobnie jak poprzednio, przygotowaliœmy trzy wersje danych.
 Liczba duplikatów by³a mniejsza ni¿ 1\% dla ka¿dej wersji.
 Dla drugiej wersji indeks podobieñstwa zmniejszy³ dane tylko o 2\%.
 Jest to bardzo s³aby wynik w porównaniu do algorytmu optymalnego, który zmniejszy³ rozmiar danych o prawie 30\%.
 Dla trzeciej wersji danych testowych indeks podobieñstwa zmniejszy³ iloœæ danych o 9\%, a algorytm optymalny o 37\%.
-Wynika z tego, ¿e lepsze dobranie parametrów indeksu podobieñstwa mog³oby znacznie poprawiæ jego wyniki.
-W szczególnoœci nale¿y zwróciæ uwagê na d³ugoœæ okna oraz liczbê cech.
-Zmniejszenie d³ugoœci okna oraz zwiêkszenie liczby cech mog³oby znacznie poprawiæ wynik indeksu podobieñstwa w stosunku do wyniku algorytmu optymalnego.
-Oczywiœcie wynik indeksu podobieñstwa nie mo¿e byæ lepszy od wyniku algorytmu optymalnego.
-Wynik algorytmu optymalnego jest dolnym oszacowaniem na wynik indeksu podobieñstwa.
 
 \section{Zbiorcze wyniki}
 
@@ -766,6 +762,7 @@ Delta kodowanie & Kompresja & \multicolumn{2}{ c| }{J¹dro linuxa} & Katolog domo
 \multicolumn{1}{ |c| }{LZMA} & N/A & N/A & N/A & N/A      \\ 
 \cline{1-6}
 \end{tabular}
+\\
 
 Tabelê powinno siê analizowaæ kolumnami. Jedna kolumna przedstawia wyniki dla jednych danych testowych przy u¿yciu ró¿nych metod replikacji.
 
@@ -778,7 +775,6 @@ Przeciêtny rozmiar bloku w wy¿ej wymienionej pracy to 8KB, z kolei u nas to 64KB
 Jednoczeœnie koñcowe eksperymenty przeprowadzano tam z 3 super cechami na blok, u nas z 2.
 Ró¿nice te mog³y znacznie wp³yn¹æ na wyniki eksperymentów.
 Wiêksza liczba super cech na blok zwiêksza szanse na dopasowanie bloku.
-Taki sam wp³yw ma ma³y rozmiar bloku - dla tego samego rozmiaru danych testowych liczba bloków jest wiêksza.
 Dziêki temu równie¿ jest ³atwiej znaleŸæ podobny blok.
 Kolejn¹ ró¿nic¹ jest rozmiar danych.
 Nasze dane testowe by³y rzêdu gigabajtów, w pracy Philipa Shilane'a rzêdu terabajtów.
