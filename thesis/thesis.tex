@@ -620,9 +620,9 @@ Rozmiar danych potrzebnych do przes³ania podczas replikacji zosta³ policzony dla
 
 Metody wraz z oznaczaj¹cymi je kolorami:
 \begin{itemize}
-\item Czerwony - usuwanie duplikatów, brak kompresji
-\item Zielony - usuwanie duplikatów, kompresja LZO. Warto dodaæ, ¿e jest to obecny wynik systemu HYDRAstor
-\item ¯ó³ty - usuwanie duplikatów, kompresja LZMA
+\item Czerwony - brak delta kodowania, brak kompresji
+\item Zielony - brak delta kodowania, kompresja LZO. Warto dodaæ, ¿e jest to obecny wynik systemu HYDRAstor
+\item ¯ó³ty - brak delta kodowania, kompresja LZMA
 \item B³êkitny - indeks podobieñstwa, brak kompresji
 \item Fioletowy - indeks podobieñstwa, kompresja LZO
 \item Szary - indeks podobieñstwa, kompresja LZMA
@@ -656,13 +656,12 @@ Podobne wnioski mo¿na wyci¹gn¹æ patrz¹c na drug¹ i trzeci¹ wersjê Ÿróde³ j¹dra L
 W ka¿dym przypadku kompresja LZMA znacznie zmniejszy³a rozmiar danych koniecznych do wys³ania.
 
 Zajmijmy siê teraz delta kodowaniem z indeksem podobieñstwa.
-Dla pierwszej wersji wyniki samego usuwania duplikatów z ró¿nymi typami kompresji (kolory czerwony, zielony, ¿ó³ty) prawie idealnie odpowiadaj¹ metodzie z u¿yciem indeksu podobieñstwa (kolory b³êkitny, fioletowy, szary).
+Dla pierwszej wersji wyniki braku delta kodowania z ró¿nymi typami kompresji (kolory czerwony, zielony, ¿ó³ty) prawie idealnie odpowiadaj¹ metodzie z u¿yciem indeksu podobieñstwa (kolory b³êkitny, fioletowy, szary).
 Wynika to z tego, ¿e indeks podobieñstwa nie mia³ danych, do których móg³by porównywaæ nowe bloki.
 Jednak do przes³ania drugiej i trzeciej wersji Ÿróde³ j¹dra Linuxa rozmiar wynikowych danych jest znacznie mniejszy.
 Odpowiednio dla standardowej metody i kompresji LZO jest to 57MB, a dla indeksu podobieñstwa 26MB.
 Oznacza to zmniejszenie rozmiaru danych o ponad 50\%!
 Podobny wynik mo¿na zaobserwowaæ dla trzeciej wersji.
-
 Równie¿ dla metody indeksu podobieñstwa zysk z u¿ycia kompresji LZMA jest znaczny.
 Dla kolejnych wersji mamy odpowiednio zmniejszenie rozmiaru o 41\%, 34\% oraz 34\%.
 
@@ -680,7 +679,6 @@ Znaczenie kolorów jest takie samo jak w poprzednim eksperymencie.
 
 Na pocz¹tku warto zauwa¿yæ, ¿e liczba duplikatów jest znacznie mniejsza ni¿ poprzednio.
 Dla drugiej i trzeciej wersji znaleziono mniej ni¿ 2\% podobnych bloków.
-
 Niestety delta kodowanie radzi sobie znacznie gorzej ni¿ w poprzednim eksperymencie.
 Porównajmy metody oznaczone kolorem zielonym i fioletowym.
 Obie u¿ywaj¹ tej samej kompresji, wiêc ró¿ni¹ siê tylko algorytmem delta kodowania.
@@ -761,7 +759,7 @@ Delta kodowanie & Kompresja & \multicolumn{2}{ c| }{J¹dro linuxa} & Katolog domo
 \multicolumn{1}{ |c  }{}                        &
 \multicolumn{1}{ |c| }{LZMA} & 68MB & 149MB & 400MB & 12.11MB      \\ 
 \cline{1-6}
-\multicolumn{1}{ |c  }{\multirow{3}{*}{Optymalne delta kodowanie} } &
+\multicolumn{1}{ |c  }{\multirow{3}{*}{Optymalne} } &
 \multicolumn{1}{ |c| }{Brak} & N/A & N/A & N/A & N/A     \\ 
 \cline{2-6}
 \multicolumn{1}{ |c  }{}                        &
