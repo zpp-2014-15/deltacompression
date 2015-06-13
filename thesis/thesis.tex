@@ -21,6 +21,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{multirow}
+\usepackage{enumitem}
 \captionsetup[sub]{labelsep=space}
 \urlstyle{same}
 
@@ -533,25 +534,51 @@ Jej zastosowanie pozwoli³o nam na wykonywanie eksperymentów, których rozmiar dan
 Dziêki temu mogliœmy sprawdziæ, jak zachowuj¹ siê algorytmy na znacznie wiêkszych danych.
 
 \chapter{Zarz¹dzanie projektem}
+Sposób organizacji pracy zespo³u ma du¿y wp³yw na jakoœæ efektu koñcowego i terminowoœæ, dlatego nie powinien byæ przypadkowy.
+Metodyk¹ pracy, na któr¹ siê zdecydowaliœmy by³o programowanie zwinne (ang. \textit{Agile software development}) z elementami kanbana.
+Stosowaliœmy tak¿e technikê TDD (ang. \textit{Test-driven development}) oraz inspekcjê kodu (ang. \textit{Code review}).
 
-\section{System kontroli wersji}
-Tworzony przez nas symulator by³ rozwijany za pomoc¹ systemu kontroli
-wersji git. Korzystaliœmy ze zdalnego repozytorium w serwisie github.com.
-\section{Metodyka pracy}
-Pracowaliœmy w metodyce agile z dodatkiem kanbana.
-Zespó³ spotyka³ siê co tydzieñ, aby ustaliæ priorytety na najbli¿szy czas, podzieliæ siê prac¹ i omówiæ wyniki dotychczasowych dzia³añ.
-Otrzymywaliœmy odgórne wytyczne co do kszta³tu symulatora od 9LivesData ("du¿e zadania"), które realizowaliœmy mniejszymi fragmentami ("ma³e zadania").
-Ka¿de z mniejszych zadañ by³o realizowane przez jednego cz³onka zespo³u.
-\section{Realizacja pojedynczego zadania}
-Zadanie by³o wybierane przez cz³onka zespo³u, tworzy³ on oddzieln¹ ga³¹Ÿ, pisa³ testy, a nastêpnie to zadanie realizowa³.
-PóŸniej kod podlega³ inspekcji przeprowadzonej przez innego cz³onka zespo³u.
-Przy koniecznoœci wprowadzenia poprawek kod wraca³ do autora.
-Autor poprawia³ kod zgodnie z uwagami recenzuj¹cego, a po zaakceptowaniu poprawek w³¹cza³ kod do g³ównej ga³êzi projektu.
-W przypadku dalszych zastrze¿eñ innych cz³onków zespo³u cykl siê powtarza³.
-\section{Tworzenie oprogramowania oparte o testy}
-Stosowaliœmy tzw. TDD (ang. \textit{Test Driven Development}).
-Przed napisaniem fragmentu kodu programista materializowa³ wymagania funkcjonalne jako testy jednostkowe, które pocz¹tkowo ponosi³y pora¿kê.
-Nastêpnie zaœ doprowadza³ kod do takiego stanu, aby owe testy koñczy³y siê z sukcesem.
+\section{Programowanie zwinne}
+Programowanie zwinne opiera siê na iteracyjno-przyrostowym tworzeniu oprogramowania.
+Wa¿n¹ obserwacj¹ w tej metodyce jest to, ¿e wymagania klienta czêsto ewoluuj¹ w czasie trwania projektu.
+Naturaln¹ konsekwencj¹ tej obserwacji jest wiêc ci¹g³a adaptacja specyfikacji i oprogramowania do zmieniaj¹cej siê sytuacji.
+Komunikacja w zespole ma charakter bezpoœredni, co pozwala ograniczyæ potrzebê tworzenia rozbudowanej dokumentacji.
+
+G³ównym powodem wybrania tej metodyki by³ nieprzesuwalny termin zakoñczenia projektu.
+Ewentualne spóŸnienie mia³o du¿o powa¿niejsze konsekwencje ni¿ ograniczenie zakresu czy zmniejszenie jakoœci.
+Drugim powodem by³o to, ¿e firma 9LivesData planowa³a zmieniaæ wymagania w zale¿noœci od kolejno osi¹ganych wyników.
+
+Zgodnie z za³o¿eniami metodyki \textit{agile} nasza praca by³a podzielona na iteracje.
+Na pocz¹tku ka¿dej z nich konsultowaliœmy siê z firm¹ w sprawie priorytetów na najbli¿szy czas.
+Nastêpnie realizowaliœmy zadania pojedynczej iteracji zgodnie z za³o¿eniami Kanbana, co opiszemy poni¿ej.
+Na zakoñczenie iteracji demonstrowaliœmy firmie dzia³aj¹c¹ wersjê produktu.
+
+\section{Kanban}
+Metodyka Kanban powsta³a na skutek zaadaptowania na potrzeby in¿ynierii oprogramowania opracowanej w Japonii metody sterowania produkcj¹.
+G³ówne zasady Kanbana to wizualizacja, ograniczenie pracy w toku i zarz¹dzanie strumieniem.
+Wizualizacja polega na przedstawieniu kolejnych etapów wykonywanych zadañ na tablicy.
+Ka¿da z kolumn tablicy przedstawia jeden etap procesu i zawiera kartki z  konkretnymi zadaniami (wraz ze wskazaniem osób wykonuj¹cych je).
+Ograniczenie pracy w toku sprowadza siê do ustalenia maksymalnej dopuszczalnej liczby zadañ, które mog¹ siê znajdowaæ w danej kolumnie tablicy.
+Skraca to œredni czas realizacji zadania.
+Z kolei zarz¹dzanie strumieniem polega na analizowaniu szybkoœci realizacji zadañ w celu optymalizacji pracy.
+Kanban k³adzie te¿ du¿y nacisk na równomierne ob³o¿enie cz³onków zespo³u prac¹ i dlatego wprowadza siê te¿ czêsto ograniczenie liczby zadañ na osobê.
+Pozwala to unikn¹æ sytuacji, gdy jeden cz³onek zespo³u zaczyna wykonywaæ wszystkie zadania na raz, blokuj¹c dzia³ania reszty.
+
+Do utworzenia tablicy z zadaniami u¿yliœmy platformy Trello (rysunek \ref{fig:trello_screen}).
+Kolejnymi kolumnami by³y: 
+\begin{description}
+\item[backlog] \hfill \\
+    du¿e zadania czekaj¹ce na realizacjê
+\item[next] \hfill \\
+    zadania do wykonania w najbli¿szym czasie
+\item[in progress] \hfill \\
+    zadania w trakcie realizacji
+\item[code review] \hfill \\
+    zadania w trakcie inspekcji kodu
+\item[done] \hfill \\
+    wykonane zadania
+\end{description}
+Zadania powstawa³y poprzez dzielenie na mniejsze czêœci du¿ych zadañ wybieranych przez firmê na pocz¹tku iteracji.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{img/trello_screen.png}
@@ -559,8 +586,25 @@ Nastêpnie zaœ doprowadza³ kod do takiego stanu, aby owe testy koñczy³y siê z suk
     \label{fig:trello_screen}
 \end{figure}
 
-\section{Podzia³ pracy}
+Aby ukazaæ pe³ny obraz pracy nad projektem, umieszczamy poni¿ej cykl ¿ycia pojedynczego zadania:
+\begin{enumerate}
+    \item Zadanie powstaje z du¿ego zadania opracowanego przez zamawiaj¹cego.
+    \item Programista wybiera zadanie i przystêpuje do jego realizacji.
+    \item Programista tworzy oddzieln¹ ga³¹Ÿ w repozytorium.
+    \item Programista pisze testy i implementuje wymagane funkcjonalnoœci.
+    \item \label{item:review}Kod podlega inspekcji przeprowadzonej przez cz³onka zespo³u innego ni¿ autor.
+    \item Jeœli kod bêdzie zaakceptowany, idŸ do punktu \ref{item:merge}, w przeciwnym razie do punktu \ref{item:fix}.
+    \item \label{item:fix} Programista poprawia kod zgodnie z uwagami recenzuj¹cego. PrzejdŸ do punktu \ref{item:review}.
+    \item \label{item:merge}Programista do³¹cza kod do g³ównej ga³êzi projektu.
+\end{enumerate}
 
+\section{TDD}
+Jest to technika tworzenia oprogramowania opieraj¹ca siê na nastêpuj¹cym schemacie.
+Przed napisaniem fragmentu kodu programista materializuje wymagania funkcjonalne jako testy jednostkowe, które pocz¹tkowo ponosz¹ pora¿kê.
+Nastêpnie doprowadza kod do takiego stanu, aby owe testy koñczy³y siê z sukcesem.
+Stosowanie TDD skutkuje du¿ym pokryciem kodu testami i wczesnym wykrywaniem b³êdów.
+
+\section{Podzia³ pracy}
 \begin{center}
     \begin{longtable}{ | l | p{10cm} |}
     \nobreakhline
