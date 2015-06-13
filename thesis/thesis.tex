@@ -20,6 +20,7 @@
 \usepackage{longtable}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{multirow}
 \usepackage{enumitem}
 \captionsetup[sub]{labelsep=space}
 \urlstyle{same}
@@ -645,10 +646,11 @@ Stosowanie TDD skutkuje du¿ym pokryciem kodu testami i wczesnym wykrywaniem b³êd
 \end{center}
 
 \chapter{Wyniki symulacji}
-W tym rozdziale zostan¹ przedstawione i omówione rezultaty eksperymentów na danych ró¿nych typów.
+W tym rozdziale zostan¹ przedstawione i omówione rezultaty eksperymentów.
 Przygotowanie danych do testowania by³o istotn¹ czêœci¹ pracy.
 Dobrze dobrane dane testowe pozwalaj¹ na lepsze zrozumienie dzia³ania algorytmów.
-Dziêki nim mo¿na oszacowaæ zysk, który zostanie osi¹gniêty w systemie HYDRAstor.
+Dziêki symulacjom na ró¿nych danych mo¿na przewidzieæ jakie wyniki bêd¹ dawaæ testowane algorytmy w œrodowisku produkcyjnym.
+
 \section{Format wyników}
 Wyniki s¹ przedstawione w formie wykresów s³upkowych. Jeden kolor odpowiada jednej metodzie przesy³ania danych.
 Wybór metody obejmuje jednoczeœnie algorytm delta kodowania (np. algorytm optymalny) oraz rodzaj kompresji (np. LZMA).
@@ -656,14 +658,15 @@ Wysokoœæ ka¿dego s³upka okreœla, ile danych trzeba przes³aæ dla danej wersji dan
 
 \section{Wyniki dla Ÿróde³ j¹dra Linuxa - ma³e odstêpy}
 Pierwsza symulacja zosta³a przeprowadzona dla Ÿróde³ j¹dra Linuxa.
-Zosta³y przygotowane trzy wersje Ÿróde³ j¹dra Linuxa z ró¿nicami wynosz¹cymi 5 tysiêcy zmian pomiêdzy ka¿dymi dwiema kolejnymi.
-Rozmiar danych potrzebnych do przes³ania zosta³ policzony dla szeœciu metod.
+Zosta³y przygotowane trzy wersje.
+Kolejne wersje Ÿróde³ j¹dra Linuxa by³y oddalone od siebie o piêæ tysiêcy zmian (ang. \textit{commit}).
+Rozmiar danych potrzebnych do przes³ania podczas replikacji zosta³ policzony dla szeœciu metod.
 
-Znaczenie kolorów:
+Metody wraz z oznaczaj¹cymi je kolorami:
 \begin{itemize}
-\item Czerwony - usuwanie duplikatów, brak kompresji
-\item Zielony - usuwanie duplikatów, kompresja LZO. Warto dodaæ, ¿e jest to obecny wynik systemu HYDRAstor
-\item ¯ó³ty - usuwanie duplikatów, kompresja LZMA
+\item Czerwony - brak delta kodowania, brak kompresji
+\item Zielony - brak delta kodowania, kompresja LZO. Warto dodaæ, ¿e jest to obecna metoda systemu HYDRAstor
+\item ¯ó³ty - brak delta kodowania, kompresja LZMA
 \item B³êkitny - indeks podobieñstwa, brak kompresji
 \item Fioletowy - indeks podobieñstwa, kompresja LZO
 \item Szary - indeks podobieñstwa, kompresja LZMA
@@ -676,35 +679,38 @@ Znaczenie kolorów:
 \end{figure}
 
 Na wykresie s¹ widoczne trzy grupy.
-Ka¿da grupa sk³adaj¹ca siê z szeœciu s³upków.
-Pierwsza grupa pokazuje, ile danych trzeba przes³aæ dla pierwszej wersji przy u¿yciu ka¿dej z metod, druga grupa dla drugiej wersji itd. 
+Ka¿da grupa sk³ada siê z szeœciu s³upków.
+Pierwsza grupa pokazuje, ile danych trzeba przes³aæ dla pierwszej wersji danych przy u¿yciu ka¿dej z metod, druga grupa dla drugiej wersji, a trzecia grupa dla trzeciej wersji Ÿróde³ j¹dra Linuxa.
 
-Zacznijmy od iloœci duplikatów, które zosta³y wykryte wœród bloków.
-Dla pierwszej wersji jest to 0.05\%, wiêc bardzo ma³o. Dla drugiej wersji duplikaty stanowi¹ 8.05\% bloków.
+Zacznijmy od iloœci duplikatów, które zosta³y wykryte podczas symulacji.
+Dla pierwszej wersji jest to tylko 0.05\%.
+Prawie wszystkie dane, które otrzyma³ system by³y zupe³nie nowe.
+Dla drugiej wersji duplikaty stanowi¹ 8.05\% bloków.
 Pomimo tego, ¿e wersje by³y od siebie oddalone o tylko 5 tysiêcy zmian, wiêkszoœæ bloków zosta³a zmieniona.
-Dla trzeciej wersji liczba usuniêtych duplikatów to nieco ponad 10\%. Jest to niewiele lepszy wynik.
+Dla trzeciej wersji liczba usuniêtych duplikatów to nieco ponad 10\%.
 
-Przeanalizujmy najpierw metody oznaczone kolorami: czerwonym, zielonym i ¿ó³tym.
-Wszystkie trzy nie u¿ywaj¹ indeksu podobieñstwa, a ró¿ni¹ siê jedynie typem kompresji u¿ytym przed wys³aniem danych.
-Widzimy, ¿e kompresja LZO zmniejsza rozmiar danych prawie o 85\%.
-Z kolei zastosowanie LZMA daje dla pierwszej wersji oszczêdnoœæ oko³o 41\% w stosunku do LZO.
-Widaæ zatem, ¿e w systemie HYDRAstor warto rozwa¿yæ u¿ycie znacznie bardziej kosztownej obliczeniowo kompresji LZMA.
+Przeanalizujmy najpierw metody nie u¿ywaj¹ce delta kodowania.
+S¹ one oznaczone kolorami: czerwonym, zielonym i ¿ó³tym.
+Ró¿ni¹ siê jedynie typem kompresji u¿ytej przed wys³aniem danych.
+Widzimy, ¿e kompresja LZO zmniejsza rozmiar danych prawie o 74\%.
+Z kolei zastosowanie LZMA pozwala zaoszczêdziæ oko³o 85\%.
 Podobne wnioski mo¿na wyci¹gn¹æ patrz¹c na drug¹ i trzeci¹ wersjê Ÿróde³ j¹dra Linuxa.
 W ka¿dym przypadku kompresja LZMA znacznie zmniejszy³a rozmiar danych koniecznych do wys³ania.
 
 Zajmijmy siê teraz delta kodowaniem z indeksem podobieñstwa.
-Dla pierwszej wersji wyniki samego usuwania duplikatów z ró¿nymi typami kompresji (kolory czerwony, zielony, ¿ó³ty) prawie idealnie odpowiadaj¹ metodzie z u¿yciem indeksu podobieñstwa (kolory b³êkitny, fioletowy, szary).
-Wynika to z tego, ¿e indeks podobieñstwa nie mia³ danych, do których móg³by porównywaæ nowe bloki.
-Jednak do przes³ania drugiej i trzeciej wersji Ÿróde³ Linuxa rozmiar wynikowych danych jest znacznie mniejszy.
-Odpowiednio dla standardowej metody i kompresji LZO - 57MB, a dla indeksu podobieñstwa 26MB.
+Dla pierwszej wersji wyniki braku delta kodowania z ró¿nymi typami kompresji (kolory czerwony, zielony, ¿ó³ty) s¹ prawie równe wynikom metody z u¿yciem indeksu podobieñstwa (kolory b³êkitny, fioletowy, szary).
+Brak poprawy w stosunku do algorytmu bez delta kodowania wynika ze zbyt ma³ej iloœci bloków w systemie, aby by³o mo¿liwe znalezienie podobnych bloków.
+Jednak do przes³ania drugiej i trzeciej wersji Ÿróde³ j¹dra Linuxa rozmiar wynikowych danych jest znacznie mniejszy.
+Odpowiednio dla braku delta kodowania i kompresji LZO jest to 57MB, a dla indeksu podobieñstwa 26MB.
 Oznacza to zmniejszenie rozmiaru danych o ponad 50\%!
 Podobny wynik mo¿na zaobserwowaæ dla trzeciej wersji.
-
 Równie¿ dla metody indeksu podobieñstwa zysk z u¿ycia kompresji LZMA jest znaczny.
 Dla kolejnych wersji mamy odpowiednio zmniejszenie rozmiaru o 41\%, 34\% oraz 34\%.
+
 \section{Wyniki dla Ÿróde³ j¹dra Linuxa - du¿e odstêpy}
 Drugi eksperyment tak¿e zosta³ przeprowadzony dla Ÿróde³ j¹dra Linuxa.
-W tym przypadku dane w kolejnych wersjach znacznie siê od siebie ró¿ni¹ - ka¿da kolejna wersja jest odleg³a od poprzedniej o 20 tysiêcy zmian.
+W tym przypadku dane w kolejnych wersjach znacznie siê od siebie ró¿ni¹.
+Ka¿da kolejna wersja jest odleg³a od poprzedniej o dwadzieœcia tysiêcy zmian.
 Znaczenie kolorów jest takie samo jak w poprzednim eksperymencie.
 \begin{figure}[H]
     \centering
@@ -715,8 +721,7 @@ Znaczenie kolorów jest takie samo jak w poprzednim eksperymencie.
 
 Na pocz¹tku warto zauwa¿yæ, ¿e liczba duplikatów jest znacznie mniejsza ni¿ poprzednio.
 Dla drugiej i trzeciej wersji znaleziono mniej ni¿ 2\% podobnych bloków.
-
-Niestety, delta kodowanie radzi sobie znacznie gorzej ni¿ w ostatnim eksperymencie.
+Niestety delta kodowanie radzi sobie znacznie gorzej ni¿ w poprzednim eksperymencie.
 Porównajmy metody oznaczone kolorem zielonym i fioletowym.
 Obie u¿ywaj¹ tej samej kompresji, wiêc ró¿ni¹ siê tylko algorytmem delta kodowania.
 Dla pierwszej wersji zysk z u¿ycia indeksu podobieñstwa jest prawie zerowy (dok³adnie z takich samych powodów jak poprzednio).
@@ -724,13 +729,14 @@ Dla drugiej i trzeciej wersji zysk wynosi odpowiednio 15\% i 9\%.
 Jeszcze gorzej prezentuje siê porównanie tych metod, gdy u¿ywamy kompresji LZMA (kolory ¿ó³ty i szary).
 Dane zosta³y zmniejszone odpowiednio o 11\% oraz 7\% dla drugiej i trzeciej wersji Ÿróde³ j¹dra Linuxa.
 Warto dodaæ, ¿e po raz kolejny kompresja LZMA znacznie zmniejszy³a dane konieczne do wys³ania - œrednio o 40\%.
+
 \section{Wyniki dla kopii zapasowych katalogu domowego}
 Tym razem eksperyment dotyczy³ danych, które pochodzi³y z naszych katalogów domowych.
 Znaczenie kolorów jest identyczne jak poprzednio.
 W przypadku katalogów domowych deduplikacja dzia³a znacznie lepiej.
 Dla drugiej i trzeciej wersji katalogu domowego (s¹ one oddalone o oko³o miesi¹c u¿ytkowania) liczba duplikatów to odpowiednio 64\% oraz 75\%.
 Jest to spowodowane specyfik¹ sposobu u¿ytkowania katalogu domowego.
-Najczêœciej dodaje siê b¹dŸ usuwa ca³e pliki, du¿o rzadziej je modyfikuje.
+Najczêœciej dodaje siê b¹dŸ usuwa ca³e pliki, rzadziej modyfikuje siê istniej¹ce pliki.
 To mo¿e t³umaczyæ, dlaczego metoda indeksu podobieñstwa nie daje praktycznie ¿adnego zysku.
 Przy jej u¿yciu musielibyœmy przesy³aæ tyle samo danych co w przypadku obecnej wersji systemu HYDRAstor.
 \begin{figure}[H]
@@ -740,9 +746,10 @@ Przy jej u¿yciu musielibyœmy przesy³aæ tyle samo danych co w przypadku obecnej w
     \label{fig:backup}
 \end{figure}
 
-\section{Wyniki dla Ÿróde³ ma³ego projektu torch}
-Interesuj¹cym mo¿e wydaæ siê pytanie, jak indeks podobieñstwa dzia³a w porównaniu z optymalnym algorytmem delta kodowania.
-Pokazuje to kolejny eksperyment.
+\section{Wyniki dla Ÿróde³ projektu Django}
+Kolejnymi danymi, na których testowaliœmy algorytmy delta kodowania by³y Ÿród³a projektu Django.
+ród³a Django zajmuj¹ tylko kilkadziesi¹t megabajtów i dlatego by³o mo¿liwe przetestowanie optymalnego algorytmu delta kodowania.
+To pozwoli³o nam odpowiedzieæ na pytanie, jak dobrze dzia³a indeks podobieñstwa wzglêdem optymalnego algorytmu delta kodowania.
 
 Znaczenie kolorów:
 \begin{itemize}
@@ -753,37 +760,76 @@ Znaczenie kolorów:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{img/torch.png}
-    \caption{Wyniki dla projektu torch}
+    \includegraphics[width=\textwidth]{img/django.png}
+    \caption{Wyniki dla projektu Django}
     \label{fig:torch}
  \end{figure}
-Niestety, dane s¹ bardzo ma³e ze wzglêdu na kwadratow¹ z³o¿onoœæ algorytmu optymalnego delta kodowania.
-Jednak dziêki temu mo¿emy porównaæ algorytm optymalny z indeksem podobieñstwa.
-Pozwala to zobaczyæ, jakie jest dolne ograniczenie na iloœæ przes³anych danych dla indeksu podobieñstwa.
-Dla drugiej wersji algorytm optymalny przygotowa³ o 54\% mniej danych do przes³ania, a dla trzeciej wersji o 41\% mniej.
-Oznacza to, ¿e daleko algorytmowi z indeksem podobieñstwa do optymalnoœci.
+Podobnie jak poprzednio, przygotowaliœmy trzy wersje danych.
+Liczba duplikatów by³a mniejsza ni¿ 1\% dla ka¿dej wersji.
+Dla drugiej wersji indeks podobieñstwa zmniejszy³ dane tylko o 2\%.
+Jest to bardzo s³aby wynik w porównaniu do algorytmu optymalnego, który zmniejszy³ rozmiar danych o prawie 30\%.
+Dla trzeciej wersji danych testowych indeks podobieñstwa zmniejszy³ iloœæ danych o 9\%, a algorytm optymalny o 37\%.
+
+\section{Zbiorcze wyniki}
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\cline{1-6}
+ & & \multicolumn{4}{ c| }{Dane testowe} \\
+Delta kodowanie & Kompresja & \multicolumn{2}{ c| }{J¹dro linuxa} & Katolog domowy & Django \\
+ &  & 5k odstêpy & 20k odstêpy &  &  \\
+\cline{1-6}
+\multicolumn{1}{ |c  }{\multirow{3}{*}{Brak} } &
+\multicolumn{1}{ |c| }{Brak} & 658MB & 1052MB & 660MB & 79.48MB    \\ 
+\cline{2-6}
+\multicolumn{1}{ |c  }{}                        &
+\multicolumn{1}{ |c| }{LZO} & 174MB & 271MB & 450MB & 19.24MB  \\ 
+\cline{2-6}
+\multicolumn{1}{ |c  }{}                        &
+\multicolumn{1}{ |c| }{LZMA} & 103MB & 160MB & 400MB & 12.35MB \\ 
+\cline{1-6}
+\multicolumn{1}{ |c  }{\multirow{3}{*}{Indeks podobieñstwa} } &
+\multicolumn{1}{ |c| }{Brak} & 396MB & 941MB & 566MB & 76.33MB     \\ 
+\cline{2-6}
+\multicolumn{1}{ |c  }{}                        &
+\multicolumn{1}{ |c| }{LZO} & 110MB & 248MB & 446MB & 18.72MB      \\ 
+\cline{2-6}
+\multicolumn{1}{ |c  }{}                        &
+\multicolumn{1}{ |c| }{LZMA} & 68MB & 149MB & 400MB & 12.11MB      \\ 
+\cline{1-6}
+\multicolumn{1}{ |c  }{\multirow{3}{*}{Optymalne} } &
+\multicolumn{1}{ |c| }{Brak} & N/A & N/A & N/A & N/A     \\ 
+\cline{2-6}
+\multicolumn{1}{ |c  }{}                        &
+\multicolumn{1}{ |c| }{LZO} & N/A & N/A & N/A & 14.6MB      \\ 
+\cline{2-6}
+\multicolumn{1}{ |c  }{}                        &
+\multicolumn{1}{ |c| }{LZMA} & N/A & N/A & N/A & N/A      \\ 
+\cline{1-6}
+\end{tabular}
+\\
+
+Tabelê powinno siê analizowaæ kolumnami. Jedna kolumna przedstawia wyniki dla jednych danych testowych przy u¿yciu ró¿nych metod replikacji.
 
 \section{Porównanie z innymi publikacjami}
 W pracy Philipa Shilane'a i innych (\cite{work1}) wykonywano podobne eksperymenty, jednak k³adziono nacisk na odrobinê inne aspekty.
-Badano tam m. in. sposób odwzorowywania super cech na bloki - porównywano indeks pe³ny, czêœciowy oraz przechowywanie informacji w pamiêci podrêcznej LRU, co opiera³o siê na za³o¿eniu, ¿e podobne bloki bêd¹ siê znajdowaæ w niedu¿ej odleg³oœci.
+Badano tam m. in. sposób odwzorowywania super cech na bloki - porównywano indeks pe³ny, czêœciowy oraz przechowywanie informacji w pamiêci podrêcznej LRU, co opiera³o siê na za³o¿eniu, ¿e podobne bloki bêd¹ siê znajdowaæ obok siebie.
 W naszych eksperymentach jednak nie by³o to istotne, dlatego weŸmiemy pod uwagê jedynie wyniki dla indeksu pe³nego.
-Zanim zaczniemy analizowaæ tê pracê, warto zauwa¿yæ, ¿e mieliœmy trochê inn¹ konfiguracjê symulatora ni¿ autorzy tej pracy.
+Warto dodaæ, ¿e mieliœmy trochê inn¹ konfiguracjê symulatora ni¿ autorzy tej pracy.
 Przeciêtny rozmiar bloku w wy¿ej wymienionej pracy to 8KB, z kolei u nas to 64KB.
 Jednoczeœnie koñcowe eksperymenty przeprowadzano tam z 3 super cechami na blok, u nas z 2.
 Ró¿nice te mog³y znacznie wp³yn¹æ na wyniki eksperymentów.
-Wiêksza liczba super cech na blok zwiêksza szanse na dopasowanie jakiegoœ bloku.
-Taki sam wp³yw na ma³y rozmiar bloku - jest ich wtedy wiêcej i ³atwiej znaleŸæ podobny.
-Kolejn¹, wart¹ wspomnienia, ró¿nic¹ jest rozmiar danych.
-Nasze dane testowe, ze wzglêdu na ograniczenia sprzêtowe i trudn¹ dostêpnoœæ, by³y rzêdu gigabajtów, w owej pracy zaœ rzêdu terabajtów.
-To równie¿ niebagatelnie zwiêksza szansê na znalezienie podobnych bloków.
-W ró¿ny sposób wykonywano te¿ sam¹ kompresjê - by³a wykonywana jedynie lokalnie, w ma³ych grupach bloków, z kolei u nas mia³a charakter globalny.
-Powodowa³o to u nas wiêkszy zysk z kompresji, zaœ mniejszy z samego delta kodowania.
-Oczywiœcie, dysponowaliœmy tak¿e innym Chunkerem.
+Wiêksza liczba super cech na blok zwiêksza szanse na dopasowanie bloku.
+Dziêki temu równie¿ jest ³atwiej znaleŸæ podobny blok.
+Kolejn¹ ró¿nic¹ jest rozmiar danych.
+Nasze dane testowe by³y rzêdu gigabajtów, w pracy Philipa Shilane'a rzêdu terabajtów.
+Inaczej te¿ wykonywaliœmy kompresjê, u nas mia³a ona charakter globalny, a nie lokalny.
+Z tego powodu zysk z kompresji by³ wiêkszy, a z delta kodowania mniejszy.
+Dysponowaliœmy tak¿e zupe³nie innym Chunkerem.
 
-PrzejdŸmy zatem do porównania wyników.
+PrzejdŸmy do porównania wyników.
 Dla kodów Ÿród³owych uzyskano tam samym delta kodowaniem poprawê rzêdu 73\%.
 Przypomnijmy, ¿e my osi¹gnêliœmy wynik 50\% i oko³o 10\% w zale¿noœci od czêstoœci wykonywania kopii zapasowych.
-Dla stacji roboczych osi¹gniêto zysk rzêdu 65\%, u nas zaœ by³ on symboliczny.
+Dla stacji roboczych osi¹gniêto zysk rzêdu 65\%, u nas by³ on symboliczny.
 
 Nale¿y przypuszczaæ, ¿e porównanie wypad³oby odrobinê inaczej, gdybyœmy przeprowadzili eksperymenty bardziej zbli¿one do tych z pracy Shilane'a i innych.
 Jednak kluczowe by³o dla nas i firmy 9LivesData, aby konfiguracja jak najbardziej odwzorowywa³a warunki pracy systemu HYDRAstor.
