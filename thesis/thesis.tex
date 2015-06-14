@@ -137,7 +137,7 @@ Chunker dzieli strumieñ na bloki zmiennej d³ugoœci.
 Bloki wraz z metadanymi s¹ dostarczane do systemu HYDRAstor poprzez po³¹czenie lokalne.
 System HYDRAstor przechowuje jedynie unikalne bloki.
 Proces eliminowania powtarzaj¹cych siê bloków nosi nazwê deduplikacji.
-W celu przes³ania kopii zapasowej na zdalny serwer nowe dane s¹ kompresowane i przesy³ane przez sieæ Internet (replikacja).
+W celu przes³ania kopii zapasowej na zdalny serwer nowe dane s¹ kompresowane i przesy³ane przez Internet (replikacja).
 
 \begin{figure}[H]
     \centering
@@ -153,8 +153,8 @@ Na koniec powiemy, w jaki sposób mo¿na niezale¿nie od istniej¹cych mechanizmów z
 Dla ka¿dego bloku tworzony jest identyfikator za pomoc¹ funkcji skrótu SHA-2.
 Ca³y system jest wyposa¿ony w rozproszon¹ tablicê mieszaj¹c¹, dziêki czemu mo¿na szybko sprawdziæ, czy dany blok jest ju¿ zapisany w systemie.
 Pozwala to na eliminacjê duplikatów i przechowywanie tylko unikalnych bloków.
-Pomaga to równie¿ w replikacji, poniewa¿ liczba bloków oraz rozmiar danych wymaganych do przes³ania jest znacznie mniejszy.
-Ma to przede wszystkim du¿e znaczenie, gdy kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
+Pomaga to równie¿ w replikacji, poniewa¿ liczba bloków oraz rozmiar danych wymaganych do przes³ania s¹ znacznie mniejsze.
+Ma to du¿e znaczenie przede wszystkim wtedy, gdy kopie s¹ wykonywane czêsto i dane w wiêkszoœci siê nie zmieniaj¹.
 
 Rysunki \ref{fig:hydra1} - \ref{fig:hydra4} przedstawiaj¹ tê sytuacjê.
 
@@ -244,7 +244,7 @@ Przyk³ad prezentuj¹ rysunki \ref{fig:hydra5} - \ref{fig:hydra8}.
 \section{Mo¿liwe optymalizacje}
 Deduplikacja oraz bloki zmiennej d³ugoœci znacznie przyspieszaj¹ replikacjê w systemie HYDRAstor.
 W pewnych sytuacjach mo¿na jednak przesy³aæ zdecydowanie mniej danych.
-Dla wielu nowych bloków mo¿emy znaleŸæ w systemie bloki bardzo podobne (np. ró¿ni¹ce siê kilkoma znakami).
+Dla wielu nowych bloków mo¿emy znaleŸæ w systemie bloki bardzo podobne (np. ró¿ni¹ce siê tylko kilkoma znakami).
 W powy¿szym przyk³adzie (rysunek \ref{fig:hydra6}) zmiana danych by³a bardzo ma³a.
 Bloki H4 i H5 niewiele siê ró¿ni¹ od bloku H2.
 Dla ka¿dego z nowych bloków mo¿na przes³aæ jedynie identyfikator bloku bazowego (w tym przypadku jest to identyfikator H2) oraz ró¿nicê.
@@ -253,10 +253,10 @@ Algorytmy delta kodowania zajmuj¹ siê w³aœnie tym zadaniem.
 Opiszemy je szerzej w nastêpnym rozdziale.
 
 \chapter{Delta kodowanie}
-Delta kodowanie to sposób przechowywania i transmisji danych w formie ró¿nic (ang. \textit{delta}) pomiêdzy blokami danych.
-Gdy ró¿nice miêdzy blokami s¹ ma³e, delta kodowanie potrafi znacznie zmniejszyæ rozmiar przesy³anych danych.
+Delta kodowanie to sposób transmisji danych w formie ró¿nic (ang. \textit{delta}) pomiêdzy blokami danych.
+Gdy bloki s¹ do siebie podobne, delta kodowanie potrafi znacznie zmniejszyæ rozmiar przesy³anych danych.
 Na wielkoœæ ró¿nic wp³yw ma to, które dane s¹ ze sob¹ porównywane oraz jaki algorytm liczenia ró¿nic jest u¿ywany.
-Dlatego delta kodowanie mo¿na sprowadziæ do dwóch zasadniczych problemów: znajdowania podobnych bloków i liczenia ró¿nic miêdzy nimi.
+Delta kodowanie mo¿na wiêc sprowadziæ do dwóch zasadniczych problemów: znajdowania podobnych bloków i liczenia ró¿nic miêdzy nimi.
 \section{Liczenie ró¿nic}
 Chcemy efektywnie rozwi¹zywaæ nastêpuj¹cy problem.
 Mamy dane dwa bloki danych.
@@ -313,7 +313,7 @@ W tym celu poruszamy siê po bloku oknem (ang. \textit{window}) o sta³ym rozmiarz
 Dla cechy o numerze $i$ definiujemy dwie wartoœci $m_i$ oraz $a_i$.
 Wartoœci¹ cechy o numerze $i$ bêdzie minimum po wszystkich oknach $w$ z $(fp(w) \times m_i + a_i) \mod 2^{32}$.
 Wartoœciami $a_i$ oraz $m_i$ powinny byæ du¿e, losowe liczby pierwsze.
-Nastêpnie tworzymy super cechy (ang. \textit{superfeature}) z ustalonej liczby $S$ zwyk³ych cech.
+Nastêpnie tworzymy super cechy (ang. \textit{superfeature}).
 W tym celu dzielimy cechy bloku na grupy po $K$ kolejnych cech i dla ka¿dej z grup liczymy znacznik Rabina - jego wartoœæ bêdzie wartoœci¹ super cechy.
 Algorytm zwróci stary blok, który ma najwiêcej wspólnych super cech z nowym blokiem.
 Jeœli zaœ ¿aden stary blok nie ma wspólnych super cech z nowym blokiem, powinniœmy wys³aæ ca³y nowy blok.
@@ -382,10 +382,6 @@ Zale¿a³o nam, aby by³ intuicyjny i wygodny w u¿yciu, dlatego zosta³ wyposa¿ony w
 Za jego pomoc¹ mo¿na tworzyæ i uruchamiaæ eksperymenty, czyli pojedyncze symulacje, dla konkretnych danych i wybranych parametrów.
 Przedstawimy listê najwa¿niejszych funkcjonalnoœci symulatora.
 \begin{description}
-        \item[Wybór sposobu przechowywania danych.] \hfill
-        
-        Mo¿na wybraæ miêdzy u¿ywaniem wy³¹cznie pamiêci RAM a wykorzystaniem bazy danych.
-        Pozwala to na wykonywanie ma³ych testów w pamiêci (co je znacz¹co przyspiesza), a du¿ych z wykorzystaniem dysku (w przeciwnym razie nie starczy³oby pamiêci).	
 
         \item[Wybór algorytmu delta kodowania.] \hfill
         
@@ -435,7 +431,7 @@ Przedstawimy listê najwa¿niejszych funkcjonalnoœci symulatora.
         
 	\item[Zliczanie odczytów i zapisów.] \hfill
 	
-	Symulator umo¿liwia liczenie, ile szacunkowo odczytów i zapisów na dysk wykonuje dla danej wersji ka¿dy z algorytmów delta kodowania.
+	Symulator umo¿liwia liczenie, ile szacunkowo odczytów i zapisów na dysk wykonywa³by dla danej wersji ka¿dy z algorytmów delta kodowania.
 	\item[Serializacja wyników.] \hfill
 	
 	W celu zwiêkszenia elastycznoœci i ergonomii symulatora mo¿na wczytywaæ i zapisywaæ do pliku wyniki wybranych eksperymentów.
@@ -527,12 +523,6 @@ Sprawdza zgodnoœæ z zaleceniami PEP 8.
 \subsection{PyLZMA}
 Biblioteka do kompresji LZMA.
 
-\section{Baza danych}
-LevelDB to nierelacyjna baza danych, która umo¿liwia efektywne przechowywanie danych typu klucz-wartoœæ.
-W naszym przypadku ma miejsce odwzorowanie wartoœci funkcji skrótu w odpowiadaj¹cy jej blok.
-Jej zastosowanie pozwoli³o nam na wykonywanie eksperymentów, których rozmiar danych wejœciowych przekracza³ wielokrotnie rozmiar pamiêci RAM.
-Dziêki temu mogliœmy sprawdziæ, jak zachowuj¹ siê algorytmy na znacznie wiêkszych danych.
-
 \chapter{Zarz¹dzanie projektem}
 Sposób organizacji pracy zespo³u ma du¿y wp³yw na jakoœæ efektu koñcowego i terminowoœæ, dlatego nie powinien byæ przypadkowy.
 Metodyk¹ pracy, na któr¹ siê zdecydowaliœmy by³o programowanie zwinne (ang. \textit{Agile software development}) z elementami kanbana.
@@ -616,14 +606,14 @@ Stosowanie TDD skutkuje du¿ym pokryciem kodu testami i wczesnym wykrywaniem b³êd
     \\ \hline
     Pawe³ Kura & 
     Zaimplementowanie domyœlnego dodawania danych do Storage'u (algorytm naiwny). \newline
-    Zaimplementowanie klasy FileProcessor, przetwarzaj¹cej pliki i dodaj¹cej je do Storage'u. \newline
+    Zaimplementowanie klasy FileProcessor, która przetwarza pliki i dodaje je do Storage'u. \newline
     Dodanie mo¿liwoœci testowania ca³ych katalogów i wersji. \newline
     Przygotowanie danych do testowania.
       
     \\ \hline
     Dawid £azarczyk &
-    Zaimplementowanie ca³ej komunikacji z Chunkerem. \newline
-    Dodanie interfejsów do ChunkUpdate. \newline
+    Zaimplementowanie komunikacji z Chunkerem. \newline
+    Dodanie interfejsów do klasy ChunkUpdate, która reprezentuje ró¿nice miêdzy blokami. \newline
     Dodanie xdelta3. \newline
     Zaimplementowanie optymalnego algorytmu delta kodowania. \newline
     Generowanie wykresów dla wielu eksperymentów na raz. \newline
@@ -632,7 +622,7 @@ Stosowanie TDD skutkuje du¿ym pokryciem kodu testami i wczesnym wykrywaniem b³êd
     
     \\ \hline
     Marcel Ziêba &
-    Przygotowanie œrodowiska - repozytorium, frameworku do testowania, narzêdzia do statycznej analizy kodu \newline
+    Przygotowanie œrodowiska - repozytorium, frameworku do testowania, narzêdzia do statycznej analizy kodu. \newline
     Zaimplementowanie podstawowych klas odpowiadaj¹cych za przechowywanie danych. \newline
     Zaimplementowanie podstawowej wersji GUI. \newline
     Dodanie kompresji LZO i ZIP. \newline
@@ -649,7 +639,7 @@ Stosowanie TDD skutkuje du¿ym pokryciem kodu testami i wczesnym wykrywaniem b³êd
 W tym rozdziale przedstawimy wyniki eksperymentów przeprowadzonych przy pomocy symulatora.
 Znalezienie odpowiednich danych do eksperymentów by³o istotn¹ czêœci¹ projektu.
 Zestawy danych powinny byæ ró¿norodne i jak najbardziej zbli¿one do danych produkcyjnych.
-Tylko wtedy mo¿na oczekiwaæ, ¿e uzyskane rezultaty s¹ dobr¹ aproksymacj¹ wyników w œrodowisku produkcyjnym.
+Tylko wtedy mo¿na oczekiwaæ, ¿e uzyskane rezultaty s¹ dobr¹ aproksymacj¹ potencjalnych wyników systemu HYDRAstor.
 Eksperymenty zosta³y przeprowadzone dla 4 zestawów danych: Ÿróde³ j¹dra Linuxa (2 zestawy), katalogów domowych i Ÿróde³ projektu Django.
 
 \section{Format wyników}
@@ -741,7 +731,7 @@ W przypadku katalogów domowych deduplikacja dzia³a znacznie lepiej.
 Dla drugiej i trzeciej wersji liczba duplikatów to odpowiednio 64\% oraz 75\%.
 Wynika to ze specyfiki sposobu u¿ytkowania katalogu domowego.
 Wiêkszoœæ zmian polega na dodawaniu b¹dŸ usuwaniu ca³ych plików, modyfikacje s¹ rzadkoœci¹.
-To t³umaczyæ, dlaczego indeks podobieñstwa nie daje praktycznie ¿adnego zysku.
+To t³umaczy, dlaczego indeks podobieñstwa nie daje praktycznie ¿adnego zysku.
 Przy jego u¿yciu musielibyœmy przesy³aæ tyle samo danych co w przypadku obecnej wersji systemu HYDRAstor.
 
 \section{Wyniki dla Ÿróde³ projektu Django}
@@ -766,7 +756,8 @@ Znaczenie kolorów:
     \label{fig:django}
  \end{figure}
 Liczby duplikatów w kolejnych wersjach to 0\%, 35.7\% i 4.4\%.
-Zmiany w kolejnych wersjach nie by³y wiêc du¿e.
+Zmiany w drugiej wersji by³y wiêc stosunkowo ma³e.
+Natomiast w trzeciej by³o du¿o nowych bloków.
 
 Tradycyjnie w przypadku pierwszej wersji nie ma wiêkszych ró¿nic miêdzy wynikami.
 Dla drugiej i trzeciej wersji optymalne delta kodowanie daje odpowiednio 87\% i 68\% zysku wzglêdem braku delta kodowania.
@@ -876,8 +867,8 @@ Na p³ycie CD-ROM do³¹czonej do niniejszej pracy znajduj¹ siê:
 	\begin{tabular}{c|c}
 		Kod Ÿród³owy symulatora wraz z testami & ./deltacompression/ \\ \hline
 		Skrypt przygotowuj¹cy dane testowe & ./tools/ \\ \hline
-		Dokumentacja instalacji & ./README.md \\ \hline
-		Kod Ÿród³owy pracy licencjackiej & ./thesis/
+		Kod Ÿród³owy pracy licencjackiej & ./thesis/ \\ \hline
+		Dokumentacja instalacji & ./README.md
 	\end{tabular}
 \]
 
