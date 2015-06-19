@@ -49,9 +49,9 @@
 \usepackage[cp1250]{inputenc}
 
 % Uwaga: ka¿dy z nas czworga ma oddzielny egzemplarz i wpisuje swoje dane
-\author{Imiê i nazwisko}
+\author{Krzysztof Kiewicz \\ Pawe³ Kura \\ Dawid £azarczyk \\ Marcel Ziêba}
 
-\nralbumu{6 cyfr}
+\nralbumu{337182, 337581, 337614, 337768}
 
 \title{Optymalizacja ruchu sieciowego w symulowanym systemie rozproszonych kopii zapasowych}
 
@@ -94,7 +94,7 @@
 
 %tu idzie streszczenie na strone poczatkowa
 \begin{abstract}
-W pracy przedstawiono opis symulatora rozproszonych kopii zapasowych, algorytmów delta kodowania oraz wyniki przeprowadzonych eksperymentów.
+W pracy przedstawiono opis algorytmów delta kodowania i symulatora systemu rozproszonych kopii zapasowych, a tak¿e wyniki przeprowadzonych symulacji.
 Symulator naœladuje pracê systemu HYDRAstor oraz pozwala na zbadanie wp³ywu wdro¿enia nowych rozwi¹zañ na wydajnoœæ systemu.
 \end{abstract}
 
@@ -308,7 +308,7 @@ Pozwala znaleŸæ dolne ograniczenie na rozmiar danych potrzebnych do przes³ania w
 
 \subsection{Indeks podobieñstwa}
 W algorytmie z indeksem podobieñstwa stosujemy znacznie bardziej wyrafinowan¹ strategiê.
-Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ iloœæ $S \times K$ wartoœci liczbowych zwanych cechami (ang. \textit{feature}).
+Dla ka¿dego bloku bêdziemy liczyæ okreœlon¹, sta³¹ liczbê $S \times K$ wartoœci zwanych cechami (ang. \textit{feature}).
 W tym celu poruszamy siê po bloku oknem (ang. \textit{window}) o sta³ym rozmiarze $W$ i dla ka¿dego okna $w$ liczymy znacznik Rabina (ang. \textit{Rabin’s fingerprint}) $fp(w) = \sum\limits_{i=0}^{W-1} w[i] \times P^{i} \mod Q$, gdzie $P$ i $Q$ to ustalone liczby pierwsze.
 Dla cechy o numerze $i$ definiujemy dwie wartoœci $m_i$ oraz $a_i$.
 Wartoœci¹ cechy o numerze $i$ bêdzie minimum po wszystkich oknach $w$ z $(fp(w) \times m_i + a_i) \mod 2^{32}$.
@@ -317,7 +317,7 @@ Nastêpnie tworzymy super cechy (ang. \textit{superfeature}).
 W tym celu dzielimy cechy bloku na grupy po $K$ kolejnych cech i dla ka¿dej z grup liczymy znacznik Rabina - jego wartoœæ bêdzie wartoœci¹ super cechy.
 Algorytm zwróci stary blok, który ma najwiêcej wspólnych super cech z nowym blokiem.
 Jeœli zaœ ¿aden stary blok nie ma wspólnych super cech z nowym blokiem, powinniœmy wys³aæ ca³y nowy blok.
-Eksperymentalnie wyznaczyliœmy, ¿e najlepiej dzia³aj¹ wartoœci $K=4$ i $S=2$ - pod uwagê braliœmy iloœæ czasu potrzebn¹ na obliczenia, iloœæ znajdowanych bloków oraz ich jakoœæ.
+Eksperymentalnie wyznaczyliœmy, ¿e najlepiej dzia³aj¹ wartoœci $K=4$ i $S=2$ - pod uwagê braliœmy iloœæ czasu potrzebn¹ na obliczenia, liczbê znajdowanych bloków oraz ich jakoœæ.
 Oczywiœcie, im wiêksze $K$, tym lepsza jakoœæ kandydatów.
 Z kolei im wiêksze $S$, tym wiêcej bloków znajdujemy.
 Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
@@ -357,7 +357,7 @@ Czas obliczeñ jest zaœ wprost proporcjonalny do $S \times K$.
 \For{$sfeature \ \textbf{in} \ sfeatures$}
     \State $hashes.add(hashes\_map[sfeature])$
 \EndFor
-\State $best \gets None$ \Comment{szukanie bloku z najwiêksz¹ iloœci¹ wspólnych super cech}
+\State $best \gets None$ \Comment{szukanie bloku z najwiêksz¹ liczb¹ wspólnych super cech}
 \State $common \gets 0$
 \For{$hash \ \textbf{in} \ hashes$}
     \State $common' \gets \Call{length}{sfeatures.intersect(sfeatures\_map[hash])}$
@@ -594,7 +594,7 @@ Przed napisaniem fragmentu kodu programista materializuje wymagania funkcjonalne
 Nastêpnie doprowadza kod do takiego stanu, aby owe testy koñczy³y siê z sukcesem.
 Stosowanie TDD skutkuje du¿ym pokryciem kodu testami i wczesnym wykrywaniem b³êdów.
 
-\section{Podzia³ pracy}
+\chapter{Podzia³ pracy}
 \begin{center}
     \begin{longtable}{ | l | p{10cm} |}
     \nobreakhline
@@ -671,7 +671,7 @@ Metody wraz z oznaczaj¹cymi je kolorami:
     \label{fig:linuxSmall}
 \end{figure}
 
-Zacznijmy od iloœci duplikatów.
+Zacznijmy od liczby duplikatów.
 Dla pierwszej wersji jest to tylko 0.05\%, czyli prawie wszystkie bloki s¹ unikalne.
 Dla drugiej wersji duplikaty stanowi¹ 8.05\% bloków.
 Pomimo tego, ¿e wersje s¹ od siebie oddalone o tylko 5 tysiêcy zmian, wiêkszoœæ bloków jest inna.
