@@ -49,7 +49,6 @@ coverage.xml
 
 # Latex stuff:
 *.log *.aux *.toc *.synctex.gz
-*.pdf
 
 # Sphinx documentation
 docs/_build/
